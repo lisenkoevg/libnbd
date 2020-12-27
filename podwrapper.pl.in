@@ -441,6 +441,21 @@ SUCH DAMAGE.
 $content .= "\n=head1 LICENSE\n";
 $content .= eval "\$license_$package_license";
 
+# Check cross-references to other nbdkit man pages exist.
+my @xrefs = $content =~ /L<(nbd_.*?\([1-9]\))>/g;
+foreach (@xrefs) {
+    # All documentation in section 3.
+    if (m/^nbd_(.*)\(3\)$/) {
+        my $name = $1;
+        die "$progname: $input: cannot find cross reference for $_\n"
+            unless -f "$abs_top_srcdir/docs/nbd_$name.pod" ||
+                   -f "$abs_top_srcdir/docs/nbd_$name.3";
+    }
+    else {
+        die "$progname: $input: cannot find cross-reference for $_\n"
+    }
+}
+
 # Output man page.
 SUBMAN: {
     package Podwrapper::Man;
