@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	dirty-bitmap.sh \
 	interop-qemu-storage-daemon.sh \
 	interop-qemu-block-size.sh \
+	block-status-64.sh \
 	list-exports-nbd-config \
 	list-exports-test-dir/disk1 \
 	list-exports-test-dir/disk2 \
@@ -134,6 +135,7 @@ check_PROGRAMS += \
 	list-exports-qemu-nbd \
 	socket-activation-qemu-nbd \
 	dirty-bitmap \
+	block-status-64 \
 	structured-read \
 	opt-extended-headers \
 	$(NULL)
@@ -144,6 +146,7 @@ TESTS += \
 	list-exports-qemu-nbd \
 	socket-activation-qemu-nbd \
 	dirty-bitmap.sh \
+	block-status-64.sh \
 	structured-read.sh \
 	interop-qemu-block-size.sh \
 	opt-extended-headers.sh \
@@ -234,6 +237,9 @@ socket_activation_qemu_nbd_LDADD = $(top_builddir)/lib/libnbd.la
 
 dirty_bitmap_SOURCES = dirty-bitmap.c
 dirty_bitmap_LDADD = $(top_builddir)/lib/libnbd.la
+
+block_status_64_SOURCES = block-status-64.c
+block_status_64_LDADD = $(top_builddir)/lib/libnbd.la
 
 structured_read_SOURCES = structured-read.c
 structured_read_LDADD = $(top_builddir)/lib/libnbd.la

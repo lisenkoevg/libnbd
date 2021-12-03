@@ -104,6 +104,7 @@ Makefile.in
 /info/nbdinfo
 /info/nbdinfo.1
 /install-sh
+/interop/block-status-64
 /interop/dirty-bitmap
 /interop/interop-nbd-server
 /interop/interop-nbd-server-tls
