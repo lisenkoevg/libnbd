@@ -832,6 +832,7 @@ For backwards compatibility, the setting of this knob is ignored
 if L<nbd_set_request_structured_replies(3)> is also set to false,
 since the use of extended headers implies structured replies.";
     see_also = [Link "get_request_extended_headers";
+                Link "opt_extended_headers";
                 Link "set_handshake_flags"; Link "set_strict_mode";
                 Link "get_extended_headers_negotiated";
                 Link "zero"; Link "trim"; Link "cache";
@@ -863,7 +864,9 @@ L<nbd_get_extended_headers_negotiated(3)> instead.";
     shortdesc = "see if extended headers are in use";
     longdesc = "\
 After connecting you may call this to find out if the connection is
-using extended headers.
+using extended headers.  Note that this setting is sticky; this
+can return true even after a second L<nbd_opt_extended_headers(3)>
+returns false because the server detected a duplicate request.
 
 When extended headers are not in use, commands are limited to a
 32-bit length, even when the libnbd API uses a 64-bit parameter
@@ -945,7 +948,7 @@ replies) even if no explicit request for structured replies was
 attempted.";
     see_also = [Link "set_request_structured_replies";
                 Link "get_request_structured_replies";
-                Link "opt_structured_reply";
+                Link "opt_structured_reply"; Link "opt_extended_headers";
                 Link "get_protocol";
                 Link "get_extended_headers_negotiated"];
   };
@@ -1218,12 +1221,13 @@ proceeding all the way to the ready state, when communicating with a
 newstyle server.  This setting has no effect when connecting to an
 oldstyle server.
 
-Note that libnbd defaults to attempting C<NBD_OPT_STARTTLS> and
-C<NBD_OPT_STRUCTURED_REPLY> before letting you control remaining
-negotiation steps; if you need control over these steps as well,
-first set L<nbd_set_tls(3)> to C<LIBNBD_TLS_DISABLE> and
-L<nbd_set_request_structured_replies(3)> to false before starting
-the connection attempt.
+Note that libnbd defaults to attempting C<NBD_OPT_STARTTLS>,
+C<NBD_OPT_EXTENDED_HEADERS>, and C<NBD_OPT_STRUCTURED_REPLY>
+before letting you control remaining negotiation steps; if you
+need control over these steps as well, first set L<nbd_set_tls(3)>
+to C<LIBNBD_TLS_DISABLE>, and L<nbd_set_request_extended_headers(3)>
+or L<nbd_set_request_structured_replies(3)> to false, before
+starting the connection attempt.
 
 When option mode is enabled, you have fine-grained control over which
 options are negotiated, compared to the default of the server
@@ -1335,6 +1339,36 @@ established, as reported by L<nbd_get_tls_negotiated(3)>.";
                 Link "supports_tls"]
   };
 
+  "opt_extended_headers", {
+    default_call with
+    args = []; ret = RBool;
+    permitted_states = [ Negotiating ];
+    modifies_fd = true;
+    shortdesc = "request the server to enable extended headers";
+    longdesc = "\
+Request that the server use extended headers, by sending
+C<NBD_OPT_EXTENDED_HEADERS>.  This can only be used if
+L<nbd_set_opt_mode(3)> enabled option mode; furthermore, libnbd
+defaults to automatically requesting this unless you use
+L<nbd_set_request_extended_headers(3)> or
+L<nbd_set_request_structured_replies(3)> prior to connecting.
+This function is mainly useful for integration testing of corner
+cases in server handling.
+
+This function returns true if the server replies with success,
+false if the server replies with an error, and fails only if
+the server does not reply (such as for a loss of connection).
+Note that some servers fail a second request as redundant;
+libnbd assumes that once one request has succeeded, then
+extended headers are supported (as visible by
+L<nbd_get_extended_headers_negotiated(3)>) regardless if
+later calls to this function return false.  If this function
+returns true, the use of structured replies is implied.";
+    see_also = [Link "set_opt_mode"; Link "aio_opt_extended_headers";
+                Link "opt_go"; Link "set_request_extended_headers";
+                Link "set_request_structured_replies"]
+  };
+
   "opt_structured_reply", {
     default_call with
     args = []; ret = RBool;
@@ -1357,7 +1391,9 @@ Note that some servers fail a second request as redundant;
 libnbd assumes that once one request has succeeded, then
 structured replies are supported (as visible by
 L<nbd_get_structured_replies_negotiated(3)>) regardless if
-later calls to this function return false.";
+later calls to this function return false.  Similarly, a
+server may fail this request if extended headers are already
+negotiated, since extended headers take priority.";
     see_also = [Link "set_opt_mode"; Link "aio_opt_structured_reply";
                 Link "opt_go"; Link "set_request_structured_replies"]
   };
@@ -3194,6 +3230,31 @@ callback.";
     see_also = [Link "set_opt_mode"; Link "opt_starttls"];
   };
 
+  "aio_opt_extended_headers", {
+    default_call with
+    args = [];
+    optargs = [ OClosure completion_closure ];
+    ret = RErr;
+    permitted_states = [ Negotiating ];
+    async_kind = Some WithCompletionCallback;
+    shortdesc = "request the server to enable extended headers";
+    longdesc = "\
+Request that the server use extended headers, by sending
+C<NBD_OPT_EXTENDED_HEADERS>.  This behaves like the synchronous
+counterpart L<nbd_opt_extended_headers(3)>, except that it does
+not wait for the server's response.
+
+To determine when the request completes, wait for
+L<nbd_aio_is_connecting(3)> to return false.  Or supply the optional
+C<completion_callback> which will be invoked as described in
+L<libnbd(3)/Completion callbacks>, except that it is automatically
+retired regardless of return value.  Note that detecting whether the
+server returns an error (as is done by the return value of the
+synchronous counterpart) is only possible with a completion
+callback.";
+    see_also = [Link "set_opt_mode"; Link "opt_extended_headers"];
+  };
+
   "aio_opt_structured_reply", {
     default_call with
     args = [];
@@ -4189,6 +4250,8 @@ let first_version = [
   "set_request_extended_headers", (1, 18);
   "get_request_extended_headers", (1, 18);
   "get_extended_headers_negotiated", (1, 18);
+  "opt_extended_headers", (1, 18);
+  "aio_opt_extended_headers", (1, 18);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.

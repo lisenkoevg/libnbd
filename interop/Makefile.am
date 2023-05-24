@@ -25,6 +25,7 @@ EXTRA_DIST = \
 	list-exports-test-dir/disk1 \
 	list-exports-test-dir/disk2 \
 	structured-read.sh \
+	opt-extended-headers.sh \
 	$(NULL)
 
 TESTS_ENVIRONMENT = \
@@ -134,6 +135,7 @@ check_PROGRAMS += \
 	socket-activation-qemu-nbd \
 	dirty-bitmap \
 	structured-read \
+	opt-extended-headers \
 	$(NULL)
 TESTS += \
 	interop-qemu-nbd \
@@ -144,6 +146,7 @@ TESTS += \
 	dirty-bitmap.sh \
 	structured-read.sh \
 	interop-qemu-block-size.sh \
+	opt-extended-headers.sh \
 	$(NULL)
 
 interop_qemu_nbd_SOURCES = \
@@ -234,6 +237,9 @@ dirty_bitmap_LDADD = $(top_builddir)/lib/libnbd.la
 
 structured_read_SOURCES = structured-read.c
 structured_read_LDADD = $(top_builddir)/lib/libnbd.la
+
+opt_extended_headers_SOURCES = opt-extended-headers.c
+opt_extended_headers_LDADD = $(top_builddir)/lib/libnbd.la
 
 endif HAVE_QEMU_NBD
 

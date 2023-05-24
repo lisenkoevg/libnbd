@@ -21,11 +21,14 @@
 STATE_MACHINE {
  NEWSTYLE.OPT_EXTENDED_HEADERS.START:
   assert (h->gflags & LIBNBD_HANDSHAKE_FLAG_FIXED_NEWSTYLE);
-  assert (h->opt_current != NBD_OPT_EXTENDED_HEADERS);
-  assert (CALLBACK_IS_NULL (h->opt_cb.completion));
-  if (!h->request_eh || !h->request_sr) {
-    SET_NEXT_STATE (%^OPT_STRUCTURED_REPLY.START);
-    return 0;
+  if (h->opt_current == NBD_OPT_EXTENDED_HEADERS)
+    assert (h->opt_mode);
+  else {
+    assert (CALLBACK_IS_NULL (h->opt_cb.completion));
+    if (!h->request_eh || !h->request_sr) {
+      SET_NEXT_STATE (%^OPT_STRUCTURED_REPLY.START);
+      return 0;
+    }
   }
 
   h->sbuf.option.version = htobe64 (NBD_NEW_VERSION);
@@ -68,6 +71,7 @@ STATE_MACHINE {
 
  NEWSTYLE.OPT_EXTENDED_HEADERS.CHECK_REPLY:
   uint32_t reply;
+  int err = ENOTSUP;
 
   reply = be32toh (h->sbuf.or.option_reply.reply);
   switch (reply) {
@@ -76,19 +80,31 @@ STATE_MACHINE {
     h->extended_headers = true;
     /* Extended headers trump structured replies, so skip ahead. */
     h->structured_replies = true;
+    err = 0;
     break;
+  case NBD_REP_ERR_INVALID:
+    err = EINVAL;
+    /* fallthrough */
   default:
     if (handle_reply_error (h) == -1) {
       SET_NEXT_STATE (%.DEAD);
       return 0;
     }
 
-    debug (h, "extended headers are not supported by this server");
+    if (h->extended_headers)
+      debug (h, "extended headers already negotiated");
+    else
+      debug (h, "extended headers are not supported by this server");
     break;
   }
 
   /* Next option. */
-  SET_NEXT_STATE (%^OPT_STRUCTURED_REPLY.START);
+  if (h->opt_current == NBD_OPT_EXTENDED_HEADERS)
+    SET_NEXT_STATE (%.NEGOTIATING);
+  else
+    SET_NEXT_STATE (%^OPT_STRUCTURED_REPLY.START);
+  CALL_CALLBACK (h->opt_cb.completion, &err);
+  nbd_internal_free_option (h);
   return 0;
 
 } /* END STATE MACHINE */

@@ -164,6 +164,31 @@ nbd_unlocked_opt_starttls (struct nbd_handle *h)
   return r;
 }
 
+/* Issue NBD_OPT_EXTENDED_HEADERS and wait for the reply. */
+int
+nbd_unlocked_opt_extended_headers (struct nbd_handle *h)
+{
+  int err;
+  nbd_completion_callback c = { .callback = go_complete, .user_data = &err };
+  int r = nbd_unlocked_aio_opt_extended_headers (h, &c);
+
+  if (r == -1)
+    return r;
+
+  r = wait_for_option (h);
+  if (r == 0) {
+    if (nbd_internal_is_state_negotiating (get_next_state (h)))
+      r = err == 0;
+    else {
+      assert (nbd_internal_is_state_dead (get_next_state (h)));
+      set_error (err,
+                 "failed to get response to opt_extended_headers request");
+      r = -1;
+    }
+  }
+  return r;
+}
+
 /* Issue NBD_OPT_STRUCTURED_REPLY and wait for the reply. */
 int
 nbd_unlocked_opt_structured_reply (struct nbd_handle *h)
@@ -386,6 +411,25 @@ nbd_unlocked_aio_opt_starttls (struct nbd_handle *h,
     debug (h, "option queued, ignoring state machine failure");
   return 0;
 #endif
+}
+
+/* Issue NBD_OPT_EXTENDED_HEADERS without waiting. */
+int
+nbd_unlocked_aio_opt_extended_headers (struct nbd_handle *h,
+                                       nbd_completion_callback *complete)
+{
+  if ((h->gflags & LIBNBD_HANDSHAKE_FLAG_FIXED_NEWSTYLE) == 0) {
+    set_error (ENOTSUP, "server is not using fixed newstyle protocol");
+    return -1;
+  }
+
+  h->opt_current = NBD_OPT_EXTENDED_HEADERS;
+  h->opt_cb.completion = *complete;
+  SET_CALLBACK_TO_NULL (*complete);
+
+  if (nbd_internal_run (h, cmd_issue) == -1)
+    debug (h, "option queued, ignoring state machine failure");
+  return 0;
 }
 
 /* Issue NBD_OPT_STRUCTURED_REPLY without waiting. */
