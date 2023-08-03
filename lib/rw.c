@@ -406,6 +406,15 @@ nbd_unlocked_aio_pwrite (struct nbd_handle *h, const void *buf,
 {
   struct command_cb cb = { .completion = *completion };
 
+  if (h->strict & LIBNBD_STRICT_AUTO_FLAG) {
+    /* It is more convenient to manage PAYLOAD_LEN by what was negotiated
+     * than to require the user to have to set it correctly.
+     */
+    if (h->extended_headers)
+      flags |= LIBNBD_CMD_FLAG_PAYLOAD_LEN;
+    else
+      flags &= ~LIBNBD_CMD_FLAG_PAYLOAD_LEN;
+  }
   if (h->strict & LIBNBD_STRICT_COMMANDS) {
     if (nbd_unlocked_is_read_only (h) == 1) {
       set_error (EPERM, "server does not support write operations");
@@ -417,16 +426,12 @@ nbd_unlocked_aio_pwrite (struct nbd_handle *h, const void *buf,
       set_error (EINVAL, "server does not support the FUA flag");
       return -1;
     }
+
+    if (!!(flags & LIBNBD_CMD_FLAG_PAYLOAD_LEN) != h->extended_headers) {
+      set_error (EINVAL, "incorrect setting for PAYLOAD_LEN flag");
+      return -1;
+    }
   }
-  /* It is more convenient to manage PAYLOAD_LEN by what was negotiated
-   * than to require the user to have to set it correctly.
-   * TODO: Add new h->strict bit to allow intentional protocol violation
-   * for interoperability testing.
-   */
-  if (h->extended_headers)
-    flags |= LIBNBD_CMD_FLAG_PAYLOAD_LEN;
-  else
-    flags &= ~LIBNBD_CMD_FLAG_PAYLOAD_LEN;
 
   SET_CALLBACK_TO_NULL (*completion);
   return nbd_internal_command_common (h, flags, NBD_CMD_WRITE, offset, count,
@@ -615,15 +620,17 @@ nbd_unlocked_aio_block_status_filter (struct nbd_handle *h,
   char *name;
   size_t i;
 
-  /* Because this affects wire format, it is more convenient to manage
-   * PAYLOAD_LEN by what was negotiated than to require the user to
-   * have to set it correctly.
-   */
-  if (!h->extended_headers) {
-    set_error (ENOTSUP, "server does not support extended headers");
-    return -1;
+  if (h->strict & LIBNBD_STRICT_AUTO_FLAG) {
+    /* Because this affects wire format, it is more convenient to manage
+     * PAYLOAD_LEN by what was negotiated than to require the user to
+     * have to set it correctly.
+     */
+    if (!h->extended_headers) {
+      set_error (ENOTSUP, "server does not support extended headers");
+      return -1;
+    }
+    flags |= LIBNBD_CMD_FLAG_PAYLOAD_LEN;
   }
-  flags |= LIBNBD_CMD_FLAG_PAYLOAD_LEN;
 
   if (h->strict & LIBNBD_STRICT_COMMANDS) {
     if (nbd_unlocked_can_block_status_payload (h) != 1) {
@@ -636,6 +643,11 @@ nbd_unlocked_aio_block_status_filter (struct nbd_handle *h,
       set_error (ENOTSUP, "did not negotiate any metadata contexts, "
                  "either you did not call nbd_add_meta_context before "
                  "connecting or the server does not support it");
+      return -1;
+    }
+
+    if ((flags & LIBNBD_CMD_FLAG_PAYLOAD_LEN) == 0) {
+      set_error (EINVAL, "incorrect setting for PAYLOAD_LEN flag");
       return -1;
     }
   }

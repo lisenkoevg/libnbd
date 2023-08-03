@@ -239,6 +239,7 @@ let strict_flags = {
     "ZERO_SIZE",      1 lsl 3;
     "ALIGN",          1 lsl 4;
     "PAYLOAD",        1 lsl 5;
+    "AUTO_FLAG",      1 lsl 6;
   ]
 }
 let allow_transport_flags = {
@@ -1145,7 +1146,8 @@ confuses libnbd, perhaps causing deadlock or ending the connection.
 Flags that are known by libnbd as associated with a given command
 (such as C<LIBNBD_CMD_FLAG_DF> for L<nbd_pread_structured(3)> gated
 by L<nbd_can_df(3)>) are controlled by C<LIBNBD_STRICT_COMMANDS>
-instead.
+instead; and C<LIBNBD_CMD_FLAG_PAYLOAD_LEN> is managed automatically
+by libnbd unless C<LIBNBD_STRICT_AUTO_FLAG> is disabled.
 
 Note that the NBD protocol only supports 16 bits of command flags,
 even though the libnbd API uses C<uint32_t>; bits outside of the
@@ -1181,6 +1183,19 @@ or not the server advertised a block size maximum.  If clear,
 oversize requests up to 64MiB may be attempted, although
 requests larger than 32MiB are liable to cause some servers to
 disconnect.
+
+=item C<LIBNBD_STRICT_AUTO_FLAG> = 0x40
+
+If set, commands that accept the C<LIBNBD_CMD_FLAG_PAYLOAD_LEN>
+flag (such as L<nbd_pwrite(3)> and C<nbd_block_status_filter(3)>)
+ignore the presence or absence of that flag from the caller,
+instead sending the value over the wire that matches the
+server's expectations based on whether extended headers were
+negotiated when the connection was made.  If clear, the caller
+takes on the responsibility for whether the payload length
+flag is set or clear during the affected command, which can
+be useful during integration testing but is more likely to
+lead to undefined behavior.
 
 =back
 
@@ -2711,10 +2726,11 @@ The C<flags> parameter may be C<0> for no flags, or may contain
 C<LIBNBD_CMD_FLAG_FUA> meaning that the server should not
 return until the data has been committed to permanent storage
 (if that is supported - some servers cannot do this, see
-L<nbd_can_fua(3)>).  For convenience, libnbd ignores the presence
-or absence of the flag C<LIBNBD_CMD_FLAG_PAYLOAD_LEN> in C<flags>,
-while correctly using the flag over the wire according to whether
-extended headers were negotiated."
+L<nbd_can_fua(3)>).  For convenience, unless C<nbd_set_strict_flags(3)>
+was used to disable C<LIBNBD_STRICT_AUTO_FLAG>, libnbd ignores the
+presence or absence of the flag C<LIBNBD_CMD_FLAG_PAYLOAD_LEN>
+in C<flags>, while correctly using the flag over the wire
+according to whether extended headers were negotiated."
 ^ strict_call_description;
     see_also = [Link "can_fua"; Link "is_read_only";
                 Link "aio_pwrite"; Link "get_block_size";
@@ -3062,8 +3078,10 @@ L<nbd_can_meta_context(3)>.
 
 All other parameters to this function have the same semantics
 as in L<nbd_block_status_64(3)>; except that for convenience,
-the C<flags> parameter may additionally contain or omit
-C<LIBNBD_CMD_FLAG_PAYLOAD_LEN>."
+unless <nbd_set_strict_flags(3)> was used to disable
+C<LIBNBD_STRICT_AUTO_FLAG>, libnbd ignores the presence or
+absence of the flag C<LIBNBD_CMD_FLAG_PAYLOAD_LEN>
+in C<flags>, while correctly using the flag over the wire."
 ^ strict_call_description;
     see_also = [Link "block_status_64";
                 Link "can_block_status_payload"; Link "can_meta_context";
