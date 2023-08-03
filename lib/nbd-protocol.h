@@ -113,6 +113,7 @@ struct nbd_fixed_new_option_reply {
 #define NBD_FLAG_CAN_MULTI_CONN       (1U << 8)
 #define NBD_FLAG_SEND_CACHE           (1U << 10)
 #define NBD_FLAG_SEND_FAST_ZERO       (1U << 11)
+#define NBD_FLAG_BLOCK_STATUS_PAYLOAD (1U << 12)
 
 /* NBD options (new style handshake only). */
 #define NBD_OPT_EXPORT_NAME        1
@@ -202,6 +203,12 @@ struct nbd_request_ext {
   uint64_t cookie;              /* Opaque handle. */
   uint64_t offset;              /* Request offset. */
   uint64_t count;               /* Request effect or payload length. */
+} NBD_ATTRIBUTE_PACKED;
+
+/* Extended request payload for NBD_CMD_BLOCK_STATUS, when supported. */
+struct nbd_block_status_payload {
+  uint64_t length;              /* Effective length of client request */
+  /* followed by array of uint32_t ids */
 } NBD_ATTRIBUTE_PACKED;
 
 /* Simple reply (server -> client). */

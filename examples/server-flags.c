@@ -78,8 +78,13 @@ main (int argc, char *argv[])
   PRINT_FLAG (nbd_can_multi_conn);
   PRINT_FLAG (nbd_can_trim);
   PRINT_FLAG (nbd_can_zero);
-#if LIBNBD_HAVE_NBD_CAN_FAST_ZERO /* Added in 1.2 */
+#if LIBNBD_HAVE_NBD_CAN_FAST_ZERO
+  /* Added in 1.2 */
   PRINT_FLAG (nbd_can_fast_zero);
+#endif
+#if LIBNBD_HAVE_NBD_CAN_BLOCK_STATUS_PAYLOAD
+  /* Added in 1.18 */
+  PRINT_FLAG (nbd_can_block_status_payload);
 #endif
   PRINT_FLAG (nbd_is_read_only);
   PRINT_FLAG (nbd_is_rotational);

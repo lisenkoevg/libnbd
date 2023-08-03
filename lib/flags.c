@@ -66,6 +66,12 @@ nbd_internal_set_size_and_flags (struct nbd_handle *h,
     eflags &= ~NBD_FLAG_SEND_DF;
   }
 
+  if (eflags & NBD_FLAG_BLOCK_STATUS_PAYLOAD && !h->extended_headers) {
+    debug (h, "server lacks extended headers, ignoring claim "
+           "of block status payload");
+    eflags &= ~NBD_FLAG_BLOCK_STATUS_PAYLOAD;
+  }
+
   if (eflags & NBD_FLAG_SEND_FAST_ZERO &&
       !(eflags & NBD_FLAG_SEND_WRITE_ZEROES)) {
     debug (h, "server lacks write zeroes, ignoring claim of fast zero");
@@ -211,6 +217,12 @@ int
 nbd_unlocked_can_cache (struct nbd_handle *h)
 {
   return get_flag (h, NBD_FLAG_SEND_CACHE);
+}
+
+int
+nbd_unlocked_can_block_status_payload (struct nbd_handle *h)
+{
+  return get_flag (h, NBD_FLAG_BLOCK_STATUS_PAYLOAD);
 }
 
 int

@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	list-exports-test-dir/disk2 \
 	structured-read.sh \
 	opt-extended-headers.sh \
+	block-status-payload.sh \
 	$(NULL)
 
 TESTS_ENVIRONMENT = \
@@ -138,6 +139,7 @@ check_PROGRAMS += \
 	block-status-64 \
 	structured-read \
 	opt-extended-headers \
+	block-status-payload \
 	$(NULL)
 TESTS += \
 	interop-qemu-nbd \
@@ -150,6 +152,7 @@ TESTS += \
 	structured-read.sh \
 	interop-qemu-block-size.sh \
 	opt-extended-headers.sh \
+	block-status-payload.sh \
 	$(NULL)
 
 interop_qemu_nbd_SOURCES = \
@@ -246,6 +249,9 @@ structured_read_LDADD = $(top_builddir)/lib/libnbd.la
 
 opt_extended_headers_SOURCES = opt-extended-headers.c
 opt_extended_headers_LDADD = $(top_builddir)/lib/libnbd.la
+
+block_status_payload_SOURCES = block-status-payload.c
+block_status_payload_LDADD = $(top_builddir)/lib/libnbd.la
 
 endif HAVE_QEMU_NBD
 

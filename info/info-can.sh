@@ -38,6 +38,9 @@ requires bash -c "nbdkit sh --dump-plugin | grep has_can_cache=1"
 # and oldstyle never, but that feels like depending a bit too much on
 # the implementation.
 
+# --can block-status-payload is not supported by nbdkit yet. Testing
+# is done during interop/block-status-payload.sh with new-enough qemu.
+
 # --has structured-reply is not a per-export setting, but rather
 # something set on the server as a whole.
 

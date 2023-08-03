@@ -72,6 +72,11 @@ do_can (void)
   else if (strcasecmp (can, "rotational") == 0)
     feature = nbd_is_rotational (nbd);
 
+  else if (strcasecmp (can, "block status payload") == 0 ||
+           strcasecmp (can, "block-status-payload") == 0 ||
+           strcasecmp (can, "block_status_payload") == 0)
+    feature = nbd_can_block_status_payload (nbd);
+
   else if (strcasecmp (can, "cache") == 0)
     feature = nbd_can_cache (nbd);
 

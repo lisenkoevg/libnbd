@@ -2353,6 +2353,23 @@ the server does not."
     example = Some "examples/server-flags.c";
   };
 
+  "can_block_status_payload", {
+    default_call with
+    args = []; ret = RBool;
+    permitted_states = [ Negotiating; Connected; Closed ];
+    shortdesc = "does the server support the block status payload flag?";
+    longdesc = "\
+Returns true if the server supports the use of the
+C<LIBNBD_CMD_FLAG_PAYLOAD_LEN> flag to allow filtering of the
+block status command.  Returns
+false if the server does not.  Note that this will never return
+true if L<nbd_get_extended_headers_negotiated(3)> is false."
+^ non_blocking_test_call_description;
+    see_also = [SectionLink "Flag calls"; Link "opt_info";
+                Link "get_extended_headers_negotiated"];
+    example = Some "examples/server-flags.c";
+  };
+
   "can_df", {
     default_call with
     args = []; ret = RBool;
@@ -4252,6 +4269,7 @@ let first_version = [
   "get_extended_headers_negotiated", (1, 18);
   "opt_extended_headers", (1, 18);
   "aio_opt_extended_headers", (1, 18);
+  "can_block_status_payload", (1, 18);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.

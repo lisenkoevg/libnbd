@@ -54,7 +54,7 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
   char *uri = NULL;
   int is_rotational, is_read_only;
   int can_cache, can_df, can_fast_zero, can_flush, can_fua,
-    can_multi_conn, can_trim, can_zero;
+    can_multi_conn, can_trim, can_zero, can_block_status_payload;
   int64_t block_minimum, block_preferred, block_maximum;
   string_vector contexts = empty_vector;
   bool show_context = false;
@@ -120,6 +120,7 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
   can_multi_conn = nbd_can_multi_conn (nbd);
   can_trim = nbd_can_trim (nbd);
   can_zero = nbd_can_zero (nbd);
+  can_block_status_payload = nbd_can_block_status_payload (nbd);
   block_minimum = nbd_get_block_size (nbd, LIBNBD_SIZE_MINIMUM);
   block_preferred = nbd_get_block_size (nbd, LIBNBD_SIZE_PREFERRED);
   block_maximum = nbd_get_block_size (nbd, LIBNBD_SIZE_MAXIMUM);
@@ -161,6 +162,8 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
     if (is_read_only >= 0)
       fprintf (fp, "\t%s: %s\n", "is_read_only",
                is_read_only ? "true" : "false");
+    if (can_block_status_payload >= 0)
+      show_boolean ("can_block_status_payload", can_block_status_payload);
     if (can_cache >= 0)
       show_boolean ("can_cache", can_cache);
     if (can_df >= 0)
@@ -230,6 +233,10 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
     if (is_read_only >= 0)
       fprintf (fp, "\t\"%s\": %s,\n",
               "is_read_only", is_read_only ? "true" : "false");
+    if (can_block_status_payload >= 0)
+      fprintf (fp, "\t\"%s\": %s,\n",
+              "can_block_status_payload",
+               can_block_status_payload ? "true" : "false");
     if (can_cache >= 0)
       fprintf (fp, "\t\"%s\": %s,\n",
               "can_cache", can_cache ? "true" : "false");
