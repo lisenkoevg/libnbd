@@ -189,6 +189,7 @@ check_PROGRAMS += \
 	errors-server-zerosize \
 	server-death \
 	shutdown-flags \
+	shutdown-opt-mode \
 	get-size \
 	read-only-flag \
 	read-write-flag \
@@ -263,6 +264,7 @@ TESTS += \
 	errors-server-zerosize \
 	server-death \
 	shutdown-flags \
+	shutdown-opt-mode \
 	get-size \
 	read-only-flag \
 	read-write-flag \
@@ -400,6 +402,9 @@ server_death_LDADD = $(top_builddir)/lib/libnbd.la
 
 shutdown_flags_SOURCES = shutdown-flags.c
 shutdown_flags_LDADD = $(top_builddir)/lib/libnbd.la
+
+shutdown_opt_mode_SOURCES = shutdown-opt-mode.c
+shutdown_opt_mode_LDADD = $(top_builddir)/lib/libnbd.la
 
 get_size_SOURCES = get-size.c
 get_size_LDADD = $(top_builddir)/lib/libnbd.la

@@ -269,6 +269,7 @@ Makefile.in
 /tests/read-write-flag
 /tests/server-death
 /tests/shutdown-flags
+/tests/shutdown-opt-mode
 /tests/socket-activation-name
 /tests/synch-parallel
 /tests/synch-parallel-tls
