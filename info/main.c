@@ -354,8 +354,6 @@ main (int argc, char *argv[])
   }
 
   free_exports ();
-  if (opt_mode)
-    nbd_opt_abort (nbd);
   nbd_shutdown (nbd, 0);
   nbd_close (nbd);
 

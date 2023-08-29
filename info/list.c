@@ -62,12 +62,6 @@ collect_exports (void)
     fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
     exit (EXIT_FAILURE);
   }
-  if (probe_content)
-    /* Disconnect from the server to move the handle into a closed
-     * state, in case the server serializes further connections.
-     * But we can ignore errors in this case.
-     */
-    nbd_opt_abort (nbd);
 }
 
 void
