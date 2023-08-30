@@ -600,7 +600,7 @@ module NameMap = Map.Make (String)
 
 (* Strip "aio_" from the beginning of a string. *)
 let strip_aio name : string =
-  if String.starts_with ~prefix:"aio_" name then
+  if string_starts_with ~prefix:"aio_" name then
     String.sub name 4 (String.length name - 4)
   else failwithf "Asynchronous call %s must begin with aio_" name
 

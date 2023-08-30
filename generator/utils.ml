@@ -124,6 +124,18 @@ let cspan str reject =
   in
   loop 0
 
+(* String.starts_with was added in OCaml 4.13 so we include this for
+ * earlier versions of OCaml.
+ *)
+let string_starts_with ~prefix s =
+  let len_s = String.length s and len_pre = String.length prefix in
+  let rec aux i =
+    if i = len_pre then true
+    else if String.unsafe_get s i <> String.unsafe_get prefix i then false
+    else aux (i + 1)
+  in
+  len_s >= len_pre && aux 0
+
 (* Current output line and column. *)
 let lineno = ref 1 and col = ref 0
 
