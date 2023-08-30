@@ -610,7 +610,7 @@ let strip_aio name : string =
 let async_handle_calls : (string * call * async_kind) NameMap.t =
   handle_calls
   |> List.filter (fun (n, _) -> not (NameSet.mem n excluded_handle_calls))
-  |> List.filter_map (fun (name, call) ->
+  |> filter_map (fun (name, call) ->
          call.async_kind
          |> Option.map (fun async_kind ->
                 (strip_aio name, (name, call, async_kind))))
