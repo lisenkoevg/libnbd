@@ -639,7 +639,13 @@ AC_ARG_ENABLE([rust],
         [enable_rust=yes])
 AS_IF([test "x$enable_rust" != "xno"],[
     AC_CHECK_PROG([CARGO],[cargo],[cargo],[no])
+    AS_IF([test "x$CARGO" != "xno"],[
+        printf "cargo version is "; $CARGO --version
+    ])
     AC_CHECK_PROG([RUSTFMT],[rustfmt],[rustfmt],[no])
+    AS_IF([test "x$RUSTFMT" != "xno"],[
+        printf "rustfmt version is "; $RUSTFMT --version
+    ])
     AS_IF([test "x$CARGO" != "xno"],[
         AC_MSG_CHECKING([if $CARGO is usable])
         AS_IF([ (

@@ -32,6 +32,7 @@ source_files = \
 	src/types.rs \
 	src/utils.rs \
 	src/async_handle.rs \
+	examples/concurrent-read-write.rs \
 	examples/connect-command.rs \
 	examples/get-size.rs \
 	examples/fetch-first-sector.rs \
@@ -62,6 +63,20 @@ source_files = \
 	tests/test_460_block_status.rs \
 	tests/test_465_block_status_64.rs \
 	tests/test_620_stats.rs \
+	tests/test_async_100_handle.rs \
+	tests/test_async_200_connect_command.rs \
+	tests/test_async_210_opt_abort.rs \
+	tests/test_async_220_opt_list.rs \
+	tests/test_async_230_opt_info.rs \
+	tests/test_async_240_opt_list_meta.rs \
+	tests/test_async_245_opt_list_meta_queries.rs \
+	tests/test_async_250_opt_set_meta.rs \
+	tests/test_async_255_opt_set_meta_queries.rs \
+	tests/test_async_400_pread.rs \
+	tests/test_async_405_pread_structured.rs \
+	tests/test_async_410_pwrite.rs \
+	tests/test_async_460_block_status.rs \
+	tests/test_async_620_stats.rs \
 	tests/test_log/mod.rs \
 	run-tests.sh.in \
 	$(NULL)

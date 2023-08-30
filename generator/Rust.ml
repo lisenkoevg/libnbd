@@ -600,7 +600,7 @@ module NameMap = Map.Make (String)
 
 (* Strip "aio_" from the beginning of a string. *)
 let strip_aio name : string =
-  if String.starts_with ~prefix:"aio_" name then
+  if string_starts_with ~prefix:"aio_" name then
     String.sub name 4 (String.length name - 4)
   else failwithf "Asynchronous call %s must begin with aio_" name
 
@@ -610,9 +610,9 @@ let strip_aio name : string =
 let async_handle_calls : (string * call * async_kind) NameMap.t =
   handle_calls
   |> List.filter (fun (n, _) -> not (NameSet.mem n excluded_handle_calls))
-  |> List.filter_map (fun (name, call) ->
+  |> filter_map (fun (name, call) ->
          call.async_kind
-         |> Option.map (fun async_kind ->
+         |> option_map (fun async_kind ->
                 (strip_aio name, (name, call, async_kind))))
   |> List.to_seq |> NameMap.of_seq
 
@@ -669,7 +669,7 @@ let print_rust_async_handle_call_with_completion_cb name aio_name call =
   let optargs = Array.of_list call.optargs in
   (* The index of the completion callback in [optargs] *)
   let completion_cb_index =
-    Array.find_map
+    array_find_map
       (fun (i, optarg) ->
         match optarg with
         | OClosure { cbname } ->

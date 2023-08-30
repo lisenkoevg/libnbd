@@ -44,6 +44,9 @@ val nsplit : string -> string -> string list
 val char_mem : char -> string -> bool
 val span : string -> string -> int
 val cspan : string -> string -> int
+val string_starts_with : prefix:string -> string -> bool
+val array_find_map : ('a -> 'b option) -> 'a array -> 'b option
+val option_map : ('a -> 'b) -> 'a option -> 'b option
 val quote : string -> string
 val spaces : int -> string
 val macro_name : string -> string
