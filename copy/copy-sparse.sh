@@ -43,7 +43,7 @@ $VG nbdcopy -S 0 --request-size=32768 -- \
              ' ] \
     [ nbdkit --exit-with-parent eval \
              get_size=' echo 7E ' \
-             pwrite=" echo \$@ >> $out " \
+             pwrite=" cat >/dev/null; echo \$@ >> $out " \
              trim=" echo \$@ >> $out " \
              zero=" echo \$@ >> $out " ]
 
