@@ -21,6 +21,10 @@ indent_size = 4
 indent_style = tab
 indent_size = 4
 
+[*.rs]
+# Match rustfmt style
+indent_size = 4
+
 [{Makefile,Makefile.in,Makefile.am,*.mk}]
 # Make requires tabs.
 indent_style = tab
