@@ -136,6 +136,18 @@ let string_starts_with ~prefix s =
   in
   len_s >= len_pre && aux 0
 
+(* Array.find_map was added in OCaml 4.13 *)
+let array_find_map f a =
+  let n = Array.length a in
+  let rec loop i =
+    if i = n then None
+    else
+      match f (Array.unsafe_get a i) with
+      | None -> loop (succ i)
+      | Some _ as r -> r
+  in
+  loop 0
+
 (* Current output line and column. *)
 let lineno = ref 1 and col = ref 0
 

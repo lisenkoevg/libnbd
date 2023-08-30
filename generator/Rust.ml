@@ -669,7 +669,7 @@ let print_rust_async_handle_call_with_completion_cb name aio_name call =
   let optargs = Array.of_list call.optargs in
   (* The index of the completion callback in [optargs] *)
   let completion_cb_index =
-    Array.find_map
+    array_find_map
       (fun (i, optarg) ->
         match optarg with
         | OClosure { cbname } ->
