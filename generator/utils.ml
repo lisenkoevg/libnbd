@@ -148,6 +148,9 @@ let array_find_map f a =
   in
   loop 0
 
+(* Option module was added in OCaml 4.08 *)
+let option_map f o = match o with None -> None | Some v -> Some (f v)
+
 (* Current output line and column. *)
 let lineno = ref 1 and col = ref 0
 
