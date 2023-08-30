@@ -21,11 +21,10 @@
 use libnbd::types::NbdExtent;
 use std::env;
 use std::path::Path;
-use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
-fn block_status_get_entries(
-    nbd: &libnbd::Handle,
+async fn block_status_get_entries(
+    nbd: &libnbd::AsyncHandle,
     count: u64,
     offset: u64,
     flags: Option<libnbd::CmdFlag>,
@@ -44,6 +43,7 @@ fn block_status_get_entries(
         },
         flags,
     )
+    .await
     .unwrap();
     Arc::try_unwrap(entries)
         .unwrap()
@@ -52,13 +52,13 @@ fn block_status_get_entries(
         .unwrap()
 }
 
-#[test]
-fn test_block_status() {
+#[tokio::test]
+async fn test_async_block_status() {
     let srcdir = env::var("srcdir").unwrap();
     let srcdir = Path::new(&srcdir);
     let script_path = srcdir.join("../tests/meta-base-allocation.sh");
     let script_path = script_path.to_str().unwrap();
-    let nbd = libnbd::Handle::new().unwrap();
+    let nbd = libnbd::AsyncHandle::new().unwrap();
     nbd.add_meta_context(libnbd::CONTEXT_BASE_ALLOCATION)
         .unwrap();
     nbd.connect_command(&[
@@ -69,10 +69,13 @@ fn test_block_status() {
         "sh",
         script_path,
     ])
+    .await
     .unwrap();
 
     assert_eq!(
-        block_status_get_entries(&nbd, 65536, 0, None).as_slice(),
+        block_status_get_entries(&nbd, 65536, 0, None)
+            .await
+            .as_slice(),
         &[
             NbdExtent {
                 length: 8192,
@@ -98,7 +101,9 @@ fn test_block_status() {
     );
 
     assert_eq!(
-        block_status_get_entries(&nbd, 1024, 32256, None).as_slice(),
+        block_status_get_entries(&nbd, 1024, 32256, None)
+            .await
+            .as_slice(),
         &[
             NbdExtent {
                 length: 512,
@@ -118,6 +123,7 @@ fn test_block_status() {
             32256,
             Some(libnbd::CmdFlag::REQ_ONE)
         )
+        .await
         .as_slice(),
         &[NbdExtent {
             length: 512,

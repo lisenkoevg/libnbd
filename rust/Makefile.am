@@ -76,6 +76,7 @@ source_files = \
 	tests/test_async_405_pread_structured.rs \
 	tests/test_async_410_pwrite.rs \
 	tests/test_async_460_block_status.rs \
+	tests/test_async_465_block_status_64.rs \
 	tests/test_async_620_stats.rs \
 	tests/test_log/mod.rs \
 	run-tests.sh.in \

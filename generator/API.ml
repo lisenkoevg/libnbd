@@ -2915,6 +2915,7 @@ validate that the server obeyed the flag."
     optargs = [ OFlags ("flags", cmd_flags, Some ["REQ_ONE"]) ];
     ret = RErr;
     permitted_states = [ Connected ];
+    modifies_fd = true;
     shortdesc = "send block status command, with 64-bit callback";
     longdesc = "\
 Issue the block status command to the NBD server.  If
@@ -3637,6 +3638,7 @@ L<nbd_aio_block_status_64(3)>.
                 OFlags ("flags", cmd_flags, Some ["REQ_ONE"]) ];
     ret = RCookie;
     permitted_states = [ Connected ];
+    async_kind = Some WithCompletionCallback;
     shortdesc = "send block status command, with 64-bit callback";
     longdesc = "\
 Send the block status command to the NBD server.
