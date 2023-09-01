@@ -56,7 +56,7 @@ pub struct AsyncHandle {
 }
 
 pub(crate) struct HandleData {
-    /// The underliing handle.
+    /// The underlying handle.
     pub handle: Handle,
 
     /// A list of all pending commands.
@@ -68,7 +68,7 @@ pub(crate) struct HandleData {
     /// Iff the predicate returns [true], the command is considered completed
     /// and removed from this list.
     ///
-    /// If The polling task dies for some reason, this [SharedResult] will be
+    /// If the polling task dies for some reason, this [SharedResult] will be
     /// set to some error.
     pub pending_commands: Mutex<
         SharedResult<
@@ -122,7 +122,7 @@ impl AsyncHandle {
         })
     }
 
-    /// Get the underliing C pointer to the handle.
+    /// Get the underlying C pointer to the handle.
     pub(crate) fn raw_handle(&self) -> *mut sys::nbd_handle {
         self.data.handle.raw_handle()
     }

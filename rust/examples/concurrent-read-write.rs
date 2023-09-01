@@ -3,7 +3,7 @@
 //!       --run 'cargo run --example concurrent-read-write -- $unixsocket'
 //! Or connect over a URI:
 //!     nbdkit -U - memory 100M \
-//!       --run 'cargo run --example concurrent-read-write -- $uri'
+//!       --run 'cargo run --example concurrent-read-write -- "$uri"'
 //!
 //! This will read and write randomly over the first megabyte of the
 //! plugin using multi-conn, multiple threads and multiple requests in

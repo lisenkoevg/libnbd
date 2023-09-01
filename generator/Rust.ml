@@ -640,7 +640,7 @@ let rust_async_optarg_type : optarg -> string = function
   | x -> rust_optarg_type x
 
 (* A string of the argument list for a method on the handle, with both
-   mandotory and optional arguments. *)
+   mandatory and optional arguments. *)
 let rust_async_handle_call_args { args; optargs } : string =
   let rust_args_names =
     List.map rust_arg_name args @ List.map rust_optarg_name optargs
