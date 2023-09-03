@@ -29,7 +29,7 @@
 #include <libnbd.h>
 
 #include "ansi-colours.h"
-#include "human-size.h"
+#include "../utils/human-size.h"
 #include "string-vector.h"
 
 #include "nbdinfo.h"
