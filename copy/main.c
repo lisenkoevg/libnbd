@@ -141,6 +141,8 @@ main (int argc, char *argv[])
   };
   int c;
   size_t i;
+  int64_t i64;
+  const char *error, *pstr;
 
   /* Set prog to basename argv[0]. */
   prog = strrchr (argv[0], '/');
@@ -210,26 +212,33 @@ main (int argc, char *argv[])
       break;
 
     case QUEUE_SIZE_OPTION:
-      if (sscanf (optarg, "%u", &queue_size) != 1) {
-        fprintf (stderr, "%s: --queue-size: could not parse: %s\n",
-                 prog, optarg);
+      i64 = human_size_parse (optarg, &error, &pstr);
+      if (i64 == -1) {
+        fprintf (stderr, "%s: --queue-size: %s: %s\n", prog, error, pstr);
         exit (EXIT_FAILURE);
       }
+      if (i64 > UINT_MAX) {
+        fprintf (stderr, "%s: --queue-size is too large: %s\n", prog, optarg);
+        exit (EXIT_FAILURE);
+      }
+      queue_size = i64;
       break;
 
     case REQUEST_SIZE_OPTION:
-      if (sscanf (optarg, "%u", &request_size) != 1) {
-        fprintf (stderr, "%s: --request-size: could not parse: %s\n",
-                 prog, optarg);
+      i64 = human_size_parse (optarg, &error, &pstr);
+      if (i64 == -1) {
+        fprintf (stderr, "%s: --request-size: %s: %s\n", prog, error, pstr);
         exit (EXIT_FAILURE);
       }
-      if (request_size < MIN_REQUEST_SIZE || request_size > MAX_REQUEST_SIZE ||
-              !is_power_of_2 (request_size)) {
+      if (i64 < MIN_REQUEST_SIZE || i64 > MAX_REQUEST_SIZE ||
+          !is_power_of_2 (i64)) {
         fprintf (stderr,
-                "%s: --request-size: must be a power of 2 within %d-%d\n",
-                 prog, MIN_REQUEST_SIZE, MAX_REQUEST_SIZE);
+                "%s: --request-size: must be a power of 2 within %d-%d: %s\n",
+                 prog, MIN_REQUEST_SIZE, MAX_REQUEST_SIZE, optarg);
         exit (EXIT_FAILURE);
       }
+      STATIC_ASSERT (MAX_REQUEST_SIZE <= UINT_MAX, max_request_size_too_large);
+      request_size = i64;
       break;
 
     case 'R':
@@ -241,17 +250,20 @@ main (int argc, char *argv[])
       break;
 
     case 'S':
-      if (sscanf (optarg, "%u", &sparse_size) != 1) {
-        fprintf (stderr, "%s: --sparse: could not parse: %s\n",
-                 prog, optarg);
+      i64 = human_size_parse (optarg, &error, &pstr);
+      if (i64 == -1) {
+        fprintf (stderr, "%s: --sparse: %s: %s\n", prog, error, pstr);
         exit (EXIT_FAILURE);
       }
-      if (sparse_size != 0 &&
-          (sparse_size < 512 || !is_power_of_2 (sparse_size))) {
-        fprintf (stderr, "%s: --sparse: must be a power of 2 and >= 512\n",
-                 prog);
+      if (i64 != 0 &&
+          (i64 < 512 || i64 > UINT_MAX || !is_power_of_2 (i64))) {
+        fprintf (stderr,
+                 "%s: --sparse: must be a power of 2, "
+                 "between %u-%u: %s\n",
+                 prog, 512, UINT_MAX, optarg);
         exit (EXIT_FAILURE);
       }
+      sparse_size = i64;
       break;
 
     case 'T':
