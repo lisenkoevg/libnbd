@@ -38,6 +38,7 @@ Makefile.in
 /common/include/test-ascii-ctype
 /common/include/test-byte-swapping
 /common/include/test-checked-overflow
+/common/include/test-human-size
 /common/include/test-isaligned
 /common/include/test-ispowerof2
 /common/include/test-iszero

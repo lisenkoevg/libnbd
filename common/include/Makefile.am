@@ -24,6 +24,8 @@ EXTRA_DIST = \
 	byte-swapping.h \
 	checked-overflow.h \
 	compiler-macros.h \
+	human-size.h \
+	human-size-test-cases.h \
 	isaligned.h \
 	ispowerof2.h \
 	iszero.h \
@@ -40,6 +42,7 @@ TESTS = \
 	test-ascii-ctype \
 	test-byte-swapping \
 	test-checked-overflow \
+	test-human-size \
 	test-isaligned \
 	test-ispowerof2 \
 	test-iszero \
@@ -62,6 +65,10 @@ test_byte_swapping_CFLAGS = $(WARNINGS_CFLAGS)
 test_checked_overflow_SOURCES = test-checked-overflow.c checked-overflow.h
 test_checked_overflow_CPPFLAGS = -I$(srcdir)
 test_checked_overflow_CFLAGS = $(WARNINGS_CFLAGS)
+
+test_human_size_SOURCES = test-human-size.c human-size.h human-size-test-cases.h
+test_human_size_CPPFLAGS = -I$(srcdir)
+test_human_size_CFLAGS = $(WARNINGS_CFLAGS)
 
 test_isaligned_SOURCES = test-isaligned.c isaligned.h
 test_isaligned_CPPFLAGS = -I$(srcdir)
