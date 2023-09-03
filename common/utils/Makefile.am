@@ -35,8 +35,6 @@ noinst_LTLIBRARIES = libutils.la
 
 libutils_la_SOURCES = \
 	const-string-vector.h \
-	human-size.c \
-	human-size.h \
 	nbdkit-string.h \
 	string-vector.h \
 	vector.c \
@@ -56,12 +54,8 @@ libutils_la_LIBADD = \
 
 # Unit tests.
 
-TESTS = test-human-size test-vector
-check_PROGRAMS = test-human-size test-vector
-
-test_human_size_SOURCES = test-human-size.c human-size.c human-size.h
-test_human_size_CPPFLAGS = -I$(srcdir)
-test_human_size_CFLAGS = $(WARNINGS_CFLAGS)
+TESTS = test-vector
+check_PROGRAMS = test-vector
 
 test_vector_SOURCES = test-vector.c vector.c vector.h bench.h
 test_vector_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/common/include

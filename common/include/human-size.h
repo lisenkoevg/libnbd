@@ -134,4 +134,55 @@ human_size_parse (const char *str,
   return size * scale;
 }
 
+/* If you allocate a buffer of at least this length in bytes and pass
+ * it as the first parameter to human_size, then it will not overrun.
+ */
+#define HUMAN_SIZE_LONGEST 64
+
+/* Convert bytes to a human-readable string.
+ *
+ * This is roughly the opposite of nbdkit_parse_size.  It will convert
+ * multiples of powers of 1024 to the appropriate human size with the
+ * right extension like 'M' or 'G'.  Anything that cannot be converted
+ * is returned as bytes.  The *human flag is set to true if the output
+ * was abbreviated to a human-readable size, or false if it is just
+ * bytes.
+ *
+ * If buf == NULL, a buffer is allocated and returned.  In this case
+ * the returned buffer must be freed.
+ *
+ * buf may also be allocated by the caller, in which case it must be
+ * at least HUMAN_SIZE_LONGEST bytes.
+ *
+ * On error the function returns an error and sets errno.
+ */
+static inline char *
+human_size (char *buf, uint64_t bytes, bool *human)
+{
+  static const char ext[][2] = { "E", "P", "T", "G", "M", "K", "" };
+  size_t i;
+
+  if (buf == NULL) {
+    buf = malloc (HUMAN_SIZE_LONGEST);
+    if (buf == NULL)
+      return NULL;
+  }
+
+  /* Work out which extension to use, if any. */
+  i = 6;
+  if (bytes != 0) {
+    while ((bytes & 1023) == 0) {
+      bytes >>= 10;
+      i--;
+    }
+  }
+
+  /* Set the flag to true if we're going to add a human-readable extension. */
+  if (human)
+    *human = ext[i][0] != '\0';
+
+  snprintf (buf, HUMAN_SIZE_LONGEST, "%" PRIu64 "%s", bytes, ext[i]);
+  return buf;
+}
+
 #endif /* NBDKIT_HUMAN_SIZE_H */

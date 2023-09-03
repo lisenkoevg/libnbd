@@ -36,16 +36,19 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "array-size.h"
 #include "human-size.h"
 #include "human-size-test-cases.h" /* defines 'pairs' below */
 
-int
-main (void)
+static unsigned errors = 0;
+
+/* Test the human_size_parse function. */
+static void
+test1 (void)
 {
   size_t i;
-  bool pass = true;
 
   for (i = 0; i < ARRAY_SIZE (pairs); i++) {
     const char *error = NULL, *pstr = NULL;
@@ -56,15 +59,79 @@ main (void)
       fprintf (stderr,
                "Wrong parse for %s, got %" PRId64 ", expected %" PRId64 "\n",
                pairs[i].str, r, pairs[i].res);
-      pass = false;
+      errors++;
     }
     if (r == -1) {
       if (error == NULL || pstr == NULL) {
         fprintf (stderr, "Wrong error message handling for %s\n", pairs[i].str);
-        pass = false;
+        errors++;
       }
     }
   }
+}
 
-  exit (pass ? EXIT_SUCCESS : EXIT_FAILURE);
+/* Test the human_size function. */
+static void
+test2_run (uint64_t bytes, const char *expected, bool expected_human_flag)
+{
+  char actual[HUMAN_SIZE_LONGEST];
+  bool actual_human_flag;
+
+  human_size (actual, bytes, &actual_human_flag);
+
+  if (strcmp (actual, expected) == 0 &&
+      actual_human_flag == expected_human_flag) {
+    printf ("test-human-size: %" PRIu64 " -> \"%s\" (%s) OK\n",
+            bytes, actual, actual_human_flag ? "true" : "false");
+    fflush (stdout);
+  }
+  else {
+    fprintf (stderr,
+             "test-human-size: error: test case %" PRIu64 " "
+             "expected \"%s\" (%s) "
+             "but returned \"%s\" (%s)\n",
+             bytes,
+             expected, expected_human_flag ? "true" : "false",
+             actual, actual_human_flag ? "true" : "false");
+    errors++;
+  }
+}
+
+static void
+test2 (void)
+{
+  test2_run (0, "0", false);
+  test2_run (1, "1", false);
+  test2_run (512, "512", false);
+  test2_run (1023, "1023", false);
+  test2_run (1024, "1K", true);
+  test2_run (1025, "1025", false);
+  test2_run (2047, "2047", false);
+  test2_run (2048, "2K", true);
+  test2_run (3 * 1024, "3K", true);
+
+  test2_run (1023 * 1024, "1023K", true);
+  test2_run (1048575, "1048575", false);
+  test2_run (1048576, "1M", true);
+  test2_run (1048577, "1048577", false);
+
+  test2_run (UINT64_C (1073741824), "1G", true);
+
+  test2_run (UINT64_C (1099511627776), "1T", true);
+  test2_run (UINT64_C (1099511627777), "1099511627777", false);
+  test2_run (UINT64_C (1099511627776) + 1024, "1073741825K", true);
+
+  test2_run (UINT64_C (1125899906842624), "1P", true);
+
+  test2_run ((uint64_t)INT64_MAX+1, "8E", true);
+  test2_run (UINT64_MAX-1023, "18014398509481983K", true);
+  test2_run (UINT64_MAX, "18446744073709551615", false);
+}
+
+int
+main (int argc, char *argv[])
+{
+  test1 ();
+  test2 ();
+  exit (errors == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

@@ -39,7 +39,7 @@
 #include <libnbd.h>
 
 #include "ispowerof2.h"
-#include "../utils/human-size.h"
+#include "human-size.h"
 #include "minmax.h"
 #include "version.h"
 #include "nbdcopy.h"
