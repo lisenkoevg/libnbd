@@ -5,9 +5,8 @@
 //!     nbdkit -U - memory 100M \
 //!       --run 'cargo run --example concurrent-read-write -- "$uri"'
 //!
-//! This will read and write randomly over the first megabyte of the
-//! plugin using multi-conn, multiple threads and multiple requests in
-//! flight on each thread.
+//! This will read and write randomly over the plugin using multi-conn,
+//! multiple threads and multiple requests in flight on each thread.
 
 #![deny(warnings)]
 use rand::prelude::*;
@@ -111,12 +110,11 @@ async fn run_thread(
         nbd.connect_unix(socket_or_uri).await?;
     }
 
-    let mut rng = SmallRng::seed_from_u64(44 as u64);
+    let mut rng = SmallRng::seed_from_u64(task_idx as u64);
 
     // Issue commands.
     let mut stats = Stats::default();
     let mut join_set = JoinSet::new();
-    //tokio::time::sleep(std::time::Duration::from_secs(1)).await;
     while stats.requests < NR_CYCLES || !join_set.is_empty() {
         while stats.requests < NR_CYCLES && join_set.len() < MAX_IN_FLIGHT {
             // If we want to issue another request, do so.  Note that we reuse
@@ -144,6 +142,5 @@ async fn run_thread(
         join_set.join_next().await.unwrap().unwrap()?;
     }
 
-    if task_idx == 0 {}
     Ok(stats)
 }
