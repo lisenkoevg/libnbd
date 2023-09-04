@@ -35,9 +35,11 @@ use crate::sys;
 use crate::Handle;
 use crate::{Error, FatalErrorKind, Result};
 use crate::{AIO_DIRECTION_BOTH, AIO_DIRECTION_READ, AIO_DIRECTION_WRITE};
-use epoll::Events;
+use mio::unix::SourceFd;
+use mio::{Events, Interest as MioInterest, Poll, Token};
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Duration;
 use tokio::io::{unix::AsyncFd, Interest, Ready as IoReady};
 use tokio::sync::Notify;
 use tokio::task;
@@ -176,13 +178,8 @@ async fn polling_task(handle_data: &HandleData) -> Result<(), FatalErrorKind> {
     } = handle_data;
     let fd = handle.aio_get_fd().map_err(Error::to_fatal)?;
     let tokio_fd = AsyncFd::new(fd)?;
-    let epfd = epoll::create(false)?;
-    epoll::ctl(
-        epfd,
-        epoll::ControlOptions::EPOLL_CTL_ADD,
-        fd,
-        epoll::Event::new(Events::EPOLLIN | Events::EPOLLOUT, 42),
-    )?;
+    let mut events = Events::with_capacity(1);
+    let mut poll = Poll::new()?;
 
     // The following loop does approximately the following things:
     //
@@ -248,19 +245,35 @@ async fn polling_task(handle_data: &HandleData) -> Result<(), FatalErrorKind> {
         }
         drop(pending_cmds_lock);
 
-        // Use epoll to check the current read/write availability on the fd.
+        // Use mio poll to check the current read/write availability on the fd.
         // This is needed because Tokio supports only edge-triggered
         // notifications but Libnbd requires level-triggered notifications.
-        let mut revent = epoll::Event { data: 0, events: 0 };
         // Setting timeout to 0 means that it will return immediately.
-        epoll::wait(epfd, 0, std::slice::from_mut(&mut revent))?;
-        let revents = Events::from_bits(revent.events).unwrap();
-        if !revents.contains(Events::EPOLLIN) {
-            ready_guard.clear_ready_matching(IoReady::READABLE);
-        }
-        if !revents.contains(Events::EPOLLOUT) {
-            ready_guard.clear_ready_matching(IoReady::WRITABLE);
-        }
+        // mio states that it is OS-dependent on whether a single event
+        // can be both readable and writable, but we survive just fine
+        // if we only see one direction even when both are available.
+        poll.registry().register(
+            &mut SourceFd(&fd),
+            Token(0),
+            MioInterest::READABLE | MioInterest::WRITABLE,
+        )?;
+        match poll.poll(&mut events, Some(Duration::ZERO)) {
+            Ok(_) => {
+                for event in &events {
+                    if !event.is_readable() {
+                        ready_guard.clear_ready_matching(IoReady::READABLE);
+                    }
+                    if !event.is_writable() {
+                        ready_guard.clear_ready_matching(IoReady::WRITABLE);
+                    }
+                }
+            }
+            Err(_) => {
+                ready_guard.clear_ready_matching(IoReady::READABLE);
+                ready_guard.clear_ready_matching(IoReady::WRITABLE);
+            }
+        };
         ready_guard.retain_ready();
+        poll.registry().deregister(&mut SourceFd(&fd))?;
     }
 }
