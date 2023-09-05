@@ -138,7 +138,6 @@ main (int argc, char *argv[])
   size_t output_len = 0;
   bool content_flag = false, no_content_flag = false;
   bool list_okay = true;
-  bool opt_mode = false;
 
   progname = argv[0];
   colour = isatty (STDOUT_FILENO);
@@ -281,11 +280,9 @@ main (int argc, char *argv[])
   nbd_set_uri_allow_local_file (nbd, true); /* Allow ?tls-psk-file. */
 
   /* Set optional modes in the handle. */
-  opt_mode = !can && !map && !size_only;
-  if (opt_mode) {
-    nbd_set_opt_mode (nbd, true);
+  nbd_set_opt_mode (nbd, true);
+  if (!can && !map && !size_only)
     nbd_set_full_info (nbd, true);
-  }
   if (map)
     nbd_add_meta_context (nbd, map);
 
@@ -398,6 +395,13 @@ do_connect (struct nbd_handle *nbd)
     fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
     exit (EXIT_FAILURE);
   }
+
+  /* If we are in opt mode, request info on the original export name.
+   * However, ignoring failure at this time is okay, as later code
+   * may want to try an alternate export name.
+   */
+  if (nbd_aio_is_negotiating (nbd))
+    nbd_opt_info (nbd);
 }
 
 /* The URI field in output is not meaningful unless there's a

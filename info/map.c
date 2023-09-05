@@ -54,6 +54,13 @@ do_map (void)
   uint64_t offset, align, max_len;
   size_t prev_entries_size;
 
+  /* Map mode requires switching over to transmission phase. */
+  if (nbd_aio_is_negotiating (nbd) &&
+      nbd_opt_go (nbd) == -1) {
+    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
+
   /* Did we get the requested map? */
   if (!nbd_can_meta_context (nbd, map)) {
     fprintf (stderr,

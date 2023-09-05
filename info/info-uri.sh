@@ -25,6 +25,11 @@ set -x
 
 requires nbdkit --version
 requires nbdkit file --version
+case $(nbdkit file --version 2>&1) in
+    *1.34.[012]* )
+        echo "$0: skipping known double-free bug in nbdkit file dir="
+        exit 77
+esac
 requires nbdkit -U - null --run 'test "$uri" != ""'
 requires jq --version
 
