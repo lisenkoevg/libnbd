@@ -109,19 +109,6 @@ main (int argc, char *argv[])
              progname, strerror (nbd_get_errno ()));
     exit (EXIT_FAILURE);
   }
-  /* Shutdown fails.  XXX this is inconvenient to users; better would
-   * be having shutdown call either opt_abort and aio_disconnect as needed.
-   */
-  if (nbd_shutdown (nbd, 0) != -1) {
-    fprintf (stderr, "%s: test failed: nbd_shutdown unexpectedly worked\n",
-             progname);
-    exit (EXIT_FAILURE);
-  }
-  if (nbd_get_errno () != EINVAL) {
-    fprintf (stderr, "%s: test failed: unexpected errno: %s\n",
-             progname, strerror (nbd_get_errno ()));
-    exit (EXIT_FAILURE);
-  }
   /* But we can manually call nbd_opt_abort, which closes gracefully. */
   if (nbd_opt_abort (nbd) == -1) {
     fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
@@ -129,6 +116,32 @@ main (int argc, char *argv[])
   }
   if (nbd_aio_is_closed (nbd) != 1) {
     fprintf (stderr, "%s: unexpected state\n", progname);
+    exit (EXIT_FAILURE);
+  }
+  nbd_close (nbd);
+
+  /* Part 3: Shutdown works by default, regardless of opt mode */
+  nbd = nbd_create ();
+  if (nbd == NULL) {
+    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
+  if (nbd_set_opt_mode (nbd, true) == -1) {
+    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
+  if (nbd_connect_command (nbd, (char **)cmd_new) == -1) {
+    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
+  if (nbd_aio_is_negotiating (nbd) != 1) {
+    fprintf (stderr, "%s: unexpected state\n", progname);
+    exit (EXIT_FAILURE);
+  }
+
+  /* Shutdown succeeds; it does more than just aio_disconnect. */
+  if (nbd_shutdown (nbd, 0) == -1) {
+    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
     exit (EXIT_FAILURE);
   }
   nbd_close (nbd);

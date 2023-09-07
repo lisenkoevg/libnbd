@@ -1232,7 +1232,8 @@ starting the connection.  To leave the mode and proceed on to the
 ready state, you must use L<nbd_opt_go(3)> successfully; a failed
 L<nbd_opt_go(3)> returns to the negotiating state to allow a change of
 export name before trying again.  You may also use L<nbd_opt_abort(3)>
-to end the connection without finishing negotiation.";
+or L<nbd_shutdown(3)> to end the connection without finishing
+negotiation.";
     example = Some "examples/list-exports.c";
     see_also = [Link "get_opt_mode"; Link "aio_is_negotiating";
                 Link "opt_abort"; Link "opt_go"; Link "opt_list";
@@ -1240,7 +1241,7 @@ to end the connection without finishing negotiation.";
                 Link "opt_set_meta_context"; Link "opt_starttls";
                 Link "opt_structured_reply";
                 Link "set_tls"; Link "set_request_structured_replies";
-                Link "aio_connect"];
+                Link "aio_connect"; Link "shutdown"];
   };
 
   "get_opt_mode", {
@@ -2667,7 +2668,7 @@ extended headers were negotiated."
     default_call with
     args = []; optargs = [ OFlags ("flags", shutdown_flags, None) ];
     ret = RErr;
-    permitted_states = [ Connected ];
+    permitted_states = [ Negotiating; Connected ];
     modifies_fd = true;
     shortdesc = "disconnect from the NBD server";
     longdesc = "\
@@ -2678,7 +2679,7 @@ the connection (see L<nbd_close(3)>).
 
 This function works whether or not the handle is ready for
 transmission of commands. If more fine-grained control is
-needed, see L<nbd_aio_disconnect(3)>.
+needed, see L<nbd_aio_opt_abort(3)> and L<nbd_aio_disconnect(3)>.
 
 The C<flags> argument is a bitmask, including zero or more of the
 following shutdown flags:
@@ -2698,7 +2699,7 @@ to disconnect.
 For convenience, the constant C<LIBNBD_SHUTDOWN_MASK> is available
 to describe all shutdown flags recognized by this build of libnbd.
 A future version of the library may add new flags.";
-    see_also = [Link "close"; Link "aio_disconnect"];
+    see_also = [Link "close"; Link "aio_disconnect"; Link "aio_opt_abort"];
     example = Some "examples/reads-and-writes.c";
   };
 

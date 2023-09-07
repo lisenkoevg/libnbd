@@ -30,6 +30,13 @@
 int
 nbd_unlocked_shutdown (struct nbd_handle *h, uint32_t flags)
 {
+  /* If we are still in opt mode, end it gracefully. */
+  if (nbd_internal_is_state_negotiating (get_next_state (h))) {
+    if (nbd_unlocked_aio_opt_abort (h) == -1)
+      return -1;
+    goto wait;
+  }
+
   /* If ABANDON_PENDING, abort any commands that have not yet had any
    * bytes sent to the server, so NBD_CMD_DISC becomes next in line.
    */
@@ -50,6 +57,7 @@ nbd_unlocked_shutdown (struct nbd_handle *h, uint32_t flags)
       return -1;
   }
 
+ wait:
   while (!nbd_internal_is_state_closed (get_next_state (h)) &&
          !nbd_internal_is_state_dead (get_next_state (h))) {
     if (nbd_unlocked_poll (h, -1) == -1)
