@@ -614,7 +614,7 @@ let async_handle_calls : (string * call * async_kind) NameMap.t =
          call.async_kind
          |> option_map (fun async_kind ->
                 (strip_aio name, (name, call, async_kind))))
-  |> List.to_seq |> NameMap.of_seq
+  |> List.fold_left (fun m (k, v) -> NameMap.add k v m) NameMap.empty
 
 (* A mapping with all synchronous (not asynchronous) handle calls. Excluded
    are also all synchronous calls that have an asynchronous counterpart. So if
@@ -624,7 +624,7 @@ let sync_handle_calls : call NameMap.t =
   handle_calls
   |> List.filter (fun (n, _) -> not (NameSet.mem n excluded_handle_calls))
   |> List.filter (fun (n, _) -> not (NameMap.mem n async_handle_calls))
-  |> List.to_seq |> NameMap.of_seq
+  |> List.fold_left (fun m (k, v) -> NameMap.add k v m) NameMap.empty
 
 (* Get the Rust type for an argument in the asynchronous API. Like
    [rust_arg_type] but no static lifetime on some buffers. *)
