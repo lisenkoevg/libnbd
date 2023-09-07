@@ -117,6 +117,24 @@ x86_64-centos-stream-8-local-env:
     NAME: centos-stream-8
 
 
+x86_64-centos-stream-9-prebuilt-env:
+  extends: .native_build_job_prebuilt_env
+  needs:
+    - job: x86_64-centos-stream-9-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: centos-stream-9
+
+x86_64-centos-stream-9-local-env:
+  extends: .native_build_job_local_env
+  needs: []
+  allow_failure: false
+  variables:
+    IMAGE: quay.io/centos/centos:stream9
+    NAME: centos-stream-9
+
+
 x86_64-debian-11-prebuilt-env:
   extends: .native_build_job_prebuilt_env
   needs:
