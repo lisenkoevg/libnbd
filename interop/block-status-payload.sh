@@ -37,7 +37,7 @@ qemu-img bitmap --add --enable -f qcow2 $file bitmap1
 
 # Unconditional part of test: qemu should not advertise block status payload
 # support if extended headers are not in use
-nbdsh -c '
+$VG nbdsh -c '
 h.set_request_extended_headers(False)
 h.add_meta_context("base:allocation")
 h.add_meta_context("qemu:allocation-depth")

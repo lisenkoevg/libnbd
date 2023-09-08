@@ -31,19 +31,19 @@ if ! qemu-nbd --help | grep -sq -- -B; then
     exit 77
 fi
 
-files="large-status.qcow2"
+files="block-status-64.qcow2"
 rm -f $files
 cleanup_fn rm -f $files
 
 # Create mostly-sparse file with intentionally different data vs. dirty areas
 # (64k data, 5G-64k hole,zero; 5G-64k clean, 64k dirty)
-qemu-img create -f qcow2 large-status.qcow2 5G
-qemu-img bitmap --add --enable -f qcow2 large-status.qcow2 bitmap0
+qemu-img create -f qcow2 block-status-64.qcow2 5G
+qemu-img bitmap --add --enable -f qcow2 block-status-64.qcow2 bitmap0
 qemu-io -f qcow2 -c "w -z $((5*1024*1024*1024 - 64*1024)) 64k" \
-        large-status.qcow2
-qemu-img bitmap --disable -f qcow2 large-status.qcow2 bitmap0
-qemu-io -f qcow2 -c 'w 0 64k' large-status.qcow2
+        block-status-64.qcow2
+qemu-img bitmap --disable -f qcow2 block-status-64.qcow2 bitmap0
+qemu-io -f qcow2 -c 'w 0 64k' block-status-64.qcow2
 
 # Run the test.
-$VG ./large-status qemu:dirty-bitmap:bitmap0 \
-    qemu-nbd -f qcow2 -B bitmap0 large-status.qcow2
+$VG ./block-status-64 qemu:dirty-bitmap:bitmap0 \
+    qemu-nbd -f qcow2 -B bitmap0 block-status-64.qcow2
