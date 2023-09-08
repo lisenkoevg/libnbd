@@ -187,6 +187,26 @@ nbd_unlocked_block_status_64 (struct nbd_handle *h,
   return wait_for_command (h, cookie);
 }
 
+/* Issue a filtered block status command and wait for the reply. */
+int
+nbd_unlocked_block_status_filter (struct nbd_handle *h,
+                                  uint64_t count, uint64_t offset,
+                                  char **filter,
+                                  nbd_extent64_callback *extent64,
+                                  uint32_t flags)
+{
+  int64_t cookie;
+  nbd_completion_callback c = NBD_NULL_COMPLETION;
+
+  cookie = nbd_unlocked_aio_block_status_filter (h, count, offset, filter,
+                                                 extent64, &c, flags);
+  if (cookie == -1)
+    return -1;
+
+  assert (CALLBACK_IS_NULL (*extent64));
+  return wait_for_command (h, cookie);
+}
+
 /* count_err represents the errno to return if bounds check fail */
 int64_t
 nbd_internal_command_common (struct nbd_handle *h,
@@ -195,6 +215,7 @@ nbd_internal_command_common (struct nbd_handle *h,
                              void *data, struct command_cb *cb)
 {
   struct command *cmd;
+  uint32_vector *ids = NULL;
 
   if (h->disconnect_request) {
       set_error (EINVAL, "cannot request more commands after NBD_CMD_DISC");
@@ -242,10 +263,23 @@ nbd_internal_command_common (struct nbd_handle *h,
     }
     break;
 
+  case NBD_CMD_BLOCK_STATUS:
+    if (data) {
+      ids = data;
+      count = ids->len * sizeof (uint32_t);
+      data = ids->ptr;
+      if (count > MAX_REQUEST_SIZE ||
+          (h->strict & LIBNBD_STRICT_PAYLOAD && count > h->payload_maximum)) {
+        set_error (ERANGE, "filter set too large");
+        goto err;
+      }
+      break;
+    }
+    /* fallthrough */
+  default:
     /* Other commands are limited by the 32 bit field in the command
      * structure on the wire, unless extended headers were negotiated.
      */
-  default:
     if (!h->extended_headers && count > UINT32_MAX) {
       set_error (ERANGE, "request too large: maximum request size is %" PRIu32,
                  UINT32_MAX);
@@ -265,6 +299,7 @@ nbd_internal_command_common (struct nbd_handle *h,
   cmd->offset = offset;
   cmd->count = count;
   cmd->data = data;
+  cmd->ids = ids;
   if (cb)
     cmd->cb = *cb;
 
@@ -314,6 +349,10 @@ nbd_internal_command_common (struct nbd_handle *h,
         FREE_CALLBACK (cb->fn.extent32);
       else
         FREE_CALLBACK (cb->fn.extent64);
+      if (ids) {
+        uint32_vector_reset (ids);
+        free (ids);
+      }
     }
     if (type == NBD_CMD_READ)
       FREE_CALLBACK (cb->fn.chunk);
@@ -560,4 +599,87 @@ nbd_unlocked_aio_block_status_64 (struct nbd_handle *h,
   SET_CALLBACK_TO_NULL (*completion);
   return nbd_internal_command_common (h, flags, NBD_CMD_BLOCK_STATUS, offset,
                                       count, EINVAL, NULL, &cb);
+}
+
+int64_t
+nbd_unlocked_aio_block_status_filter (struct nbd_handle *h,
+                                      uint64_t count, uint64_t offset,
+                                      char **filter,
+                                      nbd_extent64_callback *extent64,
+                                      nbd_completion_callback *completion,
+                                      uint32_t flags)
+{
+  struct command_cb cb = { .fn.extent64 = *extent64, .wide = true,
+                           .completion = *completion };
+  uint32_vector *ids;
+  char *name;
+  size_t i;
+
+  /* Because this affects wire format, it is more convenient to manage
+   * PAYLOAD_LEN by what was negotiated than to require the user to
+   * have to set it correctly.
+   */
+  if (!h->extended_headers) {
+    set_error (ENOTSUP, "server does not support extended headers");
+    return -1;
+  }
+  flags |= LIBNBD_CMD_FLAG_PAYLOAD_LEN;
+
+  if (h->strict & LIBNBD_STRICT_COMMANDS) {
+    if (nbd_unlocked_can_block_status_payload (h) != 1) {
+      set_error (EINVAL,
+                 "server does not support the block status payload flag");
+      return -1;
+    }
+
+    if (!h->meta_valid || h->meta_contexts.len == 0) {
+      set_error (ENOTSUP, "did not negotiate any metadata contexts, "
+                 "either you did not call nbd_add_meta_context before "
+                 "connecting or the server does not support it");
+      return -1;
+    }
+  }
+
+  ids = calloc (1, sizeof *ids);
+  if (ids == NULL) {
+    set_error (errno, "calloc");
+    return -1;
+  }
+  if (uint32_vector_append (ids, htobe32 (count >> 32)) == -1 ||
+      uint32_vector_append (ids, htobe32 (count)) == -1) {
+    set_error (errno, "realloc");
+    goto fail;
+  }
+
+  /* O(n^2) search - hopefully filter and negotiated contexts are both small */
+  for ( ; (name = *filter) != NULL; filter++) {
+    if (!h->meta_valid) {
+      set_error (EINVAL, "context %s not negotiated", name);
+      goto fail;
+    }
+    for (i = 0; i < h->meta_contexts.len; i++) {
+      struct meta_context *meta = &h->meta_contexts.ptr[i];
+      if (strcmp (name, meta->name) == 0) {
+        if (uint32_vector_append (ids, htobe32 (meta->context_id)) == -1) {
+          set_error (errno, "realloc");
+          goto fail;
+        }
+        break;
+      }
+    }
+    if (i == h->meta_contexts.len) {
+      set_error (EINVAL, "context %s not negotiated", name);
+      goto fail;
+    }
+  }
+
+  SET_CALLBACK_TO_NULL (*extent64);
+  SET_CALLBACK_TO_NULL (*completion);
+  return nbd_internal_command_common (h, flags, NBD_CMD_BLOCK_STATUS, offset,
+                                      count, EINVAL, ids, &cb);
+
+ fail:
+  uint32_vector_reset (ids);
+  free (ids);
+  return -1;
 }

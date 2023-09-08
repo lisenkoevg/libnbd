@@ -37,6 +37,10 @@ nbd_internal_retire_and_free_command (struct command *cmd)
       FREE_CALLBACK (cmd->cb.fn.extent64);
     else
       FREE_CALLBACK (cmd->cb.fn.extent32);
+    if (cmd->ids) {
+      uint32_vector_reset (cmd->ids);
+      free (cmd->ids);
+    }
   }
   if (cmd->type == NBD_CMD_READ)
     FREE_CALLBACK (cmd->cb.fn.chunk);

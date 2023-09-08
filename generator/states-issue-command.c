@@ -84,7 +84,9 @@ STATE_MACHINE {
   assert (h->cmds_to_issue != NULL);
   cmd = h->cmds_to_issue;
   assert (cmd->cookie == be64toh (h->req.compact.cookie));
-  if (cmd->type == NBD_CMD_WRITE) {
+  if (cmd->type == NBD_CMD_WRITE ||
+      (h->extended_headers && cmd->type == NBD_CMD_BLOCK_STATUS &&
+       cmd->flags & NBD_CMD_FLAG_PAYLOAD_LEN)) {
     h->wbuf = cmd->data;
     h->wlen = cmd->count;
     if (cmd->next && cmd->count < 64 * 1024)

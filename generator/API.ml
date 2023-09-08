@@ -2361,12 +2361,13 @@ the server does not."
     longdesc = "\
 Returns true if the server supports the use of the
 C<LIBNBD_CMD_FLAG_PAYLOAD_LEN> flag to allow filtering of the
-block status command.  Returns
+block status command (see L<nbd_block_status_filter(3)>).  Returns
 false if the server does not.  Note that this will never return
 true if L<nbd_get_extended_headers_negotiated(3)> is false."
 ^ non_blocking_test_call_description;
     see_also = [SectionLink "Flag calls"; Link "opt_info";
-                Link "get_extended_headers_negotiated"];
+                Link "get_extended_headers_negotiated";
+                Link "block_status_filter"];
     example = Some "examples/server-flags.c";
   };
 
@@ -2434,6 +2435,10 @@ Returns true if the server supports the given meta context
 the server does not.  It is possible for this command to fail if
 meta contexts were requested but there is a missing or failed
 attempt at NBD_OPT_SET_META_CONTEXT during option negotiation.
+
+If the server supports block status filtering (see
+L<nbd_can_block_status_payload(3)>, this function must return
+true for any filter name passed to L<nbd_block_status_filter(3)>.
 
 The single parameter is the name of the metadata context,
 for example C<LIBNBD_CONTEXT_BASE_ALLOCATION>.
@@ -2977,9 +2982,12 @@ supported by the server, this causes metadata context
 information about blocks beginning from the specified
 offset to be returned. The C<count> parameter is a hint: the
 server may choose to return less status, or the final block
-may extend beyond the requested range. If multiple contexts
+may extend beyond the requested range. When multiple contexts
 are supported, the number of blocks and cumulative length
-of those blocks need not be identical between contexts.
+of those blocks need not be identical between contexts; this
+command generally returns the status of all negotiated contexts,
+while some servers also support a filtered request (see
+L<nbd_can_block_status_payload(3)>, L<nbd_block_status_filter(3)>).
 
 Note that not all servers can support a C<count> of 4GiB or larger;
 L<nbd_get_extended_headers_negotiated(3)> indicates which servers
@@ -3029,9 +3037,37 @@ return only one extent per metadata context where that extent
 does not exceed C<count> bytes; however, libnbd does not
 validate that the server obeyed the flag."
 ^ strict_call_description;
-    see_also = [Link "block_status";
+    see_also = [Link "block_status"; Link "block_status_filter";
                 Link "add_meta_context"; Link "can_meta_context";
                 Link "aio_block_status_64"; Link "set_strict_mode"];
+  };
+
+  "block_status_filter", {
+    default_call with
+    args = [ UInt64 "count"; UInt64 "offset"; StringList "contexts";
+             Closure extent64_closure ];
+    optargs = [ OFlags ("flags", cmd_flags, Some ["REQ_ONE"; "PAYLOAD_LEN"]) ];
+    ret = RErr;
+    permitted_states = [ Connected ];
+    modifies_fd = true;
+    shortdesc = "send filtered block status command, with 64-bit callback";
+    longdesc = "\
+Issue a filtered block status command to the NBD server.  If
+supported by the server (see L<nbd_can_block_status_payload(3)>),
+this causes metadata context information about blocks beginning
+from the specified offset to be returned, and with the result
+limited to just the contexts specified in C<filter>.  Note that
+all strings in C<filter> must be supported by
+L<nbd_can_meta_context(3)>.
+
+All other parameters to this function have the same semantics
+as in L<nbd_block_status_64(3)>; except that for convenience,
+the C<flags> parameter may additionally contain or omit
+C<LIBNBD_CMD_FLAG_PAYLOAD_LEN>."
+^ strict_call_description;
+    see_also = [Link "block_status_64";
+                Link "can_block_status_payload"; Link "can_meta_context";
+                Link "aio_block_status_filter"; Link "set_strict_mode"];
   };
 
   "poll", {
@@ -3734,6 +3770,31 @@ Other parameters behave as documented in L<nbd_block_status_64(3)>."
                 Link "set_strict_mode"];
   };
 
+  "aio_block_status_filter", {
+    default_call with
+    args = [ UInt64 "count"; UInt64 "offset"; StringList "contexts";
+             Closure extent64_closure ];
+    optargs = [ OClosure completion_closure;
+                OFlags ("flags", cmd_flags, Some ["REQ_ONE"; "PAYLOAD_LEN"]) ];
+    ret = RCookie;
+    permitted_states = [ Connected ];
+    async_kind = Some WithCompletionCallback;
+    shortdesc = "send filtered block status command to the NBD server";
+    longdesc = "\
+Send a filtered block status command to the NBD server.
+
+To check if the command completed, call L<nbd_aio_command_completed(3)>.
+Or supply the optional C<completion_callback> which will be invoked
+as described in L<libnbd(3)/Completion callbacks>.
+
+Other parameters behave as documented in L<nbd_block_status_filter(3)>."
+^ strict_call_description;
+    see_also = [SectionLink "Issuing asynchronous commands";
+                Link "aio_block_status_64"; Link "block_status_filter";
+                Link "can_meta_context"; Link "can_block_status_payload";
+                Link "set_strict_mode"];
+  };
+
   "aio_get_fd", {
     default_call with
     args = []; ret = RFd;
@@ -4270,6 +4331,8 @@ let first_version = [
   "opt_extended_headers", (1, 18);
   "aio_opt_extended_headers", (1, 18);
   "can_block_status_payload", (1, 18);
+  "block_status_filter", (1, 18);
+  "aio_block_status_filter", (1, 18);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.

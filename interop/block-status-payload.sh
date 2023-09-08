@@ -49,6 +49,7 @@ args = ["qemu-nbd", "-f", "qcow2", "-A", "-B", "bitmap0", "-B", "bitmap1",
 h.connect_systemd_socket_activation(args)
 assert h.aio_is_negotiating() is True
 assert h.get_extended_headers_negotiated() is False
+
 # Flag not available until info or go
 try:
   h.can_block_status_payload()
@@ -58,7 +59,18 @@ except nbd.Error:
 h.opt_info()
 assert h.can_block_status_payload() is False
 assert h.can_meta_context("base:allocation") is True
-h.opt_abort()
+
+# Filter request not allowed if not advertised
+def f():
+  assert False
+h.opt_go()
+assert h.can_block_status_payload() is False
+try:
+  h.block_status_filter(0, 512, ["base:allocation"], f)
+  assert False
+except nbd.Error:
+  pass
+h.shutdown()
 '
 
 # Conditional part of test: only run if qemu is new enough to advertise

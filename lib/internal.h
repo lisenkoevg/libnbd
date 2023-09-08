@@ -73,6 +73,8 @@ struct meta_context {
 };
 DEFINE_VECTOR_TYPE (meta_vector, struct meta_context);
 
+DEFINE_VECTOR_TYPE(uint32_vector, uint32_t);
+
 struct export {
   char *name;
   char *description;
@@ -399,7 +401,8 @@ struct command {
   uint64_t cookie;
   uint64_t offset;
   uint64_t count;
-  void *data; /* Buffer for read/write */
+  void *data; /* Buffer for read/write, uint32_vector* for status payload */
+  uint32_vector *ids; /* For block status with payload */
   struct command_cb cb;
   bool initialized; /* For read, true if getting a hole may skip memset */
   uint32_t data_seen; /* For read, cumulative size of data chunks seen */
