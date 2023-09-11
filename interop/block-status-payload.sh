@@ -25,6 +25,7 @@ set -x
 requires qemu-img bitmap --help
 # This test uses the qemu-nbd -A and -B options.
 requires qemu-nbd -A -BA --version
+requires nbdsh --version
 
 file="block-status-payload.qcow2"
 rm -f $file
