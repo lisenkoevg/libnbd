@@ -46,6 +46,7 @@ EXTRA_DIST = \
 	libnbd-release-notes-1.12.pod \
 	libnbd-release-notes-1.14.pod \
 	libnbd-release-notes-1.16.pod \
+	libnbd-release-notes-1.18.pod \
 	libnbd-security.pod \
 	nbd_create.pod \
 	nbd_close.3 \
@@ -68,6 +69,7 @@ manpages_with_pod_source = \
 	libnbd-release-notes-1.12.1 \
 	libnbd-release-notes-1.14.1 \
 	libnbd-release-notes-1.16.1 \
+	libnbd-release-notes-1.18.1 \
 	libnbd-security.3 \
 	nbd_create.3 \
 	$(api_built:%=%.3)
