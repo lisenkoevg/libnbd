@@ -476,6 +476,7 @@ STATE_MACHINE {
       if (h->bs_count != be32toh (h->sbuf.reply.payload.bs_hdr_64.count)) {
         h->rbuf = NULL;
         h->rlen = h->payload_left;
+        h->payload_left = 0;
         SET_NEXT_STATE (%RESYNC);
         return 0;
       }
