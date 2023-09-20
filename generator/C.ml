@@ -496,7 +496,7 @@ let generate_include_libnbd_h () =
   pr "/* This is used in the callback for nbd_block_status_64.\n";
   pr " */\n";
   pr "typedef struct {\n";
-  pr "  uint64_t length;\n";
+  pr "  uint64_t length;  /* Will not exceed INT64_MAX */\n";
   pr "  uint64_t flags;\n";
   pr "} nbd_extent;\n";
   pr "\n";

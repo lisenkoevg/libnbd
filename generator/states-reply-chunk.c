@@ -547,11 +547,16 @@ STATE_MACHINE {
       break;
     }
 
+    /* Be careful to avoid arithmetic overflow, even when the user
+     * disabled LIBNBD_STRICT_BOUNDS to pass a suspect offset, or the
+     * server returns suspect lengths or advertised exportsize larger
+     * than 63 bits.  We guarantee that callbacks will not see a
+     * length exceeding INT64_MAX or the advertised h->exportsize.
+     */
     name = h->meta_contexts.ptr[i].name;
-    total = 0;
-    cap = h->exportsize - cmd->offset;
-    assert (cap <= h->exportsize);
-    assert (h->exportsize <= INT64_MAX);
+    total = cap = 0;
+    if (cmd->offset <= h->exportsize)
+      cap = h->exportsize - cmd->offset;
 
     /* Need to byte-swap the entries returned into the callback size
      * requested by the caller.  The NBD protocol allows truncation as
@@ -560,10 +565,11 @@ STATE_MACHINE {
      * don't like.  We stop iterating on a zero-length extent (error
      * only if it is the first extent), on an extent beyond the
      * exportsize (unconditional error after truncating to
-     * exportsize), and on an extent exceeding a 32-bit callback (no
-     * error, and to simplify alignment, we truncate to 4G-64M); but
-     * do not diagnose issues with the server's length alignments,
-     * flag values, nor compliance with the REQ_ONE command flag.
+     * exportsize), and on an extent exceeding a callback length limit
+     * (no error, and to simplify alignment, we truncate to 64M before
+     * the limit); but we do not diagnose issues with the server's
+     * length alignments, flag values, nor compliance with the REQ_ONE
+     * command flag.
      */
     for (i = 0, stop = false; i < h->bs_count && !stop; ++i) {
       if (type == NBD_REPLY_TYPE_BLOCK_STATUS) {
@@ -572,16 +578,12 @@ STATE_MACHINE {
       }
       else {
         orig_len = len = be64toh (h->bs_raw.wide[i].length);
-        if (len > h->exportsize) {
-          /* Since we already asserted exportsize is at most 63 bits,
-           * this ensures the extent length will appear positive even
-           * if treated as signed; treat this as an error now, rather
-           * than waiting for the comparison to cap later, to avoid
-           * arithmetic overflow.
+        if (len > INT64_MAX) {
+          /* Pick an aligned value rather than overflowing 64-bit
+           * callback; this does not require an error.
            */
           stop = true;
-          cmd->error = cmd->error ? : EPROTO;
-          len = h->exportsize;
+          len = INT64_MAX + 1ULL - MAX_REQUEST_SIZE;
         }
         if (len > UINT32_MAX && !cmd->cb.wide) {
           /* Pick an aligned value rather than overflowing 32-bit
@@ -600,7 +602,13 @@ STATE_MACHINE {
         }
       }
 
-      total += len;
+      assert (total <= cap);
+      if (len > cap - total) {
+        /* Truncate and expose this extent as an error */
+        len = cap - total;
+        stop = true;
+        cmd->error = cmd->error ? : EPROTO;
+      }
       if (len == 0) {
         stop = true;
         if (i > 0)
@@ -608,12 +616,7 @@ STATE_MACHINE {
         /* Expose this extent as an error; we made no progress */
         cmd->error = cmd->error ? : EPROTO;
       }
-      else if (total > cap) {
-        /* Expose this extent as an error, after truncating to make progress */
-        stop = true;
-        cmd->error = cmd->error ? : EPROTO;
-        len -= total - cap;
-      }
+      total += len;
       if (cmd->cb.wide) {
         h->bs_cooked.wide[i].length = len;
         h->bs_cooked.wide[i].flags = flags;
