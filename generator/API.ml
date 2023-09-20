@@ -2492,7 +2492,11 @@ Most modern NBD servers use C<\"newstyle-fixed\">.
     permitted_states = [ Negotiating; Connected; Closed ];
     shortdesc = "return the export size";
     longdesc = "\
-Returns the size in bytes of the NBD export."
+Returns the size in bytes of the NBD export.
+
+Note that this call fails with C<EOVERFLOW> for an unlikely
+server that advertises a size which cannot fit in a 64-bit
+signed integer."
 ^ non_blocking_test_call_description;
     see_also = [SectionLink "Size of the export"; Link "opt_info"];
     example = Some "examples/get-size.c";

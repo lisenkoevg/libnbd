@@ -253,6 +253,12 @@ nbd_unlocked_get_size (struct nbd_handle *h)
     return -1;
   }
 
+  if (h->exportsize > INT64_MAX) {
+    set_error (EOVERFLOW, "server claims size %" PRIu64
+               " which does not fit in signed result", h->exportsize);
+    return -1;
+  }
+
   return h->exportsize;
 }
 
