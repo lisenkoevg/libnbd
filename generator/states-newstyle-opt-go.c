@@ -149,8 +149,11 @@ STATE_MACHINE {
 
   switch (reply) {
   case NBD_REP_INFO:
-    if (len > maxpayload /* see RECV_NEWSTYLE_OPT_GO_REPLY */)
+    if (len > maxpayload) {
+      /* See prepare_for_reply_payload, used in RECV_REPLY */
+      assert (h->rbuf == NULL);
       debug (h, "skipping large NBD_REP_INFO");
+    }
     else {
       uint16_t info;
       uint64_t exportsize;
