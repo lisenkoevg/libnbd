@@ -193,8 +193,11 @@ client (int sock)
   }
 
   /* Note we ignore errors in these calls because we are only
-   * interested in whether the process crashes.
+   * interested in whether the process crashes.  Likewise, we don't
+   * want to accidentally avoid sending traffic to the server merely
+   * because client side strictness sees a problem.
    */
+  nbd_set_strict_mode (nbd, 0);
 
   /* Enable a metadata context, for block status below. */
   nbd_add_meta_context (nbd, LIBNBD_CONTEXT_BASE_ALLOCATION);
