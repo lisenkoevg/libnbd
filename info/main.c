@@ -410,7 +410,7 @@ do_connect (struct nbd_handle *nbd)
  * it suppresses the uri: field in output.
  */
 bool
-uri_is_meaingful (void)
+uri_is_meaningful (void)
 {
   return mode == MODE_URI;
 }

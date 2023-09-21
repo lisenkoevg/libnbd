@@ -96,7 +96,7 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
 
   human_size (size_str, size, &human_size_flag);
 
-  if (uri_is_meaingful ())
+  if (uri_is_meaningful ())
     uri = nbd_get_uri (nbd);
 
   /* Prefer the server's version of the name, if available */

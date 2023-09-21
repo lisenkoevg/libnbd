@@ -36,7 +36,7 @@ extern bool size_only;
 extern bool totals;
 
 void do_connect (struct nbd_handle *);
-bool uri_is_meaingful (void);
+bool uri_is_meaningful (void);
 
 /* can.c */
 extern int can_exit_code;
