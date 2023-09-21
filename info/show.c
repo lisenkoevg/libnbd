@@ -46,8 +46,8 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
                  bool first, bool last)
 {
   int64_t i, size;
-  char size_str[HUMAN_SIZE_LONGEST];
-  bool human_size_flag;
+  char size_str[HUMAN_SIZE_LONGEST] = "unavailable";
+  bool human_size_flag = false;
   char *export_name = NULL;
   char *export_desc = NULL;
   char *content = NULL;
@@ -89,12 +89,8 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
     return false;
   }
   size = nbd_get_size (nbd);
-  if (size == -1) {
-    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
-    exit (EXIT_FAILURE);
-  }
-
-  human_size (size_str, size, &human_size_flag);
+  if (size >= 0)
+    human_size (size_str, size, &human_size_flag);
 
   if (uri_is_meaningful ())
     uri = nbd_get_uri (nbd);
@@ -130,7 +126,8 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
     show_context = true;
 
   /* Get content last, as it moves the connection out of negotiating */
-  content = get_content (nbd, size);
+  if (size >= 0)
+    content = get_content (nbd, size);
 
   if (!json_output) {
     ansi_colour (ANSI_FG_BOLD_BLACK, fp);
@@ -140,10 +137,14 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
     fprintf (fp, ":\n");
     if (desc && *desc)
       fprintf (fp, "\tdescription: %s\n", desc);
-    if (human_size_flag)
-      fprintf (fp, "\texport-size: %" PRIi64 " (%s)\n", size, size_str);
+    if (size >= 0) {
+      if (human_size_flag)
+        fprintf (fp, "\texport-size: %" PRIi64 " (%s)\n", size, size_str);
+      else
+        fprintf (fp, "\texport-size: %" PRIi64 "\n", size);
+    }
     else
-      fprintf (fp, "\texport-size: %" PRIi64 "\n", size);
+      fprintf (fp, "\texport-size: %s\n", size_str);
     if (content)
       fprintf (fp, "\tcontent: %s\n", content);
     if (uri)
@@ -273,7 +274,8 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
                block_maximum);
 
     /* Put this one at the end because of the stupid comma thing in JSON. */
-    fprintf (fp, "\t\"export-size\": %" PRIi64 ",\n", size);
+    if (size >= 0)
+      fprintf (fp, "\t\"export-size\": %" PRIi64 ",\n", size);
     fprintf (fp, "\t\"export-size-str\": \"%s\"\n", size_str);
 
     if (last)
