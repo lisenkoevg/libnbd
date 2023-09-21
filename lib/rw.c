@@ -548,8 +548,7 @@ nbd_unlocked_aio_zero (struct nbd_handle *h,
 }
 
 static int
-check_aio_block_status (struct nbd_handle *h, uint64_t count, uint64_t offset,
-                        uint32_t flags)
+check_aio_block_status (struct nbd_handle *h)
 {
   if (h->strict & LIBNBD_STRICT_COMMANDS) {
     if (!h->structured_replies) {
@@ -578,7 +577,7 @@ nbd_unlocked_aio_block_status (struct nbd_handle *h,
   struct command_cb cb = { .fn.extent32 = *extent, .wide = false,
                            .completion = *completion };
 
-  if (check_aio_block_status (h, count, offset, flags) == -1)
+  if (check_aio_block_status (h) == -1)
     return -1;
 
   SET_CALLBACK_TO_NULL (*extent);
@@ -597,7 +596,7 @@ nbd_unlocked_aio_block_status_64 (struct nbd_handle *h,
   struct command_cb cb = { .fn.extent64 = *extent64, .wide = true,
                            .completion = *completion };
 
-  if (check_aio_block_status (h, count, offset, flags) == -1)
+  if (check_aio_block_status (h) == -1)
     return -1;
 
   SET_CALLBACK_TO_NULL (*extent64);
@@ -620,6 +619,9 @@ nbd_unlocked_aio_block_status_filter (struct nbd_handle *h,
   char *name;
   size_t i;
 
+  if (check_aio_block_status (h) == -1)
+    return -1;
+
   if (h->strict & LIBNBD_STRICT_AUTO_FLAG) {
     /* Because this affects wire format, it is more convenient to manage
      * PAYLOAD_LEN by what was negotiated than to require the user to
@@ -636,13 +638,6 @@ nbd_unlocked_aio_block_status_filter (struct nbd_handle *h,
     if (nbd_unlocked_can_block_status_payload (h) != 1) {
       set_error (EINVAL,
                  "server does not support the block status payload flag");
-      return -1;
-    }
-
-    if (!h->meta_valid || h->meta_contexts.len == 0) {
-      set_error (ENOTSUP, "did not negotiate any metadata contexts, "
-                 "either you did not call nbd_add_meta_context before "
-                 "connecting or the server does not support it");
       return -1;
     }
 
