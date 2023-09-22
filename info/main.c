@@ -88,6 +88,17 @@ usage (FILE *fp, int exitcode)
   exit (exitcode);
 }
 
+void
+clean_shutdown (void)
+{
+  /* If we are connected but detect an error, try to give the server
+   * notice that we are done talking.  Ignore failures, as this is
+   * only a courtesy measure.
+   */
+  if (nbd)
+    nbd_shutdown (nbd, 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -277,6 +288,7 @@ main (int argc, char *argv[])
     fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
     exit (EXIT_FAILURE);
   }
+  atexit (clean_shutdown);
   nbd_set_uri_allow_local_file (nbd, true); /* Allow ?tls-psk-file. */
 
   /* Set optional modes in the handle. */
@@ -353,6 +365,7 @@ main (int argc, char *argv[])
   free_exports ();
   nbd_shutdown (nbd, 0);
   nbd_close (nbd);
+  nbd = NULL;
 
   /* Close the output stream and copy it to the real stdout. */
   if (fclose (fp) == EOF) {
