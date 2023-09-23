@@ -55,12 +55,24 @@ L<qemu-nbd(8)> or L<nbdkit(1)>.
 
 For example, to dump out a qcow2 file as raw data:
 
- nbddump -- [ qemu-nbd -r -f qcow2 file.qcow2 ]
+ $ nbddump -- [ qemu-nbd -r -f qcow2 file.qcow2 ]
 
 To dump out an empty floppy disk created by L<nbdkit-floppy-plugin(1)>:
 
- mkdir /var/tmp/empty
- nbddump -- [ nbdkit floppy /var/tmp/empty ]
+ $ mkdir /var/tmp/empty
+ $ nbddump -- [ nbdkit floppy /var/tmp/empty ]
+ 0000: 00 00 00 4d 53 57 49 4e 34 2e 31 00 00 00 00 00 |...MSWIN4.1.....|
+ 0010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
+ ☆
+ 01b0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fe |................|
+ 01c0: ff ff 0c fe ff ff 00 08 00 00 80 00 00 00 00 00 |................|
+
+To dump out some test data using L<nbdkit-data-plugin(1)>:
+
+ $ nbddump -- [ nbdkit data ' @0x1000 "hello!" ' ]
+ 0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 │················│
+ ☆
+ 1000: 68 65 6c 6c 6f 21                               │hello!          │
 
 Note that S<C<[ ... ]>> are separate parameters, and must be
 surrounded by spaces.  C<--> separates nbddump parameters from
