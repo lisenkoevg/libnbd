@@ -7,7 +7,7 @@ libnbd-release-notes-1.18 - release notes for libnbd 1.18
 These are the release notes for libnbd stable release 1.18.
 This describes the major changes since 1.16.
 
-libnbd 1.18.0 was released on B<XX XXXX 2023>.
+libnbd 1.18.0 was released on B<27 September 2023>.
 
 =head2 Security
 
@@ -15,6 +15,21 @@ Eric Blake found a case where a server could cause libnbd to crash,
 although not in the normal libnbd configuration.  For more information
 see the announcement here:
 L<https://listman.redhat.com/archives/libguestfs/2023-July/032035.html>
+
+Eric Blake found an issue with L<nbd_get_size(3)> where a server that
+returns a size E<gt> S<(uint64_t)INT64_MAX> and E<lt> S<(uint64_t)-1>
+would cause nbd_get_size to return a negative number (which is not
+C<-1> and so callers may or may not treat it as an error).  While no
+client code in libnbd itself is affected by this, it could affect
+external clients.  libnbd E<ge> 1.18 now returns an error (C<-1>) and
+sets nbd_get_errno to C<EOVERFLOW> in this case.  We have applied for
+a decision on a CVE.
+
+During routine fuzzing we found several security problems which had
+been introduced during this development cycle and have subsequently
+been fixed.  Stable (even numbered) releases of libnbd should not be
+vulnerable; do not use the development (odd numbered) releases in
+production.
 
 If you find a security issue, please read F<SECURITY> in the source
 (online here:
@@ -72,8 +87,6 @@ L<nbd_set_string(3)> adds C<LIBNBD_STRICT_AUTO_FLAG> which allows the
 client to test how servers behave when the payload length flag is
 adjusted (Eric Blake).
 
-
-
 =head2 Protocol
 
 libnbd now supports NBD 64 bit "extended headers" and extent sizes.
@@ -83,27 +96,27 @@ servers that support this (Eric Blake).
 
 libnbd now supports filtered block status requests (Eric Blake).
 
-
 =head2 Tools
 
 L<nbdcopy(1)>, L<nbdinfo(1)> and L<nbddump(1)> have been expanded to
 use and report NBD 64 bit / extended header support when the server
 supports it (Eric Blake).
 
-In nbdinfo I<--has> can be used as an alias for I<--can>, eg.
+nbdinfo I<--has> can be used as an alias for I<--can>, eg.
 S<C<nbdinfo --has structured-reply URI>> (Eric Blake).
+
+nbdinfo makes the export size output optional, for servers which send
+an oversized one (Eric Blake).
 
 nbdcopy now supports "human sizes" for some parameters, eg.
 S<C<nbdcopy --request-size=1M ...>>.
 
-
 =head2 Language bindings
 
-Rust bindings have been added.  There is a basic API for ordinary use,
-and an asynch API implemented using Tokio.  Rust E<ge> 1.69 is
-required for this feature.  (Tage Johansson, supported by sponsorship
-from Google Summer of Code 2023, additional review and fixes by Eric
-Blake).
+New Rust bindings.  There is a basic API for ordinary use, and an
+asynch API implemented using Tokio.  S<Rust E<ge> 1.69> is required.
+(Tage Johansson, supported by sponsorship from Google Summer of Code
+2023, additional review and fixes by Eric Blake).
 
 OCaml 5 is now supported.
 
@@ -117,12 +130,13 @@ Use C<unsafe.Slice> when converting C arrays to Golang slices (Eric Blake).
 All language bindings support NBD 64 bit / extended headers, and
 examples of how to use this feature are available (Eric Blake).
 
-
 =head2 Tests
 
 Fix a couple of race conditions in tests where we did not fully
 consume stdin in L<nbdkit-sh-plugin(3)> pwrite method (Eric Blake).
 
+Fuzzing now disables client-side strictness checks, enabling a wider
+range of inputs to be fuzzed (Eric Blake).
 
 =head2 Other improvements and bug fixes
 
@@ -135,21 +149,16 @@ reenable this by defining C<-DLIBNBD_STATE_VERBOSE=1> at compile time.
 Completion C<.callback> methods are now always called exactly once,
 and documentation is clearer on when this happens (Eric Blake).
 
-
 =head2 Documentation
 
 C<podwrapper> has a new I<--replace> parameter which makes it easier
 to use C<AC_SUBST>-substitutions in documentation.
-
 
 =head2 Build
 
 Automake's C<subdir-objects> option is now used (Eric Blake).
 
 Multiple, ongoing fixes to the CI tests (Eric Blake).
-
-
-
 
 =head1 SEE ALSO
 
