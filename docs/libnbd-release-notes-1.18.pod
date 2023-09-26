@@ -21,9 +21,9 @@ returns a size E<gt> S<(uint64_t)INT64_MAX> and E<lt> S<(uint64_t)-1>
 would cause nbd_get_size to return a negative number (which is not
 C<-1> and so callers may or may not treat it as an error).  While no
 client code in libnbd itself is affected by this, it could affect
-external clients.  libnbd E<ge> 1.18 now returns an error (C<-1>) and
-sets nbd_get_errno to C<EOVERFLOW> in this case.  We have applied for
-a decision on a CVE.
+external clients.  libnbd E<ge> 1.16.5 now returns an error (C<-1>)
+and sets nbd_get_errno to C<EOVERFLOW> in this case.  We have applied
+for a decision on a CVE.
 
 During routine fuzzing we found several security problems which had
 been introduced during this development cycle and have subsequently
