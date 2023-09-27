@@ -23,7 +23,8 @@ C<-1> and so callers may or may not treat it as an error).  While no
 client code in libnbd itself is affected by this, it could affect
 external clients.  libnbd E<ge> 1.16.5 now returns an error (C<-1>)
 and sets nbd_get_errno to C<EOVERFLOW> in this case.  We have applied
-for a decision on a CVE.
+for a decision on a CVE.  See the announcement here:
+L<https://listman.redhat.com/archives/libguestfs/2023-September/032711.html>
 
 During routine fuzzing we found several security problems which had
 been introduced during this development cycle and have subsequently
