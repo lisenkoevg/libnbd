@@ -159,7 +159,7 @@ human_size_parse (const char *str,
 static inline char *
 human_size (char *buf, uint64_t bytes, bool *human)
 {
-  static const char ext[][2] = { "E", "P", "T", "G", "M", "K", "" };
+  static const char ext[] = "EPTGMK";
   size_t i;
 
   if (buf == NULL) {
@@ -170,18 +170,16 @@ human_size (char *buf, uint64_t bytes, bool *human)
 
   /* Work out which extension to use, if any. */
   i = 6;
-  if (bytes != 0) {
-    while ((bytes & 1023) == 0) {
-      bytes >>= 10;
-      i--;
-    }
+  while (bytes && (bytes & 1023) == 0) {
+    bytes >>= 10;
+    i--;
   }
 
   /* Set the flag to true if we're going to add a human-readable extension. */
   if (human)
-    *human = ext[i][0] != '\0';
+    *human = ext[i] != '\0';
 
-  snprintf (buf, HUMAN_SIZE_LONGEST, "%" PRIu64 "%s", bytes, ext[i]);
+  snprintf (buf, HUMAN_SIZE_LONGEST, "%" PRIu64 "%.1s", bytes, &ext[i]);
   return buf;
 }
 
