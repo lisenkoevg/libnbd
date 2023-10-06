@@ -35,6 +35,7 @@
 #include "nbdinfo.h"
 
 static void show_boolean (const char *name, bool cond);
+static void show_size (const char *name, int64_t size);
 static int collect_context (void *opaque, const char *name);
 static char *get_content (struct nbd_handle *, int64_t size);
 
@@ -181,13 +182,9 @@ show_one_export (struct nbd_handle *nbd, const char *desc,
       show_boolean ("can_trim", can_trim);
     if (can_zero >= 0)
       show_boolean ("can_zero", can_zero);
-    if (block_minimum > 0)
-      fprintf (fp, "\t%s: %" PRId64 "\n", "block_size_minimum", block_minimum);
-    if (block_preferred > 0)
-      fprintf (fp, "\t%s: %" PRId64 "\n", "block_size_preferred",
-               block_preferred);
-    if (block_maximum > 0)
-      fprintf (fp, "\t%s: %" PRId64 "\n", "block_size_maximum", block_maximum);
+    show_size ("block_size_minimum", block_minimum);
+    show_size ("block_size_preferred", block_preferred);
+    show_size ("block_size_maximum", block_maximum);
   }
   else {
     if (first)
@@ -302,6 +299,21 @@ show_boolean (const char *name, bool cond)
     ansi_colour (ANSI_FG_RED, fp);
   fprintf (fp, "\t%s: %s\n", name, cond ? "true" : "false");
   ansi_restore (fp);
+}
+
+/* Used for displaying sizes in non-JSON output. */
+void show_size (const char *name, int64_t size)
+{
+  char size_str[HUMAN_SIZE_LONGEST];
+  bool human_size_flag = false;
+
+  if (size > 0) {
+    human_size (size_str, size, &human_size_flag);
+    if (human_size_flag)
+      fprintf (fp, "\t%s: %" PRId64 " (%s)\n", name, size, size_str);
+    else
+      fprintf (fp, "\t%s: %" PRId64 "\n", name, size);
+  }
 }
 
 static int

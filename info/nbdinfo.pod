@@ -63,8 +63,8 @@ L<https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md>):
          can_trim: true
          can_zero: true
          block_size_minimum: 1
-         block_size_preferred: 4096
-         block_size_maximum: 33554432
+         block_size_preferred: 4096 (4K)
+         block_size_maximum: 33554432 (32M)
 
 For an NBD server on a local Unix domain socket you would use a
 command such as this (with similar output to above):
