@@ -117,6 +117,6 @@ clean-local:
 	$(CARGO) clean
 	$(CARGO) clean --manifest-path cargo_test/Cargo.toml
 
-endif
+endif HAVE_RUST
 
 CLEANFILES += libnbd-sys/libnbd_version
