@@ -90,7 +90,8 @@ EXTRA_DIST = \
 if HAVE_RUST
 
 all-local: libnbd-sys/libnbd_version target/debug/liblibnbd.rlib \
-		target/doc/libnbd/index.html
+		target/doc/libnbd/index.html \
+		target/debug/examples/get-size
 
 libnbd-sys/libnbd_version: Makefile
 	rm -f libnbd-sys/libnbd_version.t
@@ -102,6 +103,10 @@ target/debug/liblibnbd.rlib: $(source_files)
 
 target/doc/libnbd/index.html: $(source_files)
 	$(abs_top_builddir)/run $(CARGO) doc
+
+# This will actually build all the examples:
+target/debug/examples/get-size: $(source_files)
+	$(abs_top_builddir)/run $(CARGO) build --examples
 
 if HAVE_POD
 
