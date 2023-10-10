@@ -180,6 +180,7 @@ Makefile.in
 /python/run-python-tests
 /run
 /rust/Cargo.lock
+/rust/libnbd-rust.3
 /rust/libnbd-sys/Cargo.lock
 /rust/libnbd-sys/libnbd_version
 /rust/libnbd-sys/src/generated.rs

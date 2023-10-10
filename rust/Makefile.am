@@ -84,6 +84,7 @@ source_files = \
 
 EXTRA_DIST = \
 	$(source_files) \
+	libnbd-rust.pod \
 	$(NULL)
 
 if HAVE_RUST
@@ -101,6 +102,18 @@ target/debug/liblibnbd.rlib: $(source_files)
 
 target/doc/libnbd/index.html: $(source_files)
 	$(abs_top_builddir)/run $(CARGO) doc
+
+if HAVE_POD
+
+man_MANS = libnbd-rust.3
+CLEANFILES += $(man_MANS)
+
+libnbd-rust.3: libnbd-rust.pod $(top_builddir)/podwrapper.pl
+	$(PODWRAPPER) --section=3 --man $@ \
+	    --html $(top_builddir)/html/$@.html \
+	    $<
+
+endif HAVE_POD
 
 TESTS_ENVIRONMENT = \
 	LIBNBD_DEBUG=1 \

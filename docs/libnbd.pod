@@ -51,6 +51,10 @@ Using the API from OCaml.
 
 Using the API from Go.
 
+=item L<libnbd-rust(3)>
+
+Using the API from Rust.
+
 =item L<nbdsh(1)>
 
 Using the NBD shell (nbdsh) for command line and Python scripting.
