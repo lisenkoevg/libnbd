@@ -476,27 +476,88 @@ let print_rust_closure_to_raw_fn { cbname; cbargs } =
   pr "\n"
 
 (* Print the comment for a rust function for a handle call. *)
-let print_rust_handle_call_comment call =
+let rec print_rust_handle_call_comment name call =
   (* Print comments. *)
   if call.shortdesc <> "" then
     pr "/// %s\n"
       (String.concat "\n/// " (String.split_on_char '\n' call.shortdesc));
   if call.longdesc <> "" then (
-    (* If a short comment was printed, print a blank comment line befor the
-       long description. *)
+    (* If a short comment was printed, print a blank comment line before
+       the long description. *)
     if call.shortdesc <> "" then pr "/// \n";
-    (* Print all lines of the long description. Since Rust comments are
-       supposed to be Markdown, all indented lines will be treated as code
-       blocks. Hence we trim all lines. Also brackets ("[" and "]") must be
-       escaped. *)
-    List.iter
-      (fun line ->
-        let unindented = String.trim line in
-        let escaped =
-          Str.global_replace (Str.regexp {|\(\[\|\]\)|}) {|\\\1|} unindented
-        in
-        pr "/// %s\n" escaped)
-      (pod2text call.longdesc))
+    let md = longdesc_to_markdown name call.longdesc in
+    List.iter (pr "/// %s\n") md
+  )
+
+(* Convert POD to rustdoc markdown. *)
+and longdesc_to_markdown name longdesc =
+  (* Replace any POD <> expression *)
+  let content =
+    Str.global_substitute (Str.regexp {|[A-Z]<[^>]+?>|})
+      (fun s ->
+        let expr = Str.matched_string s in
+        let len = String.length expr in
+        let c = expr.[0] and content = String.sub expr 2 (len-3) in
+        match c with
+        | 'C' -> sprintf "`%s`" content (* C<...> becomes `...` *)
+        | 'B' -> sprintf "<b>%s</b>" content
+        | 'I' | 'F' -> sprintf "<i>%s</i>" content
+        | 'E' -> sprintf "&%s;" content
+        | 'L' ->
+           let len = String.length content in
+           if String.starts_with ~prefix:"nbd_" content then (
+             let n = String.sub content 4 (len - 7) in
+             if n <> "get_error" && n <> "get_errno" && n <> "close" then
+               sprintf "[%s](Handle::%s)" n n
+             else
+               sprintf "`%s`" n
+           )
+           else (* external manual page - how to link XXX *)
+             sprintf "<i>%s</i>" content
+        | _ ->
+           failwithf "rust: API documentation for %s contains '%s' which
+                      cannot be converted to Rust markdown" name expr
+      )
+      longdesc in
+
+  (* Split input into lines for rest of the processing. *)
+  let lines = nsplit "\n" content in
+
+  (* Surround any group of lines starting with whitespace with ```text *)
+  let lines =
+    List.map (fun line -> String.starts_with ~prefix:" " line, line) lines in
+  let (lines : (bool * string list) list) = group_by lines in
+  let lines =
+    List.map (function
+      | true (* verbatim *), lines -> [ "```text" ] @ lines @ [ "```" ]
+      | false, lines -> lines
+    ) lines in
+  let lines = List.flatten lines in
+
+  (* Replace any = directives *)
+  filter_map (
+    fun s ->
+      (* This is a very approximate way to translate bullet lists. *)
+      if String.starts_with ~prefix:"=over" s ||
+         String.starts_with ~prefix:"=back" s then
+        None
+      else if String.starts_with ~prefix:"=item" s then (
+        let len = String.length s in
+        let s' = String.sub s 5 (len-5) in
+        Some ("-" ^ s')
+      )
+      else if String.starts_with ~prefix:"=head" s then (
+        let i = int_of_string (String.make 1 s.[5]) in
+        let len = String.length s in
+        let s' = String.sub s 6 (len-6) in
+        Some (String.make i '#' ^ s')
+      )
+      else if String.starts_with ~prefix:"=" s then
+        failwithf "rust: API documentation for %s contains '%s' which
+                   cannot be converted to Rust markdown" name s
+      else
+        Some s
+  ) lines
 
 (* Print a Rust expression which converts Rust like arguments to FFI like
    arguments, makes a call on the raw FFI handle, and converts the return
@@ -533,7 +594,7 @@ let print_rust_handle_method (name, call) =
     String.concat ", "
       (List.map2 (sprintf "%s: %s") rust_args_names rust_args_types)
   in
-  print_rust_handle_call_comment call;
+  print_rust_handle_call_comment name call;
   (* Print visibility modifier. *)
   if NameSet.mem name hidden_handle_calls then (
     (* If this is hidden to the public API, it might be used only if some feature
@@ -653,7 +714,7 @@ let rust_async_handle_call_args { args; optargs } : string =
 
 (* Print the Rust function for a synchronous handle call. *)
 let print_rust_sync_handle_call name call =
-  print_rust_handle_call_comment call;
+  print_rust_handle_call_comment name call;
   pr "pub fn %s(&self, %s) -> %s\n" name
     (rust_async_handle_call_args call)
     (rust_ret_type call);
@@ -698,7 +759,7 @@ let print_rust_async_handle_call_with_completion_cb name aio_name call =
   let optargs_without_completion_cb =
     optargs_before_completion_cb @ optargs_after_completion_cb
   in
-  print_rust_handle_call_comment call;
+  print_rust_handle_call_comment name call;
   pr "pub async fn %s(&self, %s) -> SharedResult<()> {\n" name
     (rust_async_handle_call_args
        { call with optargs = optargs_without_completion_cb });
@@ -747,7 +808,7 @@ let print_rust_async_handle_call_with_completion_cb name aio_name call =
 let print_rust_async_handle_call_changing_state name aio_name call
     (predicate, value) =
   let value = if value then "true" else "false" in
-  print_rust_handle_call_comment call;
+  print_rust_handle_call_comment name call;
   pr "pub async fn %s(&self, %s) -> SharedResult<()>\n" name
     (rust_async_handle_call_args call);
   pr "{\n";
