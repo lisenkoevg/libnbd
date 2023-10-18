@@ -505,7 +505,7 @@ and longdesc_to_markdown name longdesc =
         | 'E' -> sprintf "&%s;" content
         | 'L' ->
            let len = String.length content in
-           if String.starts_with ~prefix:"nbd_" content then (
+           if string_starts_with ~prefix:"nbd_" content then (
              let n = String.sub content 4 (len - 7) in
              if n <> "get_error" && n <> "get_errno" && n <> "close" then
                sprintf "[%s](Handle::%s)" n n
@@ -525,7 +525,7 @@ and longdesc_to_markdown name longdesc =
 
   (* Surround any group of lines starting with whitespace with ```text *)
   let lines =
-    List.map (fun line -> String.starts_with ~prefix:" " line, line) lines in
+    List.map (fun line -> string_starts_with ~prefix:" " line, line) lines in
   let (lines : (bool * string list) list) = group_by lines in
   let lines =
     List.map (function
@@ -538,21 +538,21 @@ and longdesc_to_markdown name longdesc =
   filter_map (
     fun s ->
       (* This is a very approximate way to translate bullet lists. *)
-      if String.starts_with ~prefix:"=over" s ||
-         String.starts_with ~prefix:"=back" s then
+      if string_starts_with ~prefix:"=over" s ||
+         string_starts_with ~prefix:"=back" s then
         None
-      else if String.starts_with ~prefix:"=item" s then (
+      else if string_starts_with ~prefix:"=item" s then (
         let len = String.length s in
         let s' = String.sub s 5 (len-5) in
         Some ("-" ^ s')
       )
-      else if String.starts_with ~prefix:"=head" s then (
+      else if string_starts_with ~prefix:"=head" s then (
         let i = int_of_string (String.make 1 s.[5]) in
         let len = String.length s in
         let s' = String.sub s 6 (len-6) in
         Some (String.make i '#' ^ s')
       )
-      else if String.starts_with ~prefix:"=" s then
+      else if string_starts_with ~prefix:"=" s then
         failwithf "rust: API documentation for %s contains '%s' which
                    cannot be converted to Rust markdown" name s
       else
