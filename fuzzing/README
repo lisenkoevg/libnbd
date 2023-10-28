@@ -11,7 +11,7 @@ You will need to recompile libnbd with AFL instrumentation:
 
   ./configure CC=/usr/bin/afl-gcc CXX=/usr/bin/afl-g++ \
       --disable-shared \
-      --disable-golang --disable-ocaml --disable-python
+      --disable-golang --disable-ocaml --disable-python --disable-rust
   make clean
   make
 
@@ -20,7 +20,7 @@ To use clang instead (recommended with AFL++):
   export AFL_USE_ASAN=1
   ./configure CC=/usr/bin/afl-clang-lto CXX=/usr/bin/afl-clang-lto++ \
       --disable-shared \
-      --disable-golang --disable-ocaml --disable-python
+      --disable-golang --disable-ocaml --disable-python --disable-rust
   make clean
   make
 
@@ -54,7 +54,7 @@ profiling:
 
   ./configure CFLAGS="-O2 -g -pg -fprofile-arcs -ftest-coverage" \
       --disable-shared \
-      --disable-golang --disable-ocaml --disable-python
+      --disable-golang --disable-ocaml --disable-python --disable-rust
   make clean
   make
 
@@ -78,7 +78,7 @@ Recompile libnbd with honggfuzz instrumentation:
   ./configure \
       CC=/path/to/hfuzz-clang CXX=/path/to/hfuzz-clang++ \
       --disable-shared \
-      --disable-golang --disable-ocaml --disable-python
+      --disable-golang --disable-ocaml --disable-python --disable-rust
   make clean
   make
 
@@ -101,7 +101,7 @@ binary:
       CFLAGS="-g -O1" \
       --enable-libfuzzer \
       --disable-shared \
-      --disable-golang --disable-ocaml --disable-python
+      --disable-golang --disable-ocaml --disable-python --disable-rust
   make clean
   make CFLAGS="-g -O1 -fsanitize=fuzzer,address" -C lib
   make CFLAGS="-g -O1 -fsanitize=fuzzer,address" \
