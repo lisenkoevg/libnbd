@@ -210,39 +210,51 @@ client (int sock)
 
   length = nbd_get_size (nbd);
 
-  /* Test common synchronous I/O calls. */
-  nbd_pread (nbd, buf, sizeof buf, 0, 0);
-  nbd_pwrite (nbd, buf, sizeof buf, 0, 0);
-  nbd_flush (nbd, 0);
-  nbd_trim (nbd, 8192, 8192, 0);
-  nbd_zero (nbd, 8192, 65536, 0);
-  nbd_cache (nbd, 8192, 0, 0);
+  /* Test common asynchronous I/O calls. */
+  nbd_aio_pread (nbd, buf, sizeof buf, 0, NBD_NULL_COMPLETION, 0);
+  nbd_aio_pwrite (nbd, buf, sizeof buf, 0, NBD_NULL_COMPLETION, 0);
+  nbd_aio_flush (nbd, NBD_NULL_COMPLETION, 0);
+  nbd_aio_trim (nbd, 8192, 8192, NBD_NULL_COMPLETION, 0);
+  nbd_aio_zero (nbd, 8192, 65536, NBD_NULL_COMPLETION, 0);
+  nbd_aio_cache (nbd, 8192, 0, NBD_NULL_COMPLETION, 0);
 
   /* Test structured reads. */
-  nbd_pread_structured (nbd, prbuf, sizeof prbuf, 8192,
-                        (nbd_chunk_callback) {
-                          .callback = chunk_callback,
+  nbd_aio_pread_structured (nbd, prbuf, sizeof prbuf, 8192,
+                            (nbd_chunk_callback) {
+                              .callback = chunk_callback,
+                              .user_data = NULL,
+                              .free = NULL
+                            },
+                            NBD_NULL_COMPLETION,
+                            0);
+
+  /* Test both sizes of block status. */
+  nbd_aio_block_status (nbd, length, 0,
+                        (nbd_extent_callback) {
+                          .callback = extent_callback,
                           .user_data = NULL,
                           .free = NULL
                         },
+                        NBD_NULL_COMPLETION,
                         0);
+  nbd_aio_block_status_64 (nbd, length, 0,
+                           (nbd_extent64_callback) {
+                             .callback = extent64_callback,
+                             .user_data = NULL,
+                             .free = NULL
+                           },
+                           NBD_NULL_COMPLETION,
+                           0);
 
-  /* Test both sizes of block status. */
-  nbd_block_status (nbd, length, 0,
-                    (nbd_extent_callback) {
-                      .callback = extent_callback,
-                      .user_data = NULL,
-                      .free = NULL
-                    },
-                    0);
-  nbd_block_status_64 (nbd, length, 0,
-                       (nbd_extent64_callback) {
-                         .callback = extent64_callback,
-                         .user_data = NULL,
-                         .free = NULL
-                       },
-                       0);
+  /* Run the commands until there are no more in flight or there is an
+   * error caused by the server side disconnecting.
+   */
+  while (nbd_aio_in_flight (nbd) > 0) {
+    if (nbd_poll (nbd, -1) == -1)
+      break;
+  }
 
+  /* Shutdown (if still connected). */
   nbd_shutdown (nbd, 0);
 }
 
