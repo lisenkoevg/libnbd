@@ -600,6 +600,7 @@ STATE_MACHINE {
             break; /* Skip this and later extents; we already made progress */
           /* Expose this extent as an error; we made no progress */
           cmd->error = cmd->error ? : EOVERFLOW;
+          flags = (uint32_t)flags;
         }
       }
 
