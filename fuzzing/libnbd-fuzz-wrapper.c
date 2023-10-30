@@ -222,8 +222,6 @@ client (int sock)
   nbd_aio_pread_structured (nbd, prbuf, sizeof prbuf, 8192,
                             (nbd_chunk_callback) {
                               .callback = chunk_callback,
-                              .user_data = NULL,
-                              .free = NULL
                             },
                             NBD_NULL_COMPLETION,
                             0);
@@ -232,16 +230,12 @@ client (int sock)
   nbd_aio_block_status (nbd, length, 0,
                         (nbd_extent_callback) {
                           .callback = extent_callback,
-                          .user_data = NULL,
-                          .free = NULL
                         },
                         NBD_NULL_COMPLETION,
                         0);
   nbd_aio_block_status_64 (nbd, length, 0,
                            (nbd_extent64_callback) {
                              .callback = extent64_callback,
-                             .user_data = NULL,
-                             .free = NULL
                            },
                            NBD_NULL_COMPLETION,
                            0);
