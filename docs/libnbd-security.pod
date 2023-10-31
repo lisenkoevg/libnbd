@@ -45,6 +45,12 @@ negative size result from nbd_get_size(3)
 See the full announcement here:
 L<https://listman.redhat.com/archives/libguestfs/2023-September/032711.html>
 
+=head2 CVE-2023-5871
+assertion failure for 64-bit flags passed to nbd_block_status(3)
+
+See the full announcement here:
+L<https://lists.libguestfs.org/archives/list/guestfs@lists.libguestfs.org/thread/5CRC7LRTN35WPZZ4BT6NAMH4JGMF47IK/>
+
 =head1 SEE ALSO
 
 L<libnbd(3)>.
