@@ -93,6 +93,10 @@ struct command_cb {
 };
 
 struct nbd_handle {
+  /* Magic value used to validate handle pointers. */
+  uint64_t magic;
+#define NBD_HANDLE_MAGIC 0xbdbd
+
   /* Unique name assigned to this handle for debug messages
    * (to avoid having to print actual pointers).
    */

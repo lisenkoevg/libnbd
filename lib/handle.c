@@ -59,6 +59,7 @@ nbd_create (void)
     set_error (errno, "calloc");
     goto error1;
   }
+  h->magic = NBD_HANDLE_MAGIC;
 
   if (asprintf (&h->hname, "nbd%d", hnums++) == -1) {
     set_error (errno, "asprintf");
@@ -127,6 +128,8 @@ nbd_close (struct nbd_handle *h)
 
   if (h == NULL)
     return;
+
+  assert (h->magic == NBD_HANDLE_MAGIC);
 
   debug (h, "closing handle");
 

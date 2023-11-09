@@ -597,6 +597,7 @@ let generate_lib_api_c () =
       pr "  bool p;\n";
     pr "  %s ret;\n" ret_c_type;
     pr "\n";
+    pr "  assert (h->magic == NBD_HANDLE_MAGIC);\n";
     if may_set_error then (
       pr "  nbd_internal_set_error_context (\"nbd_%s\");\n" name;
       pr "\n";
@@ -926,6 +927,7 @@ let generate_lib_api_c () =
   pr "#include <stdint.h>\n";
   pr "#include <inttypes.h>\n";
   pr "#include <errno.h>\n";
+  pr "#include <assert.h>\n";
   pr "\n";
   pr "#include <pthread.h>\n";
   pr "\n";
