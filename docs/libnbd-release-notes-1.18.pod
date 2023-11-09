@@ -84,8 +84,8 @@ Golang, OCaml and Python language bindings (Eric Blake).
 
 L<nbd_shutdown(3)> now works correctly when in opt mode (Eric Blake).
 
-L<nbd_set_string(3)> adds C<LIBNBD_STRICT_AUTO_FLAG> which allows the
-client to test how servers behave when the payload length flag is
+L<nbd_set_strict_mode(3)> adds C<LIBNBD_STRICT_AUTO_FLAG> which allows
+the client to test how servers behave when the payload length flag is
 adjusted (Eric Blake).
 
 =head2 Protocol
