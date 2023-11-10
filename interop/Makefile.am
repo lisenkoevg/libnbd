@@ -28,6 +28,7 @@ EXTRA_DIST = \
 	structured-read.sh \
 	opt-extended-headers.sh \
 	block-status-payload.sh \
+	strict-mode-auto-flag.sh \
 	$(NULL)
 
 TESTS_ENVIRONMENT = \
@@ -153,6 +154,7 @@ TESTS += \
 	interop-qemu-block-size.sh \
 	opt-extended-headers.sh \
 	block-status-payload.sh \
+	strict-mode-auto-flag.sh \
 	$(NULL)
 
 interop_qemu_nbd_SOURCES = \
