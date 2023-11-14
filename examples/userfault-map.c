@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 
 #include <libnbd.h>
 
-struct nbd_handle *nbd;         /* libnbd handle. */
+static struct nbd_handle *nbd;  /* libnbd handle. */
 static int fd;                  /* Userfault file descriptor. */
 static long page_size;          /* Machine page size. */
 static int64_t size;            /* Size in bytes. */
