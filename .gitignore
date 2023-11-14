@@ -72,6 +72,7 @@ Makefile.in
 /examples/aio-connect-read
 /examples/batched-read-write
 /examples/connect-command
+/examples/copy-libev
 /examples/encryption
 /examples/fetch-first-sector
 /examples/get-size
@@ -82,7 +83,7 @@ Makefile.in
 /examples/server-flags
 /examples/strict-structured-reads
 /examples/threaded-reads-and-writes
-/examples/copy-libev
+/examples/userfault-map
 /fuse/nbdfuse
 /fuse/nbdfuse.1
 /fuzzing/libnbd-fuzz-wrapper

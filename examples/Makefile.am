@@ -32,6 +32,7 @@ noinst_PROGRAMS = \
 	server-flags \
 	strict-structured-reads \
 	threaded-reads-and-writes \
+	userfault-map \
 	$(NULL)
 
 if HAVE_GLIB
@@ -235,3 +236,22 @@ copy_libev_LDADD = \
 	$(LIBEV_LIBS) \
 	$(NULL)
 endif
+
+# This userfaultfd example only works on Linux >= 4.11.  However
+# creating an autoconf conditional to express this is difficult, so on
+# other platforms this will still compile but the program will just
+# print an error.
+userfault_map_SOURCES = \
+	userfault-map.c \
+	$(NULL)
+userfault_map_CPPFLAGS = \
+	-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/include \
+	$(NULL)
+userfault_map_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	$(NULL)
+userfault_map_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(PTHREAD_LIBS) \
+	$(NULL)

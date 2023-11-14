@@ -114,8 +114,10 @@ dnl Check for other headers, all optional.
 AC_CHECK_HEADERS([\
     byteswap.h \
     endian.h \
+    linux/userfaultfd.h \
     stdatomic.h \
-    sys/endian.h])
+    sys/endian.h \
+    sys/syscall.h])
 
 AC_CHECK_HEADERS([linux/vm_sockets.h sys/vsock.h], [], [], [[
   #include <sys/socket.h>
