@@ -177,7 +177,7 @@ The upstream git repository is:
 https://gitlab.com/nbdkit/libnbd
 
 Patches are accepted either by email to the upstream mailing list:
-https://www.redhat.com/mailman/listinfo/libguestfs
+https://lists.libguestfs.org
 or by Merge Request on gitlab.com
 
 If you want to fuzz the library see [fuzzing/README](fuzzing/README).
