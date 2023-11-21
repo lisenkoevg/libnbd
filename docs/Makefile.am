@@ -17,7 +17,8 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-api_built=
+# This is populated in the generated file Makefile.inc
+api_built =
 
 # Our use of sinclude to bypass Automake is intentional; this file won't
 # exist in a fresh git checkout until after the generator has run, but
