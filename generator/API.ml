@@ -2057,6 +2057,7 @@ with L<nbd_supports_tls(3)>.
 =head2 Constructing a URI from an existing connection
 
 See L<nbd_get_uri(3)>.";
+    example = Some "examples/connect-uri.c";
     see_also = [URLLink "https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md";
                 Link "aio_connect_uri";
                 Link "set_export_name"; Link "set_tls";

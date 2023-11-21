@@ -72,6 +72,7 @@ Makefile.in
 /examples/aio-connect-read
 /examples/batched-read-write
 /examples/connect-command
+/examples/connect-uri
 /examples/copy-libev
 /examples/encryption
 /examples/fetch-first-sector

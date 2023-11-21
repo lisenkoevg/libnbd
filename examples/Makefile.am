@@ -23,6 +23,7 @@ noinst_PROGRAMS = \
 	aio-connect-read \
 	batched-read-write \
 	connect-command \
+	connect-uri \
 	encryption \
 	fetch-first-sector \
 	get-size \
@@ -71,6 +72,19 @@ connect_command_CFLAGS = \
 	$(WARNINGS_CFLAGS) \
 	$(NULL)
 connect_command_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(NULL)
+
+connect_uri_SOURCES = \
+	connect-uri.c \
+	$(NULL)
+connect_uri_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(NULL)
+connect_uri_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(NULL)
+connect_uri_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
 	$(NULL)
 
