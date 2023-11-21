@@ -61,6 +61,8 @@ sources = \
 	state_machine_generator.ml \
 	C.mli \
 	C.ml \
+	docs.mli \
+	docs.ml \
 	Python.mli \
 	Python.ml \
 	OCaml.mli \

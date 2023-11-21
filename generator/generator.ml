@@ -39,13 +39,14 @@ let () =
   output_to "include/libnbd.h" C.generate_include_libnbd_h;
   output_to "lib/unlocked.h" C.generate_lib_unlocked_h;
   output_to "lib/api.c" C.generate_lib_api_c;
-  output_to "docs/Makefile.inc" C.generate_docs_Makefile_inc;
-  output_to "docs/api-links.pod" C.generate_docs_api_links_pod;
-  output_to "docs/api-flag-links.pod" C.generate_docs_api_flag_links_pod;
+
+  output_to "docs/Makefile.inc" Docs.generate_docs_Makefile_inc;
+  output_to "docs/api-links.pod" Docs.generate_docs_api_links_pod;
+  output_to "docs/api-flag-links.pod" Docs.generate_docs_api_flag_links_pod;
   List.iter (
     fun (name, call) ->
       output_to (sprintf "docs/nbd_%s.pod" name)
-                (C.generate_docs_nbd_pod name call)
+                (Docs.generate_docs_nbd_pod name call)
   ) API.handle_calls;
 
   output_to "python/methods.h" Python.generate_python_methods_h;

@@ -24,10 +24,11 @@ val generate_lib_libnbd_syms : unit -> unit
 val generate_include_libnbd_h : unit -> unit
 val generate_lib_unlocked_h : unit -> unit
 val generate_lib_api_c : unit -> unit
-val generate_docs_Makefile_inc : unit -> unit
-val generate_docs_api_links_pod : unit -> unit
-val generate_docs_api_flag_links_pod : unit -> unit
-val generate_docs_nbd_pod : string -> API.call -> unit -> unit
+
+val name_of_arg : API.arg -> string list
+val name_of_optarg : API.optarg -> string
+val arg_attr_nonnull : API.arg -> bool list
+val optarg_attr_nonnull : API.optarg -> bool list
 val print_arg_list : ?wrap:bool -> ?maxcol:int ->
                      ?handle:bool -> ?types:bool -> ?parens:parens_style ->
                      ?closure_style:closure_style ->
@@ -35,5 +36,10 @@ val print_arg_list : ?wrap:bool -> ?maxcol:int ->
 val print_cbarg_list : ?wrap:bool -> ?maxcol:int ->
                        ?types:bool -> ?parens:bool ->
                        API.cbarg list -> unit
+val print_call : ?wrap:bool -> ?maxcol:int ->
+                 ?closure_style:closure_style ->
+                 string -> API.arg list -> API.optarg list -> API.ret -> unit
 val errcode_of_ret : API.ret -> string option
 val type_of_ret : API.ret -> string
+
+val permitted_state_text : ?fold:bool -> API.permitted_state list -> string
