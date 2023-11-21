@@ -43,6 +43,10 @@ states_code = \
 	states-reply.c \
 	$(NULL)
 
+# Some man pages contain example code and so must be rebuilt
+# if that changes.
+examples_code = $(wildcard $(top_srcdir)/examples/*.c)
+
 # Source code for the generator.
 sources = \
 	config.mli \
@@ -78,7 +82,7 @@ EXTRA_DIST = \
 
 if HAVE_OCAMLC
 
-stamp-generator: generator $(states_code)
+stamp-generator: generator $(states_code) $(examples_code)
 	rm -f $@
 #	We must run this from the source directory since these
 #	files are distributed in the tarball.
