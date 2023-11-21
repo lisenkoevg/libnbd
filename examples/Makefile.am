@@ -35,16 +35,6 @@ noinst_PROGRAMS = \
 	userfault-map \
 	$(NULL)
 
-if HAVE_GLIB
-noinst_PROGRAMS += \
-	glib-main-loop
-endif
-
-if HAVE_LIBEV
-noinst_PROGRAMS += \
-	copy-libev
-endif
-
 aio_connect_read_SOURCES = \
 	aio-connect-read.c \
 	$(NULL)
@@ -55,6 +45,19 @@ aio_connect_read_CFLAGS = \
 	$(WARNINGS_CFLAGS) \
 	$(NULL)
 aio_connect_read_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(NULL)
+
+batched_read_write_SOURCES = \
+	batched-read-write.c \
+	$(NULL)
+batched_read_write_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(NULL)
+batched_read_write_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(NULL)
+batched_read_write_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
 	$(NULL)
 
@@ -190,53 +193,6 @@ threaded_reads_and_writes_LDADD = \
 	$(PTHREAD_LIBS) \
 	$(NULL)
 
-batched_read_write_SOURCES = \
-	batched-read-write.c \
-	$(NULL)
-batched_read_write_CPPFLAGS = \
-	-I$(top_srcdir)/include \
-	$(NULL)
-batched_read_write_CFLAGS = \
-	$(WARNINGS_CFLAGS) \
-	$(NULL)
-batched_read_write_LDADD = \
-	$(top_builddir)/lib/libnbd.la \
-	$(NULL)
-
-if HAVE_GLIB
-glib_main_loop_SOURCES = \
-	glib-main-loop.c \
-	$(NULL)
-glib_main_loop_CPPFLAGS = \
-	-I$(top_srcdir)/include \
-	$(NULL)
-glib_main_loop_CFLAGS = \
-	$(WARNINGS_CFLAGS) \
-	$(GLIB_CFLAGS) \
-	$(NULL)
-glib_main_loop_LDADD = \
-	$(top_builddir)/lib/libnbd.la \
-	$(GLIB_LIBS) \
-	$(NULL)
-endif
-
-if HAVE_LIBEV
-copy_libev_SOURCES = \
-	copy-libev.c \
-	$(NULL)
-copy_libev_CPPFLAGS = \
-	-I$(top_srcdir)/include \
-	$(NULL)
-copy_libev_CFLAGS = \
-	$(WARNINGS_CFLAGS) \
-	$(LIBEV_CFLAGS) \
-	$(NULL)
-copy_libev_LDADD = \
-	$(top_builddir)/lib/libnbd.la \
-	$(LIBEV_LIBS) \
-	$(NULL)
-endif
-
 # This userfaultfd example only works on Linux >= 4.11.  However
 # creating an autoconf conditional to express this is difficult, so on
 # other platforms this will still compile but the program will just
@@ -255,3 +211,43 @@ userfault_map_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
 	$(PTHREAD_LIBS) \
 	$(NULL)
+
+if HAVE_GLIB
+noinst_PROGRAMS += \
+	glib-main-loop
+
+glib_main_loop_SOURCES = \
+	glib-main-loop.c \
+	$(NULL)
+glib_main_loop_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(NULL)
+glib_main_loop_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(GLIB_CFLAGS) \
+	$(NULL)
+glib_main_loop_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(GLIB_LIBS) \
+	$(NULL)
+endif
+
+if HAVE_LIBEV
+noinst_PROGRAMS += \
+	copy-libev
+
+copy_libev_SOURCES = \
+	copy-libev.c \
+	$(NULL)
+copy_libev_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(NULL)
+copy_libev_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(LIBEV_CFLAGS) \
+	$(NULL)
+copy_libev_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(LIBEV_LIBS) \
+	$(NULL)
+endif
