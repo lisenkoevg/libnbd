@@ -1893,7 +1893,12 @@ parameter in NBD URIs is allowed.";
     shortdesc = "connect to NBD URI";
     longdesc = "\
 Connect (synchronously) to an NBD server and export by specifying
-the NBD URI.  This call parses the URI and calls
+the NBD URI.  NBD URIs are a standard way to specify a network
+block device endpoint, using a syntax like
+C<\"nbd://example.com\"> which is convenient, well defined and
+future proof.
+
+This call works by parsing the URI parameter and calling
 L<nbd_set_export_name(3)> and L<nbd_set_tls(3)> and other
 calls as needed, followed by L<nbd_connect_tcp(3)>,
 L<nbd_connect_unix(3)> or L<nbd_connect_vsock(3)>.
