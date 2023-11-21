@@ -140,6 +140,9 @@ let non_blocking_test_call_description = "\n
 This call does not block, because it returns data that is saved in
 the handle from the NBD protocol handshake."
 
+let all_permitted_states =
+  [ Created; Connecting; Negotiating; Connected; Closed; Dead ]
+
 (* Closures. *)
 let chunk_closure = {
   cbname = "chunk";

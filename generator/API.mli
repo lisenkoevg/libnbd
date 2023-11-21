@@ -156,6 +156,7 @@ val first_version : (string * (int * int)) list
 val all_closures : closure list
 val all_enums : enum list
 val all_flags : flags list
+val all_permitted_states : permitted_state list
 val constants : (string * int) list
 val metadata_namespaces : (string * (string * (string * int) list) list) list
 

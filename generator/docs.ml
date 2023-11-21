@@ -199,9 +199,27 @@ let generate_docs_nbd_pod name { args; optargs; ret;
   if permitted_states <> [] then (
     pr "=head1 HANDLE STATE\n";
     pr "\n";
-    pr "The handle must be\n";
-    pr "%s,\n" (C.permitted_state_text ~fold:true permitted_states);
-    pr "otherwise this call will return an error.\n";
+    pr "nbd_%s\ncan be called when the handle is in the following %s:\n"
+      name (if List.length permitted_states = 1 then "state" else "states");
+    pr "\n";
+    pr " ┌─────────────────────────────────────┬─────────────────────────┐\n";
+    let row ps description =
+      let permitted = List.mem ps permitted_states in
+      pr " │ %-35s │ %s %-20s │\n" description
+        (if permitted then "✅" else "❌")
+        (if permitted then "allowed" else "error")
+    in
+    List.iter (
+      fun ps ->
+      match ps with
+      | Created ->     row ps "Handle created, before connecting"
+      | Connecting ->  row ps "Connecting"
+      | Negotiating -> row ps "Connecting & handshaking (opt_mode)"
+      | Connected ->   row ps "Connected to the server"
+      | Closed ->      row ps "Connection shut down"
+      | Dead ->        row ps "Handle dead"
+    ) all_permitted_states;
+    pr " └─────────────────────────────────────┴─────────────────────────┘\n";
     pr "\n"
   );
 

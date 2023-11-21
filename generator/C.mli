@@ -41,5 +41,3 @@ val print_call : ?wrap:bool -> ?maxcol:int ->
                  string -> API.arg list -> API.optarg list -> API.ret -> unit
 val errcode_of_ret : API.ret -> string option
 val type_of_ret : API.ret -> string
-
-val permitted_state_text : ?fold:bool -> API.permitted_state list -> string
