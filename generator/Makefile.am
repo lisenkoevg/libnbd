@@ -107,10 +107,13 @@ stamp-generator:
 	    echo;                                              \
 	    echo "        *** *** ***";                        \
 	    echo;                                              \
-	    echo "Source files are missing from your build.";  \
+	    echo "Generated files are missing from your build."; \
 	    echo;                                              \
 	    echo "Install the OCaml bytecode compiler (the program called ‘ocamlc’)"; \
 	    echo "and rerun ./configure && make";              \
+	    echo;
+	    echo "OR build from the tarballs at https://download.libguestfs.org/libnbd/"; \
+	    echo "which include generated files.";             \
 	    echo;                                              \
 	    echo "        *** *** ***";                        \
 	    echo;                                              \
