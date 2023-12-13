@@ -54,7 +54,6 @@ caml_alloc_initialized_string (mlsize_t len, const char *p)
 }
 #endif
 
-extern void nbd_internal_ocaml_handle_finalize (value);
 extern void nbd_internal_ocaml_buffer_finalize (value);
 
 extern void nbd_internal_ocaml_raise_error (void) Noreturn;
@@ -72,7 +71,7 @@ extern void nbd_internal_ocaml_exception_in_wrapper (const char *, value);
 
 static struct custom_operations libnbd_custom_operations = {
   "libnbd_custom_operations",
-  nbd_internal_ocaml_handle_finalize,
+  custom_finalize_default,
   custom_compare_default,
   custom_hash_default,
   custom_serialize_default,

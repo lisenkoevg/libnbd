@@ -32,16 +32,6 @@
 
 #include "nbd-c.h"
 
-void
-nbd_internal_ocaml_handle_finalize (value hv)
-{
-  struct nbd_handle *h = NBD_val (hv);
-
-  caml_enter_blocking_section ();
-  nbd_close (h);
-  caml_leave_blocking_section ();
-}
-
 value
 nbd_internal_ocaml_nbd_create (value unitv)
 {
@@ -61,11 +51,16 @@ value
 nbd_internal_ocaml_nbd_close (value hv)
 {
   CAMLparam1 (hv);
+  struct nbd_handle *h = NBD_val (hv);
 
-  nbd_internal_ocaml_handle_finalize (hv);
+  if (h) {
+    caml_enter_blocking_section ();
+    nbd_close (h);
+    caml_leave_blocking_section ();
 
-  /* So we don't double-free in the finalizer. */
-  NBD_val (hv) = NULL;
+    /* So we don't double-free. */
+    NBD_val (hv) = NULL;
+  }
 
   CAMLreturn (Val_unit);
 }

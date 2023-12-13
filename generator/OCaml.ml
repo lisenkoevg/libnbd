@@ -343,8 +343,13 @@ external errno_of_unix_error : Unix.error -> int =
 
 type t
 
-external create : unit -> t = \"nbd_internal_ocaml_nbd_create\"
+external _create : unit -> t = \"nbd_internal_ocaml_nbd_create\"
 external close : t -> unit = \"nbd_internal_ocaml_nbd_close\"
+
+let create () =
+  let nbd = _create () in
+  Gc.finalise close nbd;
+  nbd
 
 let with_handle f =
   let nbd = create () in
