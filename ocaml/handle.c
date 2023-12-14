@@ -54,12 +54,12 @@ nbd_internal_ocaml_nbd_close (value hv)
   struct nbd_handle *h = NBD_val (hv);
 
   if (h) {
+    /* So we don't double-free. */
+    NBD_val (hv) = NULL;
+
     caml_enter_blocking_section ();
     nbd_close (h);
     caml_leave_blocking_section ();
-
-    /* So we don't double-free. */
-    NBD_val (hv) = NULL;
   }
 
   CAMLreturn (Val_unit);
