@@ -24,11 +24,19 @@ EXTRA_DIST = \
 
 if HAVE_BASH_COMPLETION
 
-bashcomp_DATA = nbddump nbdfuse nbdsh nbdublk
+bashcomp_DATA = nbddump nbdsh
 
 if HAVE_LIBXML2
 bashcomp_DATA += nbdcopy nbdinfo
 endif HAVE_LIBXML2
+
+if HAVE_FUSE
+bashcomp_DATA += nbdfuse
+endif
+
+if HAVE_UBLK
+bashcomp_DATA += nbdublk
+endif
 
 nbdcopy: nbdsh
 	rm -f $@
