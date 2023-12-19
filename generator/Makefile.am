@@ -111,7 +111,7 @@ stamp-generator:
 	    echo;                                              \
 	    echo "Install the OCaml bytecode compiler (the program called ‘ocamlc’)"; \
 	    echo "and rerun ./configure && make";              \
-	    echo;
+	    echo;                                              \
 	    echo "OR build from the tarballs at https://download.libguestfs.org/libnbd/"; \
 	    echo "which include generated files.";             \
 	    echo;                                              \
