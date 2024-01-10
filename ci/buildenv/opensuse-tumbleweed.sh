@@ -43,7 +43,7 @@ function install_buildenv() {
            perl-base \
            pkgconfig \
            python3-devel \
-           python39-flake8 \
+           python3-flake8 \
            qemu \
            qemu-tools \
            sed \

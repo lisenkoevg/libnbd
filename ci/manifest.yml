@@ -8,9 +8,9 @@ gitlab:
     check-dco: false
 
 targets:
-  alpine-317: x86_64
-
   alpine-318: x86_64
+
+  alpine-319: x86_64
 
   almalinux-8:
     jobs:
@@ -40,9 +40,9 @@ targets:
 
   debian-sid: x86_64
 
-  fedora-37: x86_64
-
   fedora-38: x86_64
+
+  fedora-39: x86_64
 
   fedora-rawhide:
     jobs:
@@ -58,9 +58,9 @@ targets:
         variables:
           LIBXML2: skip
 
-  freebsd-12: x86_64
-
   freebsd-13: x86_64
+
+  freebsd-14: x86_64
 
   freebsd-current: x86_64
 
