@@ -779,10 +779,11 @@ connect_uri_nbd_LDADD = $(top_builddir)/lib/libnbd.la
 connect_uri_nbd_unix_SOURCES = connect-uri.c requires.c requires.h
 connect_uri_nbd_unix_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DNEEDS_UNIX_SOCKET=1 \
-	-DSERVER_PARAMS='"-U", UNIX_SOCKET' \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str' \
 	-DPIDFILE='"connect-uri-nbd-unix.pid"' \
-	-DURI='"nbd+unix:///?socket="' # UNIX_SOCKET appended
+	-DURI='"nbd+unix:///?socket=%s", str' \
+	$(NULL)
 connect_uri_nbd_unix_LDADD = $(top_builddir)/lib/libnbd.la
 
 if HAVE_GNUTLS
@@ -811,11 +812,12 @@ connect_uri_nbds_certs_LDADD = $(top_builddir)/lib/libnbd.la
 connect_uri_nbds_unix_certs_SOURCES = connect-uri.c requires.c requires.h
 connect_uri_nbds_unix_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DNEEDS_UNIX_SOCKET=1 \
-	-DSERVER_PARAMS='"-U", UNIX_SOCKET, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
 	-DPIDFILE='"connect-uri-nbds-unix-certs.pid"' \
-	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket="' # UNIX_SOCKET appended
+	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s", str' \
+	$(NULL)
 connect_uri_nbds_unix_certs_LDADD = $(top_builddir)/lib/libnbd.la
 
 endif HAVE_CERTTOOL
@@ -845,11 +847,11 @@ connect_uri_nbds_psk_LDADD = $(top_builddir)/lib/libnbd.la
 connect_uri_nbds_unix_psk_SOURCES = connect-uri.c requires.c requires.h
 connect_uri_nbds_unix_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DNEEDS_UNIX_SOCKET=1 \
-	-DSERVER_PARAMS='"-U", UNIX_SOCKET, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
 	-DPIDFILE='"connect-uri-nbds-unix-psk.pid"' \
-	-DURI='"nbds+unix://alice@/?tls-psk-file=keys.psk&socket="' # UNIX_SOCKET appended \
+	-DURI='"nbds+unix://alice@/?tls-psk-file=keys.psk&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_psk_LDADD = $(top_builddir)/lib/libnbd.la
 

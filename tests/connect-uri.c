@@ -31,16 +31,15 @@
 
 #include "requires.h"
 
-#ifdef NEEDS_UNIX_SOCKET
-#define UNIX_SOCKET tmp
-static char tmp[] = "/tmp/nbdXXXXXX";
+#ifdef DEFINE_STR_AS_UNIX_SOCKET
+static char str[] = "/tmp/nbdXXXXXX";
 
 static void
 unlink_unix_socket (void)
 {
-  unlink (UNIX_SOCKET);
+  unlink (str);
 }
-#endif /* NEEDS_UNIX_SOCKET */
+#endif
 
 static int compare_uris (const char *uri1, const char *uri2);
 
@@ -51,11 +50,7 @@ main (int argc, char *argv[])
   pid_t pid;
   size_t i;
   char *get_uri;
-#ifdef NEEDS_UNIX_SOCKET
   char *uri;
-#else
-  const char *uri = URI;
-#endif
 
   /* If SERVER_PARAMS contains --tls-verify-peer we must make sure
    * that nbdkit supports that option.
@@ -64,11 +59,11 @@ main (int argc, char *argv[])
   requires ("nbdkit --tls-verify-peer -U - null --run 'exit 0'");
 #endif
 
-#ifdef NEEDS_UNIX_SOCKET
-  int fd = mkstemp (UNIX_SOCKET);
+#ifdef DEFINE_STR_AS_UNIX_SOCKET
+  int fd = mkstemp (str);
   if (fd == -1 ||
       close (fd) == -1) {
-    perror (UNIX_SOCKET);
+    perror (str);
     exit (EXIT_FAILURE);
   }
   /* We have to remove the temporary file first, since we will create
@@ -76,13 +71,12 @@ main (int argc, char *argv[])
    */
   unlink_unix_socket ();
   atexit (unlink_unix_socket);
+#endif
 
-  /* uri = URI + UNIX_SOCKET */
-  if (asprintf (&uri, "%s%s", URI, UNIX_SOCKET) == -1) {
+  if (asprintf (&uri, URI) == -1) {
     perror ("asprintf");
     exit (EXIT_FAILURE);
   }
-#endif
 
   unlink (PIDFILE);
 
@@ -158,9 +152,7 @@ main (int argc, char *argv[])
   }
 
   nbd_close (nbd);
-#ifdef NEEDS_UNIX_SOCKET
   free (uri);
-#endif
   exit (EXIT_SUCCESS);
 }
 
