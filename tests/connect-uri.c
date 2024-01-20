@@ -29,6 +29,7 @@
 
 #include <libnbd.h>
 
+#include "pick-a-port.h"
 #include "requires.h"
 
 #ifdef DEFINE_STR_AS_UNIX_SOCKET
@@ -39,6 +40,10 @@ unlink_unix_socket (void)
 {
   unlink (str);
 }
+#endif
+
+#ifdef DEFINE_STR_AS_PORT
+static char str[] = "12345";
 #endif
 
 static int compare_uris (const char *uri1, const char *uri2);
@@ -71,6 +76,11 @@ main (int argc, char *argv[])
    */
   unlink_unix_socket ();
   atexit (unlink_unix_socket);
+#endif
+
+#ifdef DEFINE_STR_AS_PORT
+  int port = pick_a_port ();
+  snprintf (str, sizeof str, "%d", port);
 #endif
 
   if (asprintf (&uri, URI) == -1) {
