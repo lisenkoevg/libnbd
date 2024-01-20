@@ -29,6 +29,7 @@ LT_INIT
 
 AC_CANONICAL_HOST
 
+AC_PROG_LN_S
 AC_PROG_SED
 
 dnl Check for some commands used by the tests which should be the GNU

@@ -43,7 +43,8 @@ TESTS =
 # XXX automake subdir-objects is broken, use a workaround instead.
 BUILT_SOURCES = requires.c
 requires.c: $(top_srcdir)/tests/requires.c
-	ln -s -f $(top_srcdir)/tests/$@
+	rm -f $@
+	$(LN_S) $(top_srcdir)/tests/$@ $@
 
 # Common flags.
 # Note there is no such thing as "AM_LDADD".
