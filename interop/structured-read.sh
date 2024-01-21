@@ -24,7 +24,7 @@ set -x
 
 requires qemu-img --version
 requires qemu-io --version
-requires qemu-nbd --version
+requires $QEMU_NBD --version
 
 files="structured-read.qcow2"
 rm -f $files
@@ -37,4 +37,4 @@ qemu-io -d unmap -f qcow2 -c 'w -P 1 0 3k' -c 'w -zu 2k 512' \
 	structured-read.qcow2
 
 # Run the test.
-$VG ./structured-read qemu-nbd -f qcow2 structured-read.qcow2
+$VG ./structured-read $QEMU_NBD -f qcow2 structured-read.qcow2

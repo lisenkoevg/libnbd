@@ -62,7 +62,7 @@ rm -f $sock $pid
 $QEMU_NBD -t --socket=$sock --pid-file=$pid -f qcow2 -A $f4 &
 cleanup_fn kill $!
 
-wait_for_pidfile qemu-nbd $pid
+wait_for_pidfile $QEMU_NBD $pid
 
 $VG nbdinfo --map=qemu:allocation-depth "nbd+unix://?socket=$sock" > $out
 cat $out

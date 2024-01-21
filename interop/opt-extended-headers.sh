@@ -22,8 +22,8 @@ source ../tests/functions.sh
 set -e
 set -x
 
-requires qemu-nbd --version
-requires nbdinfo --can extended-headers -- [ qemu-nbd -r -f raw "$0" ]
+requires $QEMU_NBD --version
+requires nbdinfo --can extended-headers -- [ $QEMU_NBD -r -f raw "$0" ]
 
 # Run the test.
-$VG ./opt-extended-headers qemu-nbd -r -f raw "$0"
+$VG ./opt-extended-headers $QEMU_NBD -r -f raw "$0"

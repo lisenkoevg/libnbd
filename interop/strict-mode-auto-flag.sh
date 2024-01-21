@@ -23,7 +23,7 @@ set -e
 set -x
 
 requires truncate --version
-requires qemu-nbd --version
+requires $QEMU_NBD --version
 requires nbdsh --version
 
 file="strict-mode-auto-flag.file"
@@ -33,11 +33,14 @@ cleanup_fn rm -f $file
 truncate -s 1M $file
 
 # Unconditional part of test: behavior when extended headers are not in use
+export QEMU_NBD
 $VG nbdsh -c '
-import errno
+import errno, os
+
+qemu_nbd = os.environ["QEMU_NBD"]
 
 h.set_request_extended_headers(False)
-args = ["qemu-nbd", "-f", "raw", "'"$file"'"]
+args = [qemu_nbd, "-f", "raw", "'"$file"'"]
 h.connect_systemd_socket_activation(args)
 assert h.get_extended_headers_negotiated() is False
 
@@ -88,11 +91,14 @@ h.shutdown()
 '
 
 # Conditional part of test: only run if qemu supports extended headers
-requires nbdinfo --has extended-headers -- [ qemu-nbd -r -f raw "$file" ]
+requires nbdinfo --has extended-headers -- [ $QEMU_NBD -r -f raw "$file" ]
+export QEMU_NBD
 $VG nbdsh -c '
-import errno
+import errno, os
 
-args = ["qemu-nbd", "-f", "raw", "'"$file"'"]
+qemu_nbd = os.environ["QEMU_NBD"]
+
+args = [qemu_nbd, "-f", "raw", "'"$file"'"]
 h.connect_systemd_socket_activation(args)
 assert h.get_extended_headers_negotiated() is True
 

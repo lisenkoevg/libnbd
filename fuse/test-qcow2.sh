@@ -25,7 +25,7 @@ set -e
 set -x
 
 requires_fuse
-requires qemu-nbd --version
+requires $QEMU_NBD --version
 requires qemu-img --version
 requires cmp --version
 requires dd --version
@@ -48,7 +48,7 @@ qemu-img convert -f raw $data -O qcow2 $qcow2
 
 rm -rf $mp
 mkdir -p $mp
-$VG nbdfuse -r -P $pidfile $mp [ qemu-nbd -f qcow2 --cache=writeback $qcow2 ] &
+$VG nbdfuse -r -P $pidfile $mp [ $QEMU_NBD -f qcow2 --cache=writeback $qcow2 ] &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do

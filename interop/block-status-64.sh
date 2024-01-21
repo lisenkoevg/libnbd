@@ -23,11 +23,11 @@ set -e
 set -x
 
 requires qemu-img bitmap --help
-requires qemu-nbd --version
+requires $QEMU_NBD --version
 
 # This test uses the qemu-nbd -B option.
-if ! qemu-nbd --help | grep -sq -- -B; then
-    echo "$0: skipping because qemu-nbd does not support the -B option"
+if ! $QEMU_NBD --help | grep -sq -- -B; then
+    echo "$0: skipping because $QEMU_NBD does not support the -B option"
     exit 77
 fi
 
@@ -46,4 +46,4 @@ qemu-io -f qcow2 -c 'w 0 64k' block-status-64.qcow2
 
 # Run the test.
 $VG ./block-status-64 qemu:dirty-bitmap:bitmap0 \
-    qemu-nbd -f qcow2 -B bitmap0 block-status-64.qcow2
+    $QEMU_NBD -f qcow2 -B bitmap0 block-status-64.qcow2

@@ -24,7 +24,7 @@ set -x
 
 requires qemu-img bitmap --help
 # This test uses the qemu-nbd -A and -B options.
-requires qemu-nbd -A -BA --version
+requires $QEMU_NBD -A -BA --version
 requires nbdsh --version
 
 file="block-status-payload.qcow2"
@@ -38,14 +38,19 @@ qemu-img bitmap --add --enable -f qcow2 $file bitmap1
 
 # Unconditional part of test: qemu should not advertise block status payload
 # support if extended headers are not in use
+export QEMU_NBD
 $VG nbdsh -c '
+import os
+
+qemu_nbd = os.environ["QEMU_NBD"]
+
 h.set_request_extended_headers(False)
 h.add_meta_context("base:allocation")
 h.add_meta_context("qemu:allocation-depth")
 h.add_meta_context("qemu:dirty-bitmap:bitmap0")
 h.add_meta_context("qemu:dirty-bitmap:bitmap1")
 h.set_opt_mode(True)
-args = ["qemu-nbd", "-f", "qcow2", "-A", "-B", "bitmap0", "-B", "bitmap1",
+args = [qemu_nbd, "-f", "qcow2", "-A", "-B", "bitmap0", "-B", "bitmap1",
         "'"$file"'"]
 h.connect_systemd_socket_activation(args)
 assert h.aio_is_negotiating() is True
@@ -76,6 +81,6 @@ h.shutdown()
 
 # Conditional part of test: only run if qemu is new enough to advertise
 # support for block status payload.
-requires nbdinfo --can block-status-payload -- [ qemu-nbd -r -f qcow2 "$file" ]
+requires nbdinfo --can block-status-payload -- [ $QEMU_NBD -r -f qcow2 "$file" ]
 $VG ./block-status-payload \
-    qemu-nbd -f qcow2 -A -B bitmap0 -B bitmap1 "$file"
+    $QEMU_NBD -f qcow2 -A -B bitmap0 -B bitmap1 "$file"

@@ -24,7 +24,7 @@ set -x
 
 # versions of qemu-nbd older than 4.0 reported inaccurate block sizes
 # Use 'qemu-nbd --list' as our witness, it was also added in 4.0
-requires qemu-nbd --list --version
+requires $QEMU_NBD --list --version
 requires nbdsh --version
 requires qemu-img --version
 requires truncate --version
@@ -43,7 +43,7 @@ fail=0
 run_test() {
     rm -f $sock
     # No -t or -e, so qemu-nbd should exit once nbdsh disconnects
-    timeout 60s qemu-nbd -k $sock $1 $f &
+    timeout 60s $QEMU_NBD -k $sock $1 $f &
     pid=$!
     # Wait for the socket to appear
     for i in {1..30}; do
@@ -80,7 +80,7 @@ h.shutdown()
 EOF
     st=$?
     if [ $st = 77 ]; then
-        echo "$0: skipping: qemu-nbd too old for this test"
+        echo "$0: skipping: $QEMU_NBD too old for this test"
         exit 77
     elif [ $st != 0 ]; then
         fail=1

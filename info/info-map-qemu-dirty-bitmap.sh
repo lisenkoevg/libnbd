@@ -49,7 +49,7 @@ rm -f $sock $pid
 $QEMU_NBD -t --socket=$sock --pid-file=$pid -f qcow2 -B bitmap0 $f &
 cleanup_fn kill $!
 
-wait_for_pidfile qemu-nbd $pid
+wait_for_pidfile $QEMU_NBD $pid
 
 $VG nbdinfo --map=qemu:dirty-bitmap:bitmap0 "nbd+unix://?socket=$sock" > $out
 cat $out

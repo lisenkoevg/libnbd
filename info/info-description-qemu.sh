@@ -35,7 +35,7 @@ truncate -s 1M $img
 $QEMU_NBD -f raw -t --socket=$sock --pid-file=$pid -x "hello" -D "world" $img &
 cleanup_fn kill $!
 
-wait_for_pidfile qemu-nbd $pid
+wait_for_pidfile $QEMU_NBD $pid
 
 $VG nbdinfo "nbd+unix:///hello?socket=$sock" > $out
 cat $out

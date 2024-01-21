@@ -35,7 +35,7 @@ truncate -s 1M $img
 $QEMU_NBD -t --socket=$sock --pid-file=$pid -x "hello" -D "world" $img &
 cleanup_fn kill $!
 
-wait_for_pidfile qemu-nbd $pid
+wait_for_pidfile $QEMU_NBD $pid
 
 # Test twice, once with an export name not on the list,...
 $VG nbdinfo "nbd+unix://?socket=$sock" --list > $out
