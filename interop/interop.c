@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
@@ -74,7 +75,7 @@ main (int argc, char *argv[])
   struct nbd_handle *nbd;
   char *args[] = { SERVER, SERVER_PARAMS, NULL };
   int64_t actual_size;
-  char buf[512];
+  char buf[512], buf2[512];
   size_t i;
 
   /* Check requirements or skip the test. */
@@ -203,6 +204,9 @@ main (int argc, char *argv[])
   }
 #endif
 
+  /* The apparent size reported over NBD should match the real size of
+   * the temporary file.
+   */
   actual_size = nbd_get_size (nbd);
   if (actual_size == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
@@ -214,12 +218,95 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  /* Test reading. */
   if (nbd_pread (nbd, buf, sizeof buf, 0, 0) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);
   }
 
-  /* XXX In future test more operations here. */
+  if (nbd_is_read_only (nbd) == 0) {
+    /* Test writing. */
+    memset (buf, 0x5a, sizeof buf);
+    if (nbd_pwrite (nbd, buf, sizeof buf, 0, 0) == -1) {
+      fprintf (stderr, "%s\n", nbd_get_error ());
+      exit (EXIT_FAILURE);
+    }
+
+    if (nbd_can_flush (nbd) > 0) {
+      /* Test flush. */
+      if (nbd_flush (nbd, 0) == -1) {
+        fprintf (stderr, "%s\n", nbd_get_error ());
+        exit (EXIT_FAILURE);
+      }
+      /* Test the temporary file is updated after flush. */
+      fd = open (TMPFILE, O_RDONLY);
+      if (fd == -1) {
+        perror (TMPFILE);
+        exit (EXIT_FAILURE);
+      }
+      if (read (fd, buf2, sizeof buf2) == -1) {
+        perror ("read");
+        exit (EXIT_FAILURE);
+      }
+      close (fd);
+      if (memcmp (buf, buf2, sizeof buf) != 0) {
+        fprintf (stderr, "%s: error: "
+                 "backing file was not updated after write + flush\n",
+                 argv[0]);
+        exit (EXIT_FAILURE);
+      }
+    } /* nbd_can_flush */
+    else {
+      printf ("%s: warning: server does not support flush\n", argv[0]);
+    }
+  } /* !nbd_is_read_only */
+  else {
+    printf ("%s: warning: server does not support writes\n", argv[0]);
+  }
+
+  if (nbd_can_zero (nbd) > 0) {
+    /* Test writing zeroes. */
+    if (nbd_zero (nbd, SIZE, 0, 0) == -1) {
+      fprintf (stderr, "%s\n", nbd_get_error ());
+      exit (EXIT_FAILURE);
+    }
+
+    if (nbd_can_flush (nbd) > 0) {
+      /* Test flush. */
+      if (nbd_flush (nbd, 0) == -1) {
+        fprintf (stderr, "%s\n", nbd_get_error ());
+        exit (EXIT_FAILURE);
+      }
+      /* Test the temporary file is all zeroes after flush. */
+      fd = open (TMPFILE, O_RDONLY);
+      if (fd == -1) {
+        perror (TMPFILE);
+        exit (EXIT_FAILURE);
+      }
+      memset (buf, 0, sizeof buf);
+      for (i = 0; i < SIZE; i += sizeof buf2) {
+        if (read (fd, buf2, sizeof buf2) == -1) {
+          perror ("read");
+          exit (EXIT_FAILURE);
+        }
+        if (memcmp (buf, buf2, sizeof buf) != 0) {
+          fprintf (stderr, "%s: error: "
+                   "backing file was not updated after zero + flush\n",
+                   argv[0]);
+          exit (EXIT_FAILURE);
+        }
+      }
+      close (fd);
+    } /* nbd_can_flush */
+    else {
+      printf ("%s: warning: server does not support flush\n", argv[0]);
+    }
+  } /* nbd_can_zero */
+  else {
+    printf ("%s: warning: server does not support zeroing\n", argv[0]);
+  }
+
+  /* XXX Test trim and block_status. */
 
   if (nbd_shutdown (nbd, 0) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
