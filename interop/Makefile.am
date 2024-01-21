@@ -177,7 +177,7 @@ interop_qemu_nbd_tls_certs_SOURCES = \
 	$(NULL)
 interop_qemu_nbd_tls_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DREQUIRES=' requires ("test -d $(abs_top_builddir)/tests/pki"); requires_qemu_nbd_tls_support ("$(QEMU_NBD)"); ' \
+	-DREQUIRES=' requires ("test -d $(abs_top_builddir)/tests/pki"); requires_qemu_nbd_tls_support (); ' \
 	-DSOCKET_ACTIVATION=1 \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-x509,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests/pki", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \
@@ -198,7 +198,7 @@ interop_qemu_nbd_tls_psk_SOURCES = \
 	$(NULL)
 interop_qemu_nbd_tls_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DREQUIRES=' requires ("test -f $(abs_top_builddir)/tests/keys.psk"); requires_qemu_nbd_tls_support ("$(QEMU_NBD)"); requires_qemu_nbd_tls_psk_support ("$(QEMU_NBD)"); ' \
+	-DREQUIRES=' requires ("test -f $(abs_top_builddir)/tests/keys.psk"); requires_qemu_nbd_tls_support (); requires_qemu_nbd_tls_psk_support (); ' \
 	-DSOCKET_ACTIVATION=1 \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-psk,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \

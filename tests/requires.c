@@ -47,9 +47,10 @@ requires_not (const char *cmd)
   }
 }
 
+#ifdef QEMU_NBD
 /* Check qemu-nbd was compiled with support for TLS. */
 void
-requires_qemu_nbd_tls_support (const char *qemu_nbd)
+requires_qemu_nbd_tls_support (void)
 {
   char cmd[256];
 
@@ -57,15 +58,14 @@ requires_qemu_nbd_tls_support (const char *qemu_nbd)
    * interested in the error message that it prints.
    */
   snprintf (cmd, sizeof cmd,
-            "! %s --object tls-creds-x509,id=tls0 2>&1 \\\n"
-            "  | grep -sq 'TLS credentials support requires GNUTLS'\n",
-            qemu_nbd);
+            "! " QEMU_NBD " --object tls-creds-x509,id=tls0 2>&1 \\\n"
+            "  | grep -sq 'TLS credentials support requires GNUTLS'\n");
   requires (cmd);
 }
 
 /* Check qemu-nbd supports PSK (version 3.0.0 and above). */
 void
-requires_qemu_nbd_tls_psk_support (const char *qemu_nbd)
+requires_qemu_nbd_tls_psk_support (void)
 {
   char cmd[256];
 
@@ -73,11 +73,25 @@ requires_qemu_nbd_tls_psk_support (const char *qemu_nbd)
    * interested in the error message that it prints.
    */
   snprintf (cmd, sizeof cmd,
-            "! %s --object tls-creds-psk,id=tls0 / 2>&1 \\\n"
-            "  | grep -sq 'invalid object type'\n",
-            qemu_nbd);
+            "! " QEMU_NBD " --object tls-creds-psk,id=tls0 / 2>&1 \\\n"
+            "  | grep -sq 'invalid object type'\n");
   requires (cmd);
 }
+#else /* !QEMU_NBD */
+void
+requires_qemu_nbd_tls_support (void)
+{
+  fprintf (stderr, "qemu-nbd not available at compile time\n");
+  exit (77);
+}
+
+void
+requires_qemu_nbd_tls_psk_support (void)
+{
+  fprintf (stderr, "qemu-nbd not available at compile time\n");
+  exit (77);
+}
+#endif
 
 /* On some distros, nbd-server is built without support for syslog
  * which prevents use of inetd mode.  Instead nbd-server will exit with

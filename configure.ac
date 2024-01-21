@@ -295,6 +295,8 @@ AS_IF([test "x$NBD_SERVER" != "x"], [
 AC_CHECK_PROG([QEMU_NBD], [qemu-nbd], [qemu-nbd])
 AM_CONDITIONAL([HAVE_QEMU_NBD], [test "x$QEMU_NBD" != "x"])
 AS_IF([test "x$QEMU_NBD" != "x"], [
+  AC_DEFINE_UNQUOTED([QEMU_NBD],["$QEMU_NBD"],
+                     [The name of qemu-nbd (optional)])
    printf "qemu-nbd version is "; $QEMU_NBD --version | head -1
 ])
 AC_CHECK_PROG([QEMU_STORAGE_DAEMON],
