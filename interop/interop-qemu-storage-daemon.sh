@@ -39,7 +39,7 @@ cleanup_fn rm -f $f $sock
 
 qemu-img create $f 10M -f qcow2
 
-export f sock
+export QEMU_STORAGE_DAEMON f sock
 $VG nbdsh -c - <<'EOF'
 import os
 import signal
