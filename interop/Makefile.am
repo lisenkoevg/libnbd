@@ -82,7 +82,6 @@ interop_nbd_server_SOURCES = \
 interop_nbd_server_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires_nbd_server_supports_inetd ("$(NBD_SERVER)"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBD_SERVER)\" \
 	-DSERVER_PARAMS='"-d", "-C", "/dev/null", "0", TMPFILE' \
 	-DEXPORT_NAME='""' \
@@ -97,7 +96,6 @@ interop_nbd_server_tls_SOURCES = \
 interop_nbd_server_tls_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -d $(abs_top_builddir)/tests/pki"); requires_nbd_server_supports_inetd ("$(NBD_SERVER)"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBD_SERVER)\" \
 	-DSERVER_PARAMS='"-d", "-C", "nbd-server-tls.conf", "0", TMPFILE' \
 	-DEXPORT_NAME='""' \
@@ -166,7 +164,6 @@ interop_qemu_nbd_SOURCES = \
 interop_qemu_nbd_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DSOCKET_ACTIVATION=1 \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"-f", "raw", "-x", "/", TMPFILE' \
 	-DEXPORT_NAME='"/"' \
@@ -183,7 +180,6 @@ interop_qemu_nbd_tls_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -d $(abs_top_builddir)/tests/pki"); requires_qemu_nbd_tls_support ("$(QEMU_NBD)"); ' \
 	-DSOCKET_ACTIVATION=1 \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-x509,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests/pki", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \
 	-DEXPORT_NAME='"/"' \
@@ -205,7 +201,6 @@ interop_qemu_nbd_tls_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -f $(abs_top_builddir)/tests/keys.psk"); requires_qemu_nbd_tls_support ("$(QEMU_NBD)"); requires_qemu_nbd_tls_psk_support ("$(QEMU_NBD)"); ' \
 	-DSOCKET_ACTIVATION=1 \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-psk,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \
 	-DEXPORT_NAME='"/"' \
@@ -307,7 +302,6 @@ interop_nbdkit_SOURCES = \
 	$(NULL)
 interop_nbdkit_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"-s", "--exit-with-parent", "file", TMPFILE' \
 	$(NULL)
@@ -321,7 +315,6 @@ interop_nbdkit_tls_certs_SOURCES = \
 interop_nbdkit_tls_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DCERTS=1 \
@@ -340,7 +333,6 @@ interop_nbdkit_tls_certs_allow_enabled_SOURCES = \
 interop_nbdkit_tls_certs_allow_enabled_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DCERTS=1 \
@@ -359,7 +351,6 @@ interop_nbdkit_tls_certs_allow_fallback_SOURCES = \
 interop_nbdkit_tls_certs_allow_fallback_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=off", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DCERTS=1 \
@@ -379,7 +370,6 @@ interop_nbdkit_tls_psk_SOURCES = \
 interop_nbdkit_tls_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-psk=../tests/keys.psk", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DPSK=1 \
@@ -398,7 +388,6 @@ interop_nbdkit_tls_psk_allow_enabled_SOURCES = \
 interop_nbdkit_tls_psk_allow_enabled_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-psk=../tests/keys.psk", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DPSK=1 \
@@ -417,7 +406,6 @@ interop_nbdkit_tls_psk_allow_fallback_SOURCES = \
 interop_nbdkit_tls_psk_allow_fallback_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
-	-DNEEDS_TMPFILE=1 \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=off", "-s", "--exit-with-parent", "file", TMPFILE' \
 	-DPSK=1 \

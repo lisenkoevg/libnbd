@@ -48,7 +48,6 @@
 #endif
 #endif
 
-#ifdef NEEDS_TMPFILE
 #define TMPFILE tmp
 static char tmp[] = "/tmp/nbdXXXXXX";
 
@@ -57,7 +56,6 @@ unlink_tmpfile (void)
 {
   unlink (TMPFILE);
 }
-#endif /* NEEDS_TMPFILE */
 
 #ifdef HAVE_GNUTLS
 #if TLS
@@ -93,7 +91,6 @@ main (int argc, char *argv[])
 #endif
 
   /* Create a large sparse temporary file. */
-#ifdef NEEDS_TMPFILE
   int fd = mkstemp (TMPFILE);
   if (fd == -1 ||
       ftruncate (fd, SIZE) == -1 ||
@@ -102,7 +99,6 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   atexit (unlink_tmpfile);
-#endif
 
   nbd = nbd_create ();
   if (nbd == NULL) {
