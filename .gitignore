@@ -124,6 +124,7 @@ Makefile.in
 /interop/list-exports-nbd-server
 /interop/list-exports-nbdkit
 /interop/list-exports-qemu-nbd
+/interop/nbd-server.conf
 /interop/nbd-server-tls.conf
 /interop/opt-extended-headers
 /interop/requires.c

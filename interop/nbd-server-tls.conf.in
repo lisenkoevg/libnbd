@@ -1,4 +1,5 @@
 [generic]
+flush = 1
 cacertfile = @abs_top_builddir@/tests/pki/ca-cert.pem
 certfile = @abs_top_builddir@/tests/pki/server-cert.pem
 keyfile = @abs_top_builddir@/tests/pki/server-key.pem

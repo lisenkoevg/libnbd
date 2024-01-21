@@ -83,7 +83,7 @@ interop_nbd_server_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DREQUIRES=' requires_nbd_server_supports_inetd ("$(NBD_SERVER)"); ' \
 	-DSERVER=\"$(NBD_SERVER)\" \
-	-DSERVER_PARAMS='"-d", "-C", "/dev/null", "0", TMPFILE' \
+	-DSERVER_PARAMS='"-d", "-C", "nbd-server.conf", "0", TMPFILE' \
 	-DEXPORT_NAME='""' \
 	$(NULL)
 interop_nbd_server_LDADD = $(top_builddir)/lib/libnbd.la
