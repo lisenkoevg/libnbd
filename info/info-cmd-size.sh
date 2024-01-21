@@ -21,11 +21,11 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 out=info-cmd-size.out
 cleanup_fn rm -f $out
 
-$VG nbdinfo --size [ nbdkit memory size=$((512*1024*1024)) ] > $out
+$VG nbdinfo --size [ $NBDKIT memory size=$((512*1024*1024)) ] > $out
 test "$(cat $out)" -eq $((512*1024*1024))

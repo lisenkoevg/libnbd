@@ -26,8 +26,8 @@ set -e
 set -x
 
 requires test "x$PSKTOOL" != "x"
-requires nbdkit --exit-with-parent --version
-requires bash -c "nbdkit --dump-config | grep tls=yes"
+requires $NBDKIT --exit-with-parent --version
+requires bash -c "$NBDKIT --dump-config | grep tls=yes"
 requires cmp /dev/null /dev/null
 requires hexdump -C /dev/null
 
@@ -42,9 +42,9 @@ cleanup_fn rm -f $pskfile $pidfile1 $pidfile2 $file1 $file2 $sock1 $sock2
 
 $PSKTOOL -u alice -p $pskfile
 
-nbdkit --exit-with-parent -f -v -P $pidfile1 -U $sock1 \
-       --tls=require --tls-psk=$pskfile \
-       pattern size=100M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 \
+        --tls=require --tls-psk=$pskfile \
+        pattern size=100M &
 uri1="nbds+unix://alice@/?socket=$sock1&tls-psk-file=$pskfile"
 # Wait for the pidfile to appear.
 for i in {1..60}; do
@@ -54,13 +54,13 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile1; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 
-nbdkit --exit-with-parent -f -v -P $pidfile2 -U $sock2 \
-       --tls=require --tls-psk=$pskfile \
-       memory size=100M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 \
+        --tls=require --tls-psk=$pskfile \
+        memory size=100M &
 uri2="nbds+unix://alice@/?socket=$sock2&tls-psk-file=$pskfile"
 # Wait for the pidfile to appear.
 for i in {1..60}; do
@@ -70,7 +70,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile2; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 

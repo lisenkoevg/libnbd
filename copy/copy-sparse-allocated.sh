@@ -23,26 +23,26 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit --exit-with-parent --version
-requires nbdkit data --version
-requires nbdkit eval --version
+requires $NBDKIT --version
+requires $NBDKIT --exit-with-parent --version
+requires $NBDKIT data --version
+requires $NBDKIT eval --version
 
 out=copy-sparse-allocated.out
 cleanup_fn rm -f $out
 
 $VG nbdcopy --allocated --request-size=32K -- \
-    [ nbdkit --exit-with-parent data data='
-             1
-             @1073741823 1
-             @4294967295 1
-             @4294967296 1
-             ' ] \
-    [ nbdkit --exit-with-parent eval \
-             get_size=' echo 7E ' \
-             pwrite=" cat >/dev/null; echo \$@ >> $out " \
-             trim=" echo \$@ >> $out " \
-             zero=" echo \$@ >> $out " ]
+    [ $NBDKIT --exit-with-parent data data='
+              1
+              @1073741823 1
+              @4294967295 1
+              @4294967296 1
+              ' ] \
+    [ $NBDKIT --exit-with-parent eval \
+              get_size=' echo 7E ' \
+              pwrite=" cat >/dev/null; echo \$@ >> $out " \
+              trim=" echo \$@ >> $out " \
+              zero=" echo \$@ >> $out " ]
 
 sort -o $out $out
 

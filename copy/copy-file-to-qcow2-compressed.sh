@@ -22,8 +22,8 @@ set -e
 set -x
 
 requires $QEMU_NBD --version
-requires nbdkit --exit-with-parent --version
-requires nbdkit sparse-random --dump-plugin
+requires $NBDKIT --exit-with-parent --version
+requires $NBDKIT sparse-random --dump-plugin
 requires qemu-img --version
 requires nbdinfo --version
 #requires stat --version
@@ -46,7 +46,7 @@ seed=$RANDOM
 # To test this condition, set seed=12756
 requires_not bash -c "
     nbdinfo --map --totals -- \
-        [ nbdkit --exit-with-parent sparse-random $size seed=$seed ] |
+        [ $NBDKIT --exit-with-parent sparse-random $size seed=$seed ] |
         grep -sq '100.0%.*hole,zero'
 "
 
@@ -66,7 +66,7 @@ opts=driver=compress
 opts+=,file.driver=qcow2
 opts+=,file.file.driver=file
 opts+=,file.file.filename=$file1
-nbdcopy -- [ nbdkit --exit-with-parent sparse-random $size seed=$seed ] \
+nbdcopy -- [ $NBDKIT --exit-with-parent sparse-random $size seed=$seed ] \
         [ $QEMU_NBD --image-opts "$opts" ]
 
 ls -l $file1
@@ -76,7 +76,7 @@ qemu-img create -f qcow2 $file2 $size
 opts=driver=qcow2
 opts+=,file.driver=file
 opts+=,file.filename=$file2
-nbdcopy -- [ nbdkit --exit-with-parent sparse-random $size seed=$seed ] \
+nbdcopy -- [ $NBDKIT --exit-with-parent sparse-random $size seed=$seed ] \
         [ $QEMU_NBD --image-opts "$opts" ]
 
 ls -l $file2

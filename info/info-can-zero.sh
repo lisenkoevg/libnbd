@@ -24,12 +24,12 @@ set -x
 # nbdkit emulates zeroing so we have to use the nozero filter to test
 # the negative case below.
 
-requires nbdkit null --version
-requires nbdkit null --filter=nozero --version
+requires $NBDKIT null --version
+requires $NBDKIT null --filter=nozero --version
 
-nbdkit -v -U - null \
-       --run '$VG nbdinfo --can zero "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -v -U - null \
+        --run '$VG nbdinfo --can zero "nbd+unix:///?socket=$unixsocket"'
 
-nbdkit -v -U - null \
-       --filter=nozero \
-       --run '! $VG nbdinfo --can zero "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -v -U - null \
+        --filter=nozero \
+        --run '! $VG nbdinfo --can zero "nbd+unix:///?socket=$unixsocket"'

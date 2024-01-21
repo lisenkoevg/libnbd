@@ -24,7 +24,7 @@ set -e
 set -x
 
 requires_fuse
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 
 pidfile=test-nbdkit-file-null.pid
 mp=test-nbdkit-file-null
@@ -35,7 +35,7 @@ cleanup_fn rm -f $pidfile $mp
 # Create the underlying file/mountpoint as non-zero sized.
 truncate -s 1024 $mp
 
-$VG nbdfuse -P $pidfile $mp [ nbdkit -r --exit-with-parent null ] &
+$VG nbdfuse -P $pidfile $mp [ $NBDKIT -r --exit-with-parent null ] &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do

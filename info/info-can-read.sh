@@ -23,7 +23,7 @@ set -x
 
 # --can read always returns true.
 
-requires nbdkit null --version
+requires $NBDKIT null --version
 
-nbdkit -v -U - null \
-       --run '$VG nbdinfo --can read "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -v -U - null \
+        --run '$VG nbdinfo --can read "nbd+unix:///?socket=$unixsocket"'

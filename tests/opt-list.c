@@ -114,7 +114,7 @@ static struct nbd_handle*
 prepare (int i)
 {
   char mode[] = "mode=X";
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-v",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-v",
                    "sh", SCRIPT, mode, NULL };
   struct nbd_handle *nbd;
 
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   struct progress p;
 
   /* Quick check that nbdkit is new enough */
-  requires ("nbdkit sh --dump-plugin | grep -q has_list_exports=1");
+  requires (NBDKIT " sh --dump-plugin | grep -q has_list_exports=1");
 
   /* First pass: server fails NBD_OPT_LIST. */
   nbd = prepare (0);

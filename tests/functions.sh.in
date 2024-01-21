@@ -34,6 +34,7 @@
 # Various variables defined by autoconf that test scripts might want
 # to use.
 abs_top_srcdir="@abs_top_srcdir@"
+NBDKIT="@NBDKIT@"
 QEMU_NBD="@QEMU_NBD@"
 QEMU_STORAGE_DAEMON="@QEMU_STORAGE_DAEMON@"
 REALPATH="@REALPATH@"

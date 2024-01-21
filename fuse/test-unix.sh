@@ -24,7 +24,7 @@ set -e
 set -x
 
 requires_fuse
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 
 # Difficult to arrange for this test to be run this test under
 # valgrind, so don't bother.
@@ -43,7 +43,7 @@ mkdir $mp
 # Run nbdkit with the null plugin using a Unix domain socket, then
 # connect nbdfuse to the socket using --unix.
 export mp pidfile prog="$0"
-nbdkit -U - null --run '
+$NBDKIT -U - null --run '
     nbdfuse -P $pidfile $mp --unix "$unixsocket" &
 
     # Wait for the pidfile to appear.

@@ -21,15 +21,15 @@
 set -e
 set -x
 
-requires nbdkit --filter=exportname memory --version
+requires $NBDKIT --filter=exportname memory --version
 
 out=info-description.out
 cleanup_fn rm -f $out
 rm -f $out
 
-nbdkit -U - --filter=exportname memory 1M \
-       default-export=hello exportdesc=fixed:world \
-       --run '$VG nbdinfo "$uri"' > $out
+$NBDKIT -U - --filter=exportname memory 1M \
+        default-export=hello exportdesc=fixed:world \
+        --run '$VG nbdinfo "$uri"' > $out
 cat $out
 
 grep 'export="hello":' $out

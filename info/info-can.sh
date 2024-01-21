@@ -21,8 +21,8 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires bash -c "nbdkit sh --dump-plugin | grep has_can_cache=1"
+requires $NBDKIT --version
+requires bash -c "$NBDKIT sh --dump-plugin | grep has_can_cache=1"
 
 # --is read-only and --can write are tested in info-is-read-only.sh
 
@@ -44,8 +44,8 @@ requires bash -c "nbdkit sh --dump-plugin | grep has_can_cache=1"
 # --has structured-reply is not a per-export setting, but rather
 # something set on the server as a whole.
 
-nbdkit -v -U - sh - \
-       --run '$VG nbdinfo --has structured-reply "nbd+unix:///?socket=$unixsocket"' <<'EOF'
+$NBDKIT -v -U - sh - \
+        --run '$VG nbdinfo --has structured-reply "nbd+unix:///?socket=$unixsocket"' <<'EOF'
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -54,8 +54,8 @@ esac
 EOF
 
 st=0
-nbdkit -v -U - --no-sr sh - \
-       --run '$VG nbdinfo --has structured-reply "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
+$NBDKIT -v -U - --no-sr sh - \
+        --run '$VG nbdinfo --has structured-reply "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -68,10 +68,10 @@ test $st = 2
 # --no-eh support.  Otherwise, it is similar to --has structured-reply.
 
 no_eh=
-if nbdkit --no-eh --help >/dev/null 2>/dev/null; then
+if $NBDKIT --no-eh --help >/dev/null 2>/dev/null; then
     no_eh=--no-eh
-    nbdkit -v -U - sh - \
-           --run '$VG nbdinfo --has extended-headers "nbd+unix:///?socket=$unixsocket"' <<'EOF'
+    $NBDKIT -v -U - sh - \
+            --run '$VG nbdinfo --has extended-headers "nbd+unix:///?socket=$unixsocket"' <<'EOF'
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -81,8 +81,8 @@ EOF
 fi
 
 st=0
-nbdkit -v -U - $no_eh sh - \
-       --run '$VG nbdinfo --has extended-headers "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
+$NBDKIT -v -U - $no_eh sh - \
+        --run '$VG nbdinfo --has extended-headers "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -97,8 +97,8 @@ test $st = 2
 
 for flag in cache fua; do
     export flag
-    nbdkit -v -U - sh - \
-           --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF'
+    $NBDKIT -v -U - sh - \
+            --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF'
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -109,8 +109,8 @@ esac
 EOF
 
     st=0
-    nbdkit -v -U - sh - \
-           --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
+    $NBDKIT -v -U - sh - \
+            --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -126,8 +126,8 @@ done
 
 for flag in fast_zero flush multi_conn trim ; do
     export flag
-    nbdkit -v -U - sh - \
-           --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF'
+    $NBDKIT -v -U - sh - \
+            --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF'
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;
@@ -138,8 +138,8 @@ esac
 EOF
 
     st=0
-    nbdkit -v -U - sh - \
-           --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
+    $NBDKIT -v -U - sh - \
+            --run '$VG nbdinfo --can $flag "nbd+unix:///?socket=$unixsocket"' <<'EOF' || st=$?
 case "$1" in
   get_size) echo 1024 ;;
   pread) ;;

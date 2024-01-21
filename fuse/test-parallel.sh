@@ -25,8 +25,8 @@ set -x
 
 requires_fuse
 requires dd --version
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 # Difficult to arrange for this test to be run this test under
 # valgrind, so don't bother.
@@ -41,7 +41,7 @@ cleanup_fn fusermount3 -u $mp
 cleanup_fn rm -rf $mp $pidfile
 
 mkdir $mp
-$VG nbdfuse -P $pidfile $mp [ nbdkit --exit-with-parent memory size=10M ] &
+$VG nbdfuse -P $pidfile $mp [ $NBDKIT --exit-with-parent memory size=10M ] &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do

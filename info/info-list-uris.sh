@@ -21,16 +21,16 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit file --version
-case $(nbdkit file --version 2>&1) in
+requires $NBDKIT --version
+requires $NBDKIT file --version
+case $($NBDKIT file --version 2>&1) in
     *1.34.[012]* )
-        echo "$0: skipping known double-free bug in nbdkit file dir="
+        echo "$0: skipping known double-free bug in $NBDKIT file dir="
         exit 77
 esac
 
 # This test requires nbdkit >= 1.22.
-minor=$( nbdkit --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
 requires test $minor -ge 22
 
 out=info-list-uris.out
@@ -41,8 +41,8 @@ cleanup_fn rm -f $out
 # directory to be the current directory since other tests create
 # temporary files here.  So point this to a more stable directory.
 
-nbdkit -U - file dir=$srcdir/../examples \
-       --run '$VG nbdinfo --list "$uri"' > $out
+$NBDKIT -U - file dir=$srcdir/../examples \
+        --run '$VG nbdinfo --list "$uri"' > $out
 cat $out
 
 # We expect to see URIs corresponding to some well-known files

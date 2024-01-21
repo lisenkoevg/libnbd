@@ -21,18 +21,18 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires hexdump -C /dev/null
 
 # This test requires nbdkit >= 1.22.
-minor=$( nbdkit --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
 requires test $minor -ge 22
 
 file=copy-nbd-to-hexdump.file
 cleanup_fn rm -f $file
 
-$VG nbdcopy -- [ nbdkit --exit-with-parent \
-                        data data=' ( "Hello" )*2000 ' size=8192 \
+$VG nbdcopy -- [ $NBDKIT --exit-with-parent \
+                         data data=' ( "Hello" )*2000 ' size=8192 \
                ] - | hexdump -C | tail > $file
 cat $file
 

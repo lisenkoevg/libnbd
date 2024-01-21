@@ -21,14 +21,14 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 requires jq --version
 
 out=info-cmd-json.out
 cleanup_fn rm -f $out
 
-$VG nbdinfo --json -- [ nbdkit -r memory size=1M ] > $out
+$VG nbdinfo --json -- [ $NBDKIT -r memory size=1M ] > $out
 jq . < $out
 test $( jq -r '.protocol' < $out ) != "newstyle"
 test $( jq -r '.exports[0]."export-size"' < $out ) != "null"

@@ -24,7 +24,7 @@ set -e
 set -x
 
 requires_fuse
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires cmp --version
 requires dd --version
 
@@ -41,7 +41,7 @@ cleanup_fn rm -rf $mp
 cleanup_fn rm -f $pidfile $data
 
 mkdir -p $mp
-$VG nbdfuse -P $pidfile $mp [ nbdkit --exit-with-parent memory size=10M ] &
+$VG nbdfuse -P $pidfile $mp [ $NBDKIT --exit-with-parent memory size=10M ] &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do

@@ -56,7 +56,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   if (pid == 0) {
-    execlp ("nbdkit",
+    execlp (NBDKIT,
             "nbdkit", "-f", "-p", port_str, "-P", PIDFILE,
             "--exit-with-parent", "null", NULL);
     perror ("nbdkit");

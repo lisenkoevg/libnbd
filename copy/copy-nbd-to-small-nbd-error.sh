@@ -21,7 +21,7 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 
 pidfile1=copy-nbd-to-nbd-error.pid1
 pidfile2=copy-nbd-to-nbd-error.pid2
@@ -29,7 +29,7 @@ sock1=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 sock2=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile1 $pidfile2 $sock1 $sock2
 
-nbdkit --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile1; then
@@ -38,12 +38,12 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile1; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 
 # Since this is too small, we expect nbdcopy below to give an error.
-nbdkit --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=1M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=1M &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile2; then
@@ -52,7 +52,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile2; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 

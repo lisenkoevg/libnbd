@@ -30,7 +30,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   int r;
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-r", "-v", "null",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-r", "-v", "null",
                    NULL };
 
   nbd = nbd_create ();

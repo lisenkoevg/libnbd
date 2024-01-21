@@ -31,24 +31,24 @@ if [ "x$LIBNBD_VALGRIND" = "x1" ]; then
     exit 77
 fi
 
-requires nbdkit --version
-requires nbdkit --exit-with-parent --version
-requires nbdkit data --version
-requires nbdkit eval --version
+requires $NBDKIT --version
+requires $NBDKIT --exit-with-parent --version
+requires $NBDKIT data --version
+requires $NBDKIT eval --version
 
 out=copy-sparse-request-size.out
 cleanup_fn rm -f $out
 
 $VG nbdcopy --no-extents -S 0 --request-size=1M -- \
-    [ nbdkit --exit-with-parent data data='
-             1
-             @33554431 1
-             ' ] \
-    [ nbdkit --exit-with-parent eval \
-             get_size=' echo 33554432 ' \
-             pwrite=" cat >/dev/null; echo \$@ >> $out " \
-             trim=" echo \$@ >> $out " \
-             zero=" echo \$@ >> $out " ]
+    [ $NBDKIT --exit-with-parent data data='
+              1
+              @33554431 1
+              ' ] \
+    [ $NBDKIT --exit-with-parent eval \
+              get_size=' echo 33554432 ' \
+              pwrite=" cat >/dev/null; echo \$@ >> $out " \
+              trim=" echo \$@ >> $out " \
+              zero=" echo \$@ >> $out " ]
 
 LC_ALL=C sort -k1,1 -k2,2n -k3,3n -o $out $out
 

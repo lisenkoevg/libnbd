@@ -21,9 +21,9 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
-requires nbdkit sh --version
+requires $NBDKIT --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
+requires $NBDKIT sh --version
 requires tr --version
 
 out=info-base-allocation-weird.out
@@ -31,8 +31,8 @@ cleanup_fn rm -f $out
 rm -f $out
 
 # This is a "weird" server that returns extents that are all 1 byte.
-nbdkit -U - sh - \
-       --run '$VG nbdinfo --map "$uri"' > $out <<'EOF'
+$NBDKIT -U - sh - \
+        --run '$VG nbdinfo --map "$uri"' > $out <<'EOF'
 case "$1" in
   get_size) echo 32 ;;
   pread) dd if=/dev/zero count=$3 iflag=count_bytes ;;

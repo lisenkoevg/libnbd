@@ -21,14 +21,14 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 
 out=info-base-allocation-zero.out
 cleanup_fn rm -f $out
 rm -f $out
 
-nbdkit -U - null --run '$VG nbdinfo --map "$uri"' > $out
+$NBDKIT -U - null --run '$VG nbdinfo --map "$uri"' > $out
 
 cat $out
 

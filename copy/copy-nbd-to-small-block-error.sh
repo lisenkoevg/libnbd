@@ -23,7 +23,7 @@ set -x
 
 requires_root
 requires_caps cap_sys_admin
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires test -r /sys/module/nbd
 requires nbd-client --version
 # /dev/nbd0 must not be in use.
@@ -36,8 +36,8 @@ sock2=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile1 $pidfile2 $sock1 $sock2
 cleanup_fn nbd-client -d /dev/nbd0
 
-nbdkit --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
-nbdkit --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=5M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=5M &
 # Wait for the pidfiles to appear.
 for i in {1..60}; do
     if test -f $pidfile1 && test -f $pidfile2; then
@@ -46,7 +46,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile1 || ! test -f $pidfile2; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 

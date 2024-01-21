@@ -58,7 +58,7 @@ main (int argc, char *argv[])
             getenv ("srcdir") ? : ".");
 
   char *args[] =
-    { "nbdkit", "-s", "--exit-with-parent", "-v",
+    { NBDKIT, "-s", "--exit-with-parent", "-v",
       "sh", plugin_path,
       NULL };
 

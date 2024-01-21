@@ -21,13 +21,13 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 out=info-oldstyle.out
 cleanup_fn rm -f $out
 
-nbdkit --oldstyle -U - memory size=1M \
-       --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
+$NBDKIT --oldstyle -U - memory size=1M \
+        --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
 cat $out
 grep "protocol: oldstyle" $out

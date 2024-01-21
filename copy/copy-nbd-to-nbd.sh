@@ -21,7 +21,7 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires cmp /dev/null /dev/null
 requires hexdump -C /dev/null
 
@@ -33,7 +33,7 @@ sock1=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 sock2=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile1 $pidfile2 $file1 $file2 $sock1 $sock2
 
-nbdkit --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile1; then
@@ -42,11 +42,11 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile1; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 
-nbdkit --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=10M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=10M &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile2; then
@@ -55,7 +55,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile2; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 

@@ -61,7 +61,7 @@ main (int argc, char *argv[])
    * that nbdkit supports that option.
    */
 #ifdef REQUIRES_NBDKIT_TLS_VERIFY_PEER
-  requires ("nbdkit --tls-verify-peer -U - null --run 'exit 0'");
+  requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
 #endif
 
 #ifdef DEFINE_STR_AS_UNIX_SOCKET
@@ -96,7 +96,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   if (pid == 0) {
-    execlp ("nbdkit",
+    execlp (NBDKIT,
             "nbdkit", "-f", "-v", "--exit-with-parent",
 //          "-D", "nbdkit.tls.log=99",
             "-P", PIDFILE,

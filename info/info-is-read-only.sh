@@ -23,14 +23,14 @@ set -x
 
 # Test --is read-only and --can write.
 
-requires nbdkit --version
-requires nbdkit null --version
+requires $NBDKIT --version
+requires $NBDKIT null --version
 
-nbdkit -U - -r null \
-       --run '$VG nbdinfo --is read-only "nbd+unix:///?socket=$unixsocket"'
-nbdkit -U - -r null \
-       --run '! $VG nbdinfo --can write "nbd+unix:///?socket=$unixsocket"'
-nbdkit -U - null \
-       --run '$VG nbdinfo --can write "nbd+unix:///?socket=$unixsocket"'
-nbdkit -U - null \
-       --run '! $VG nbdinfo --is read-only "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -U - -r null \
+        --run '$VG nbdinfo --is read-only "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -U - -r null \
+        --run '! $VG nbdinfo --can write "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -U - null \
+        --run '$VG nbdinfo --can write "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -U - null \
+        --run '! $VG nbdinfo --is read-only "nbd+unix:///?socket=$unixsocket"'

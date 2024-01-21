@@ -21,8 +21,8 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit --no-sr memory --version
+requires $NBDKIT --version
+requires $NBDKIT --no-sr memory --version
 
 out=info-packets.out
 cleanup_fn rm -f $out
@@ -31,23 +31,23 @@ cleanup_fn rm -f $out
 # witness of whether nbdkit is new enough.
 
 no_eh=
-if nbdkit --no-eh --help >/dev/null 2>/dev/null; then
+if $NBDKIT --no-eh --help >/dev/null 2>/dev/null; then
     no_eh=--no-eh
 fi
 
-nbdkit --no-sr -U - memory size=1M \
-       --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
+$NBDKIT --no-sr -U - memory size=1M \
+        --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
 cat $out
 grep "protocol: .*using simple packets" $out
 
-nbdkit $no_eh -U - memory size=1M \
-       --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
+$NBDKIT $no_eh -U - memory size=1M \
+        --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
 cat $out
 grep "protocol: .*using structured packets" $out
 
 if test x != "x$no_eh"; then
-    nbdkit -U - memory size=1M \
-           --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
+    $NBDKIT -U - memory size=1M \
+            --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
     cat $out
     grep "protocol: .*using extended packets" $out
 fi

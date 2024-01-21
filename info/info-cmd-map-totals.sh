@@ -21,8 +21,8 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires tr --version
 
 out=info-cmd-map-totals.out
@@ -31,7 +31,7 @@ rm -f $out
 
 # The sparse allocator used by nbdkit-data-plugin uses a 32K page
 # size, and extents are always aligned with this.
-$VG nbdinfo --map --totals [ nbdkit data data='1 @131072 2' size=1M ] > $out
+$VG nbdinfo --map --totals [ $NBDKIT data data='1 @131072 2' size=1M ] > $out
 
 cat $out
 

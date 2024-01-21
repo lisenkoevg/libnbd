@@ -278,6 +278,10 @@ AS_IF([test "x$NBDKIT" != "x"], [
             have_nbdkit_features=no
         ])
     done
+
+    AC_DEFINE_UNQUOTED([NBDKIT],["$NBDKIT"],
+                       [The name of nbdkit server (optional)])
+
 ])
 AM_CONDITIONAL([HAVE_NBDKIT],
     [test "x$NBDKIT" != "x" && test "x$have_nbdkit_features" = "xyes"])

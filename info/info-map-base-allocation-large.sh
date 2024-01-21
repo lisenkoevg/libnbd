@@ -21,8 +21,8 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires tr --version
 
 out=info-base-allocation-large.out
@@ -31,8 +31,8 @@ rm -f $out
 
 # The sparse allocator used by nbdkit-data-plugin uses a 32K page
 # size, and extents are always aligned with this.
-nbdkit -U - data data='1 @131072 2 @6442450944 3' size=8G \
-       --run '$VG nbdinfo --map "$uri"' > $out
+$NBDKIT -U - data data='1 @131072 2 @6442450944 3' size=8G \
+        --run '$VG nbdinfo --map "$uri"' > $out
 
 cat $out
 

@@ -21,16 +21,16 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit pattern --dump-plugin
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT pattern --dump-plugin
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires nbdsh -c 'exit(not h.supports_uri())'
 
 output=dump-pattern.out
 rm -f $output
 cleanup_fn rm -f $output
 
-nbdkit -U - pattern size=299 --run 'nbddump "$uri"' > $output
+$NBDKIT -U - pattern size=299 --run 'nbddump "$uri"' > $output
 
 cat $output
 

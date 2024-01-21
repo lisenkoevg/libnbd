@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   int r;
   struct progress p;
   /* Leave room for --no-sr in second process */
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-v",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-v",
                    "memory", "size=1M", NULL, NULL };
 
   /* First process, delay structured replies. Get into negotiating state. */
@@ -218,7 +218,7 @@ main (int argc, char *argv[])
    * This part of the test is C-only, because it depends on nbdkit 1.14
    * or newer with its --no-sr kill switch.
    */
-  requires ("nbdkit --no-sr --help");
+  requires (NBDKIT " --no-sr --help");
   args[ARRAY_SIZE (args) - 2] = "--no-sr";
   nbd = nbd_create ();
   if (nbd == NULL ||

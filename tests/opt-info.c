@@ -36,7 +36,7 @@ main (int argc, char *argv[])
   struct nbd_handle *nbd;
   int64_t r;
   char *s;
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-v",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-v",
                    "sh", SCRIPT, NULL };
 
   /* Get into negotiating state. */

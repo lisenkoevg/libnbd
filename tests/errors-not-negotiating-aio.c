@@ -109,7 +109,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   const char *cmd[] = {
-    "nbdkit", "-s", "-v", "--exit-with-parent", "memory", "1048576", NULL
+    NBDKIT, "-s", "-v", "--exit-with-parent", "memory", "1048576", NULL
   };
   struct progress p;
   nbd_list_callback list_cb = { .callback = list_call,

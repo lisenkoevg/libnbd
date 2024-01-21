@@ -21,13 +21,13 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires stat --version
 
 file=copy-nbd-to-stdout.file
 cleanup_fn rm -f $file
 
-$VG nbdcopy -- [ nbdkit --exit-with-parent -v pattern size=10M ] - > $file
+$VG nbdcopy -- [ $NBDKIT --exit-with-parent -v pattern size=10M ] - > $file
 if [ "$(stat -c %s $file)" -ne $(( 10 * 1024 * 1024 )) ]; then
     echo "$0: incorrect amount of data copied"
     exit 1

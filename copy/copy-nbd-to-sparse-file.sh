@@ -24,7 +24,7 @@ set -x
 requires cmp --version
 requires dd --version
 requires dd oflag=seek_bytes </dev/null
-requires nbdkit --version
+requires $NBDKIT --version
 requires test -r /dev/urandom
 requires test -r /dev/zero
 
@@ -43,7 +43,7 @@ done
 
 # Apply nbdkit on top of the file, copy it and make sure that it
 # doesn't get corrupted.
-$VG nbdcopy -S 512 -- [ nbdkit --exit-with-parent file $file ] $file2
+$VG nbdcopy -S 512 -- [ $NBDKIT --exit-with-parent file $file ] $file2
 
 ls -ls $file $file2
 cmp $file $file2

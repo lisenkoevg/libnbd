@@ -40,7 +40,7 @@ main (int argc, char *argv[])
   struct nbd_handle *nbd;
   int64_t r;
   /* -n forces newstyle even if someone is still using nbdkit < 1.3 */
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-n", "-v",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-n", "-v",
                    "null", "size=" STR (SIZE), NULL };
   const char *s;
 

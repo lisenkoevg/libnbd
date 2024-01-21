@@ -84,7 +84,7 @@ main (int argc, char *argv[])
    * which delays responding to writes until a witness file no longer
    * exists.
    */
-  const char *cmd[] = { "nbdkit", "-s", "-v", "--exit-with-parent", "sh",
+  const char *cmd[] = { NBDKIT, "-s", "-v", "--exit-with-parent", "sh",
                         script, NULL };
 
   progname = argv[0];

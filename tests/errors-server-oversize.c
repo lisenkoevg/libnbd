@@ -92,7 +92,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   const char *cmd[] = {
-    "nbdkit", "-s", "-v", "--exit-with-parent", "eval",
+    NBDKIT, "-s", "-v", "--exit-with-parent", "eval",
     "get_size=    echo 68157440",
     "block_size=  echo 1 512 16M",
     "pread=       echo EIO >&2; exit 1",
@@ -107,7 +107,7 @@ main (int argc, char *argv[])
   uint32_t strict;
 
   progname = argv[0];
-  requires ("max=$(nbdkit --dump-plugin eval | "
+  requires ("max=$(" NBDKIT " --dump-plugin eval | "
             "sed -n '/^max_known_status=/ s///p') && test \"$max\" -ge 6");
 
   nbd = nbd_create ();

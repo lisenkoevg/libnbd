@@ -28,8 +28,8 @@ requires_fuse
 requires dd --version
 requires dd iflag=count_bytes,skip_bytes </dev/null
 requires hexdump -C /dev/null
-requires nbdkit --version
-requires nbdkit pattern --version
+requires $NBDKIT --version
+requires $NBDKIT pattern --version
 
 # Difficult to arrange for this test to be run this test under
 # valgrind, so don't bother.
@@ -45,7 +45,7 @@ cleanup_fn fusermount3 -u $mp
 cleanup_fn rm -rf $mp $out $pidfile
 
 mkdir $mp
-$VG nbdfuse -P $pidfile $mp [ nbdkit --exit-with-parent pattern size=1G ] &
+$VG nbdfuse -P $pidfile $mp [ $NBDKIT --exit-with-parent pattern size=1G ] &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do

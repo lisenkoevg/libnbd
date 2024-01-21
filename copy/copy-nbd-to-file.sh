@@ -21,14 +21,15 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires hexdump -C /dev/null
 requires stat --version
 
 file=copy-nbd-to-file.file
 cleanup_fn rm -f $file
 
-$VG nbdcopy -- [ nbdkit --exit-with-parent -v data data='0x55 0xAA @268435454 0xAA 0x55' ] $file
+$VG nbdcopy -- [ $NBDKIT --exit-with-parent -v \
+                         data data='0x55 0xAA @268435454 0xAA 0x55' ] $file
 if [ "$(stat -c %s $file)" -ne $(( 256 * 1024 * 1024 )) ]; then
     echo "$0: incorrect amount of data copied"
     exit 1

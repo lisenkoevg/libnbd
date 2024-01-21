@@ -31,13 +31,13 @@
 int
 main (int argc, char *argv[])
 {
-  char *args[] = {"nbdkit", "-f", "memory", "size=1m", NULL};
+  char *args[] = { NBDKIT, "-f", "memory", "size=1m", NULL };
   struct nbd_handle *nbd;
   char *uri = NULL;
   int result = EXIT_FAILURE;
 
-  requires ("nbdkit --version");
-  requires ("nbdkit memory --version");
+  requires (NBDKIT " --version");
+  requires (NBDKIT " memory --version");
 
   printf ("Connecting via systemd socket activation...\n");
 

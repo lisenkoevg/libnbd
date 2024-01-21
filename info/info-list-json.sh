@@ -21,7 +21,7 @@
 set -e
 set -x
 
-requires nbdkit --filter=exportname memory --version
+requires $NBDKIT --filter=exportname memory --version
 requires jq --version
 
 out=info-list-json.out
@@ -29,10 +29,10 @@ cleanup_fn rm -f $out
 rm -f $out
 
 # Test twice, once with an export name not on the list,...
-nbdkit -U - -e nosuch --filter=exportname memory 1M \
-       exportname=hello exportname=goodbye \
-       exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
-       --run '$VG nbdinfo --list --json "$uri"' > $out
+$NBDKIT -U - -e nosuch --filter=exportname memory 1M \
+        exportname=hello exportname=goodbye \
+        exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
+        --run '$VG nbdinfo --list --json "$uri"' > $out
 jq . < $out
 
 grep '"export-name": "hello"' $out
@@ -42,10 +42,10 @@ test $( jq -r '.exports[0].contexts[] | select(. == "base:allocation")' \
 	   < $out ) = "base:allocation"
 
 # ...and again with the export name included
-nbdkit -U - -e hello --filter=exportname memory 1M \
-       exportname=hello exportname=goodbye \
-       exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
-       --run '$VG nbdinfo --list --json "$uri"' > $out
+$NBDKIT -U - -e hello --filter=exportname memory 1M \
+        exportname=hello exportname=goodbye \
+        exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
+        --run '$VG nbdinfo --list --json "$uri"' > $out
 jq . < $out
 
 grep '"export-name": "hello"' $out

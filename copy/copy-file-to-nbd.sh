@@ -21,7 +21,7 @@
 set -e
 set -x
 
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires cmp --version
 requires dd --version
 requires dd oflag=seek_bytes </dev/null
@@ -46,7 +46,7 @@ for i in `seq 1 100`; do
 done
 size="$( stat -c %s $file )"
 
-nbdkit --exit-with-parent -f -v -P $pidfile -U $sock memory size=$size &
+$NBDKIT --exit-with-parent -f -v -P $pidfile -U $sock memory size=$size &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile; then
@@ -55,7 +55,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 

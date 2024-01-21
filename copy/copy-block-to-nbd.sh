@@ -23,7 +23,7 @@ set -x
 
 requires_root
 requires_caps cap_sys_admin
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires test -r /sys/module/nbd
 requires nbd-client --version
 # /dev/nbd0 must not be in use.
@@ -35,7 +35,7 @@ cleanup_fn rm -f $pidfile $sock
 cleanup_fn nbd-client -d /dev/nbd0
 
 # Run an nbdkit server to act as the backing for /dev/nbd0.
-nbdkit --exit-with-parent -f -v -P $pidfile -U $sock pattern size=5M &
+$NBDKIT --exit-with-parent -f -v -P $pidfile -U $sock pattern size=5M &
 # Wait for the pidfile to appear.
 for i in {1..60}; do
     if test -f $pidfile; then
@@ -44,10 +44,10 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f $pidfile; then
-    echo "$0: nbdkit did not start up"
+    echo "$0: $NBDKIT did not start up"
     exit 1
 fi
 
 nbd-client -unix $sock /dev/nbd0 -b 512
 
-$VG nbdcopy -- /dev/nbd0 [ nbdkit --exit-with-parent -v memory 5M ]
+$VG nbdcopy -- /dev/nbd0 [ $NBDKIT --exit-with-parent -v memory 5M ]

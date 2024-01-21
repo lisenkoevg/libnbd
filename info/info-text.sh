@@ -21,18 +21,18 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 # This test requires nbdkit >= 1.12.
-minor=$( nbdkit --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
 requires test $minor -ge 12
 
 out=info-text.out
 cleanup_fn rm -f $out
 
-nbdkit -U - memory size=1M \
-       --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
+$NBDKIT -U - memory size=1M \
+        --run '$VG nbdinfo "nbd+unix:///?socket=$unixsocket"' > $out
 cat $out
 grep "export-size: $((1024*1024))" $out
 grep "uri: nbd+unix:///?socket=" $out

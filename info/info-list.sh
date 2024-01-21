@@ -21,17 +21,17 @@
 set -e
 set -x
 
-requires nbdkit --filter=exportname memory --version
+requires $NBDKIT --filter=exportname memory --version
 
 out=info-list.out
 cleanup_fn rm -f $out
 rm -f $out
 
 # Test twice, once with an export name not on the list,...
-nbdkit -U - -e nosuch --filter=exportname memory 1M \
-       exportname=hello exportname=goodbye \
-       exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
-       --run '$VG nbdinfo --list "$uri"' > $out
+$NBDKIT -U - -e nosuch --filter=exportname memory 1M \
+        exportname=hello exportname=goodbye \
+        exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
+        --run '$VG nbdinfo --list "$uri"' > $out
 cat $out
 
 grep 'export="hello":' $out
@@ -40,10 +40,10 @@ grep 'export-size: 1048576' $out
 sed -n '/contexts:/ { N; p; q; }' $out | grep .
 
 # ...and again with the export name included
-nbdkit -U - -e hello --filter=exportname memory 1M \
-       exportname=hello exportname=goodbye \
-       exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
-       --run '$VG nbdinfo --list "$uri"' > $out
+$NBDKIT -U - -e hello --filter=exportname memory 1M \
+        exportname=hello exportname=goodbye \
+        exportname-strict=true exportname-list=explicit exportdesc=fixed:world \
+        --run '$VG nbdinfo --list "$uri"' > $out
 cat $out
 
 grep 'export="hello":' $out

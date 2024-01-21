@@ -81,7 +81,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   int64_t r;
-  char *args[] = { "nbdkit", "-s", "-o", "--exit-with-parent", "-v",
+  char *args[] = { NBDKIT, "-s", "-o", "--exit-with-parent", "-v",
                    "memory", "size=" STR (SIZE), NULL };
   int calls = 0;
   nbd_chunk_callback chunk_callback = { .callback = pread_cb,

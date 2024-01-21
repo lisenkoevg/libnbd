@@ -21,9 +21,9 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit sparse-random --version
+requires $NBDKIT --version
+requires $NBDKIT sparse-random --version
 
 # This plugin self-compares the written data with the read data so we
 # don't need to do any comparison ourselves.
-nbdkit -U - sparse-random 10G --run '$VG nbdcopy "$uri" "$uri"'
+$NBDKIT -U - sparse-random 10G --run '$VG nbdcopy "$uri" "$uri"'

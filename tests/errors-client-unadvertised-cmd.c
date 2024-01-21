@@ -61,7 +61,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   const char *cmd[] = {
-    "nbdkit", "-s", "-v", "--exit-with-parent",
+    NBDKIT, "-s", "-v", "--exit-with-parent",
     "eval",
     "get_size=echo 512",
     "can_write=exit 0",
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
 
   progname = argv[0];
 
-  requires ("nbdkit --version eval");
+  requires (NBDKIT " --version eval");
 
   nbd = nbd_create ();
   if (nbd == NULL) {

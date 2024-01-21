@@ -27,12 +27,12 @@
 #include <libnbd.h>
 
 static char *nbdkit[] =
-  { "nbdkit", "-s", "--exit-with-parent", "-v",
+  { NBDKIT, "-s", "--exit-with-parent", "-v",
     "null", "size=512",
     NULL };
 
 static char *nbdkit_delay[] =
-  { "nbdkit", "-s", "--exit-with-parent", "-v",
+  { NBDKIT, "-s", "--exit-with-parent", "-v",
     "--filter=delay",
     "null", "size=512",
     "delay-read=10",

@@ -51,7 +51,7 @@ main (int argc, char *argv[])
   char key_param[32];
 
 #ifdef requirement
-  requires ("nbdkit --dump-plugin sh | grep -q " requirement);
+  requires (NBDKIT " --dump-plugin sh | grep -q " requirement);
 #endif
 
   snprintf (plugin_path, sizeof plugin_path, "%s/eflags-plugin.sh",
@@ -59,7 +59,7 @@ main (int argc, char *argv[])
   snprintf (key_param, sizeof key_param, "key=%s", STR (flag));
 
   char *args[] =
-    { "nbdkit", "-s", "--exit-with-parent", "-v",
+    { NBDKIT, "-s", "--exit-with-parent", "-v",
 #ifdef filter
       filter,
 #endif

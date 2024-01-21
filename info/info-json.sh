@@ -21,15 +21,15 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT memory --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires jq --version
 
 out=info-json.out
 cleanup_fn rm -f $out
 
-nbdkit -U - -r memory size=1M --run '$VG nbdinfo --json "$uri"' > $out
+$NBDKIT -U - -r memory size=1M --run '$VG nbdinfo --json "$uri"' > $out
 jq . < $out
 test $( jq -r '.protocol' < $out ) != "newstyle"
 test $( jq -r '.exports[0]."export-size"' < $out ) != "null"

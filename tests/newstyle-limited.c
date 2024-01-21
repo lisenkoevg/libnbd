@@ -102,7 +102,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   int64_t r;
-  char *args[] = { "nbdkit", "-s", "--mask-handshake", "0",
+  char *args[] = { NBDKIT, "-s", "--mask-handshake", "0",
                    "--exit-with-parent", "-v", "eval",
                    "list_exports=printf a\\nb\\n",
                    "get_size=echo " STR (SIZE),
@@ -120,7 +120,7 @@ main (int argc, char *argv[])
   progname = argv[0];
 
   /* Quick check that nbdkit is new enough */
-  requires ("nbdkit eval --dump-plugin | grep -q has_list_exports=1");
+  requires (NBDKIT " eval --dump-plugin | grep -q has_list_exports=1");
 
   /* Initial sanity check that we can't require TLS */
   nbd = nbd_create ();

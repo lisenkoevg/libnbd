@@ -23,7 +23,7 @@ fail=0
 requires nbdsh -c 'exit(not h.supports_uri())'
 
 # Without --base-allocation, no meta context is requested
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
     -u "nbd+unix://?socket=$unixsocket" \
     -c "print(h.can_meta_context(nbd.CONTEXT_BASE_ALLOCATION))"')
 if test "x$output" != xFalse; then
@@ -32,7 +32,7 @@ if test "x$output" != xFalse; then
 fi
 
 # Can also use manual -c to request context before -u
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
 -c "h.add_meta_context(nbd.CONTEXT_BASE_ALLOCATION)" \
 -u "nbd+unix://?socket=$unixsocket" \
 -c "print(h.can_meta_context(nbd.CONTEXT_BASE_ALLOCATION))"
@@ -43,7 +43,7 @@ if test "x$output" != xTrue; then
 fi
 
 # With --base-allocation (and a server that supports it), meta context works.
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
     --base-allocation --uri "nbd+unix://?socket=$unixsocket" \
     --command "print(h.can_meta_context(nbd.CONTEXT_BASE_ALLOCATION))"')
 if test "x$output" != xTrue; then
@@ -52,7 +52,7 @@ if test "x$output" != xTrue; then
 fi
 
 # Again, but with abbreviated option names
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
     --b -u "nbd+unix://?socket=$unixsocket" \
     -c "print(h.can_meta_context(nbd.CONTEXT_BASE_ALLOCATION))"')
 if test "x$output" != xTrue; then
@@ -60,9 +60,9 @@ if test "x$output" != xTrue; then
     fail=1
 fi
 
-if [[ $(nbdkit --help) =~ --no-sr ]]; then
+if [[ $($NBDKIT --help) =~ --no-sr ]]; then
     # meta context depends on server cooperation
-    output=$(nbdkit -U - --no-sr null --run 'nbdsh \
+    output=$($NBDKIT -U - --no-sr null --run 'nbdsh \
       --base-allocation -u "nbd+unix://?socket=$unixsocket" \
       -c "print(h.can_meta_context(nbd.CONTEXT_BASE_ALLOCATION))"')
     if test "x$output" != xFalse; then
@@ -70,11 +70,11 @@ if [[ $(nbdkit --help) =~ --no-sr ]]; then
         fail=1
     fi
 else
-    echo "$0: nbdkit lacks --no-sr"
+    echo "$0: $NBDKIT lacks --no-sr"
 fi
 
 # Test interaction with opt mode
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
     --opt-mode --base-allocation -u "nbd+unix://?socket=$unixsocket" \
     -c "
 try:
@@ -91,7 +91,7 @@ if test "x$output" != xTrue; then
 fi
 
 # And with --opt-mode, we can get away without --base-allocation
-output=$(nbdkit -U - null --run 'nbdsh \
+output=$($NBDKIT -U - null --run 'nbdsh \
     --opt-mode -u "nbd+unix://?socket=$unixsocket" \
     -c "h.add_meta_context(nbd.CONTEXT_BASE_ALLOCATION)" \
     -c "h.opt_go()" \

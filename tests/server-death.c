@@ -53,7 +53,7 @@ main (int argc, char *argv[])
   char buf[512];
   int64_t cookie;
   int r;
-  const char *cmd[] = { "nbdkit", "-s", "--exit-with-parent",
+  const char *cmd[] = { NBDKIT, "-s", "--exit-with-parent",
                         "--filter=delay", "memory", "size=1m",
                         "delay-read=15", "delay-trim=15", NULL };
 

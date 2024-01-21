@@ -23,14 +23,14 @@ set -x
 
 # --can connect always returns true.
 
-requires nbdkit --no-sr null --version
+requires $NBDKIT --no-sr null --version
 
-nbdkit -v -U - null \
-       --run '$VG nbdinfo --can connect "nbd+unix:///?socket=$unixsocket"'
+$NBDKIT -v -U - null \
+        --run '$VG nbdinfo --can connect "nbd+unix:///?socket=$unixsocket"'
 
 # --is tls is false for unencrypted connections.
 
 st=0
-nbdkit -v -U - null \
-       --run '$VG nbdinfo --is tls "nbd+unix:///?socket=$unixsocket"' || st=$?
+$NBDKIT -v -U - null \
+        --run '$VG nbdinfo --is tls "nbd+unix:///?socket=$unixsocket"' || st=$?
 test $st = 2

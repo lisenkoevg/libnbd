@@ -35,9 +35,9 @@ int
 main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
-  const char *cmd_old[] = { "nbdkit", "--oldstyle", "-s", "--exit-with-parent",
+  const char *cmd_old[] = { NBDKIT, "--oldstyle", "-s", "--exit-with-parent",
                             "memory", "size=2m", NULL };
-  const char *cmd_new[] = { "nbdkit", "-s", "--exit-with-parent",
+  const char *cmd_new[] = { NBDKIT, "-s", "--exit-with-parent",
                             "memory", "size=2m", NULL };
 
   progname = argv[0];

@@ -23,9 +23,9 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit null --version
-requires nbdkit --tls-verify-peer -U - null --run 'exit 0'
+requires $NBDKIT --version
+requires $NBDKIT null --version
+requires $NBDKIT --tls-verify-peer -U - null --run 'exit 0'
 requires jq --version
 
 # Requires that the test certificates were created.
@@ -45,10 +45,10 @@ cleanup_fn rm -rf $d
 # (because there's not really a good way to know if the resulting URI
 # would be valid) so we need to construct a URI here.
 export pki
-nbdkit -U - --tls=require --tls-verify-peer --tls-certificates=$pki \
-       null size=1M \
-       --run '$VG nbdinfo --json "nbds+unix:///?socket=$unixsocket&tls-certificates=$pki" &&
-              $VG nbdinfo --is tls "nbds+unix:///?socket=$unixsocket&tls-certificates=$pki"' > $out
+$NBDKIT -U - --tls=require --tls-verify-peer --tls-certificates=$pki \
+        null size=1M \
+        --run '$VG nbdinfo --json "nbds+unix:///?socket=$unixsocket&tls-certificates=$pki" &&
+               $VG nbdinfo --is tls "nbds+unix:///?socket=$unixsocket&tls-certificates=$pki"' > $out
 cat $out
 jq . < $out
 

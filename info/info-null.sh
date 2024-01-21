@@ -21,14 +21,14 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit null --version
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT null --version
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 
 out=info-null.out
 cleanup_fn rm -f $out
 
-nbdkit -U - null \
-       --run '$VG nbdinfo --list "$uri"' > $out
+$NBDKIT -U - null \
+        --run '$VG nbdinfo --list "$uri"' > $out
 cat $out
 grep 'export-size: 0$' $out

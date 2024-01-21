@@ -53,7 +53,7 @@ main (int argc, char *argv[])
   int err;
   const char *msg;
   int64_t cookie;
-  const char *cmd[] = { "nbdkit", "-s", "--exit-with-parent",
+  const char *cmd[] = { NBDKIT, "-s", "--exit-with-parent",
                         "memory", "size=2m", NULL };
 
   progname = argv[0];

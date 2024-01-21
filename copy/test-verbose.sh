@@ -23,13 +23,13 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 file=test-verbose.out
 cleanup_fn rm -f $file
 
-$VG nbdcopy -v -- [ nbdkit memory size=1M ] null: 2>$file
+$VG nbdcopy -v -- [ $NBDKIT memory size=1M ] null: 2>$file
 
 cat $file
 

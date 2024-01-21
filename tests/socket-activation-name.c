@@ -48,7 +48,7 @@ main (int argc, char *argv[])
    * a working grep command, all needed below.
    */
   requires ("libnbd_sentinel=42 "
-            "nbdkit -v -D nbdkit.environ=1 null --run true 2>&1 | "
+            NBDKIT " -v -D nbdkit.environ=1 null --run true 2>&1 | "
             "grep -sq 'debug.*libnbd_sentinel=42'");
 
   nbd = nbd_create ();
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
   char *cmd[] = {
     "sh", "-c",
     "exec 2> " DEBUG_FILE "\n"
-    "exec nbdkit --exit-with-parent -v -D nbdkit.environ=1 null 1024\n",
+    "exec " NBDKIT " --exit-with-parent -v -D nbdkit.environ=1 null 1024\n",
     NULL
   };
   if (nbd_connect_systemd_socket_activation (nbd, cmd) == -1) {

@@ -92,7 +92,7 @@ do_test (const char *server_tls, struct expected exp)
   }
 
   /* Run nbdkit as a subprocess. */
-  const char *args[] = { "nbdkit", "-sv", "--exit-with-parent", server_tls,
+  const char *args[] = { NBDKIT, "-sv", "--exit-with-parent", server_tls,
                          "--tls-verify-peer", "--tls-psk=keys.psk",
                          "--filter=tls-fallback", "pattern",
                          "size=1M", "tlsreadme=fallback", NULL };
@@ -138,9 +138,9 @@ int
 main (int argc, char *argv[])
 {
   /* Check --tls-verify-peer option is supported. */
-  requires ("nbdkit --tls-verify-peer -U - null --run 'exit 0'");
+  requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
   /* Check for nbdkit tls-fallback filter. */
-  requires ("nbdkit --filter=tls-fallback null --dump-plugin");
+  requires (NBDKIT " --filter=tls-fallback null --dump-plugin");
 
   /* Reject nbdkit 1.33.1 and older where --tls=require chokes on
    * early NBD_OPT_INFO. nbdkit does not have a nice witness for this,
@@ -149,7 +149,7 @@ main (int argc, char *argv[])
    * us to DEAD during our handling of the second one).
    */
   {
-    const char *args[] = { "nbdkit", "-sv", "--exit-with-parent",
+    const char *args[] = { NBDKIT, "-sv", "--exit-with-parent",
                            "--tls=require", "--tls-psk=keys.psk",
                            "null", "size=1M", NULL };
     struct nbd_handle *nbd = nbd_create ();

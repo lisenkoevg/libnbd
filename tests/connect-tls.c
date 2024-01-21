@@ -40,7 +40,7 @@ main (int argc, char *argv[])
   int64_t actual_size;
 
   /* Check --tls-verify-peer option is supported. */
-  requires ("nbdkit --tls-verify-peer -U - null --run 'exit 0'");
+  requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
 
   nbd = nbd_create ();
   if (nbd == NULL) {
@@ -74,7 +74,7 @@ main (int argc, char *argv[])
 #endif
 
   /* Run nbdkit as a subprocess. */
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent",
                    "--tls=require", "--tls-verify-peer",
 #if CERTS
                    "--tls-certificates=pki",

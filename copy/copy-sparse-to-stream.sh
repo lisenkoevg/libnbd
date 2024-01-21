@@ -25,18 +25,18 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit --exit-with-parent --version
-requires nbdkit data --version
-requires nbdkit --version --filter=rate null
+requires $NBDKIT --version
+requires $NBDKIT --exit-with-parent --version
+requires $NBDKIT data --version
+requires $NBDKIT --version --filter=rate null
 
 # Copy rate is 512Kbps.  nbdcopy should only need to copy two 32Kbyte
 # extents (2 * 32 * 8 = 512) so this should not take longer than a
 # second.  But if nbdcopy is ignoring extents it will take much, much
 # longer.
 $VG nbdcopy -- \
-    [ nbdkit --exit-with-parent \
-             data data=' 1  @1073741823 1 ' \
-             --filter=rate rate=512K \
+    [ $NBDKIT --exit-with-parent \
+              data data=' 1  @1073741823 1 ' \
+              --filter=rate rate=512K \
     ] \
     - >/dev/null

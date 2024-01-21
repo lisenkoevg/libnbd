@@ -19,13 +19,13 @@
 # Test interaction with nbdkit, and for correct global handling over -c.
 
 . ../tests/functions.sh
-requires nbdkit --exit-with-parent --version
+requires $NBDKIT --exit-with-parent --version
 requires nbdsh -c 'exit(not h.supports_uri())'
 
 sock=$(mktemp -u /tmp/libnbd-test-nbdsh.XXXXXX)
 pidfile=test-pattern.pid
 cleanup_fn rm -f $sock $pidfile
-nbdkit -v -P $pidfile --exit-with-parent -U $sock pattern size=1m &
+$NBDKIT -v -P $pidfile --exit-with-parent -U $sock pattern size=1m &
 
 # Wait for the pidfile to appear.
 for i in {1..60}; do
@@ -35,7 +35,7 @@ for i in {1..60}; do
     sleep 1
 done
 if ! test -f "$pidfile"; then
-    echo "$0: nbdkit PID file $pidfile was not created"
+    echo "$0: $NBDKIT PID file $pidfile was not created"
     exit 1
 fi
 

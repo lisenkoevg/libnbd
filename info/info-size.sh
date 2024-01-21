@@ -21,12 +21,12 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit memory --version
+requires $NBDKIT --version
+requires $NBDKIT memory --version
 
 out=info-size.out
 cleanup_fn rm -f $out
 
-nbdkit -U - memory size=$((512*1024*1024)) \
-       --run '$VG nbdinfo --size "nbd+unix:///?socket=$unixsocket"' > $out
+$NBDKIT -U - memory size=$((512*1024*1024)) \
+        --run '$VG nbdinfo --size "nbd+unix:///?socket=$unixsocket"' > $out
 test "$(cat $out)" -eq $((512*1024*1024))

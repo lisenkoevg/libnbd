@@ -57,7 +57,7 @@ main (int argc, char *argv[])
   struct nbd_handle *nbd;
   int r;
   struct progress p;
-  char *args[] = { "nbdkit", "-s", "--exit-with-parent", "-v",
+  char *args[] = { NBDKIT, "-s", "--exit-with-parent", "-v",
                    "memory", "size=1M", NULL };
   nbd_context_callback ctx = { .callback = check,
                                .user_data = &p};

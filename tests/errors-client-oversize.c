@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
   const char *cmd[] = {
-    "nbdkit", "-s", "-v", "--exit-with-parent",
+    NBDKIT, "-s", "-v", "--exit-with-parent",
     "memory", "68157440",
     "--filter=blocksize-policy", "blocksize-maximum=32M",
     "blocksize-error-policy=error",
@@ -71,7 +71,7 @@ main (int argc, char *argv[])
   };
 
   progname = argv[0];
-  requires ("nbdkit --version --filter=blocksize-policy null");
+  requires (NBDKIT " --version --filter=blocksize-policy null");
 
   nbd = nbd_create ();
   if (nbd == NULL) {

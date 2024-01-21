@@ -26,8 +26,8 @@ set -x
 requires_fuse
 requires dd --version
 requires dd iflag=count_bytes,skip_bytes </dev/null
-requires nbdkit --version
-requires nbdkit sh --version
+requires $NBDKIT --version
+requires $NBDKIT sh --version
 
 # Difficult to arrange for this test to be run this test under
 # valgrind, so don't bother.
@@ -44,9 +44,9 @@ cleanup_fn rm -rf $mp $pidfile
 mkdir $mp
 
 export mp pidfile prog="$0"
-nbdkit -U - \
-       sh - \
-       --run '
+$NBDKIT -U - \
+        sh - \
+        --run '
 set -e
 set -x
 

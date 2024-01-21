@@ -21,20 +21,20 @@
 set -e
 set -x
 
-requires nbdkit --version
-requires nbdkit data --dump-plugin
-requires nbdkit -U - null --run 'test "$uri" != ""'
+requires $NBDKIT --version
+requires $NBDKIT data --dump-plugin
+requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires nbdsh -c 'exit(not h.supports_uri())'
 
 # This test requires nbdkit >= 1.22.
-minor=$( nbdkit --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
 requires test $minor -ge 22
 
 output=dump-data.out
 rm -f $output
 cleanup_fn rm -f $output
 
-nbdkit -U - data data='
+$NBDKIT -U - data data='
   @32768 1
   @65535 "hello, world!"
   @17825790 "spanning buffer boundary"
