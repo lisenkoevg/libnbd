@@ -25,6 +25,6 @@ extern void requires_not (const char *cmd);
 /* Some specific tests using the requires() mechanism. */
 extern void requires_qemu_nbd_tls_support (void);
 extern void requires_qemu_nbd_tls_psk_support (void);
-extern void requires_nbd_server_supports_inetd (const char *nbd_server);
+extern void requires_nbd_server_supports_inetd (void);
 
 #endif /* LIBNBD_REQUIRES */

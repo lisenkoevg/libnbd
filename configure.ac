@@ -290,6 +290,8 @@ dnl nbd-server, qemu-nbd and qemu-storage-daemon for interop testing.
 AC_CHECK_PROG([NBD_SERVER], [nbd-server], [nbd-server])
 AM_CONDITIONAL([HAVE_NBD_SERVER], [test "x$NBD_SERVER" != "x"])
 AS_IF([test "x$NBD_SERVER" != "x"], [
+  AC_DEFINE_UNQUOTED([NBD_SERVER],["$NBD_SERVER"],
+                     [The name of nbd-server (optional)])
    printf "nbd-server version is "; $NBD_SERVER --version | head -1
 ])
 AC_CHECK_PROG([QEMU_NBD], [qemu-nbd], [qemu-nbd])

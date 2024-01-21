@@ -93,6 +93,7 @@ requires_qemu_nbd_tls_psk_support (void)
 }
 #endif
 
+#ifdef NBD_SERVER
 /* On some distros, nbd-server is built without support for syslog
  * which prevents use of inetd mode.  Instead nbd-server will exit with
  * this error:
@@ -103,14 +104,22 @@ requires_qemu_nbd_tls_psk_support (void)
  * https://listman.redhat.com/archives/libguestfs/2022-January/msg00003.html
  */
 void
-requires_nbd_server_supports_inetd (const char *nbd_server)
+requires_nbd_server_supports_inetd (void)
 {
   char cmd[256];
 
-  snprintf (cmd, sizeof cmd, "\"%s\" --version", nbd_server);
+  snprintf (cmd, sizeof cmd, "\"%s\" --version", NBD_SERVER);
   requires (cmd);
   snprintf (cmd, sizeof cmd,
             "grep 'inetd mode requires syslog' \"$(command -v \"%s\")\"",
-            nbd_server);
+            NBD_SERVER);
   requires_not (cmd);
 }
+#else /* !NBD_SERVER */
+void
+requires_nbd_server_supports_inetd (void)
+{
+  fprintf (stderr, "nbd-server not available at compile time\n");
+  exit (77);
+}
+#endif
