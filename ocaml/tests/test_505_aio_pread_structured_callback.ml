@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 (* These can be any two unique errors.  They are just used as a sentinel. *)
@@ -61,7 +63,7 @@ let callback user_data err =
 
 let () =
   let nbd = NBD.create () in
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "-v";
                            "pattern"; "size=512"];
 
   (* First try: succeed in both callbacks *)

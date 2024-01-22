@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 let count = ref 0
@@ -33,7 +35,7 @@ let () =
   let nbd = NBD.create () in
   NBD.set_opt_mode nbd true;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "memory"; "size=1M"];
 
   (* First pass: empty query should give at least "base:allocation". *)

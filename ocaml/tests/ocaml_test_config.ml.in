@@ -1,6 +1,7 @@
 (* hey emacs, this is OCaml code: -*- tuareg -*- *)
-(* libnbd OCaml test case
+(* libnbd OCaml test configuration
  * Copyright Red Hat
+ * @configure_input@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,14 +18,4 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
-open Ocaml_test_config
-
-let () =
-  NBD.with_handle (
-    fun nbd ->
-      NBD.connect_command nbd
-                          [nbdkit; "-s"; "--exit-with-parent"; "-v";
-                           "null"]
-  )
-
-let () = Gc.compact ()
+let nbdkit = "@NBDKIT@"

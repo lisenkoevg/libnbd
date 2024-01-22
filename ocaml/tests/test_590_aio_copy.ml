@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Unix
 open Printf
 
@@ -119,9 +121,9 @@ let () =
   NBD.set_handle_name src "src";
   let dst = NBD.create () in
   NBD.set_handle_name dst "dst";
-  NBD.connect_command src ["nbdkit"; "-s"; "--exit-with-parent"; "-r";
+  NBD.connect_command src [nbdkit; "-s"; "--exit-with-parent"; "-r";
                            "pattern"; sprintf "size=%d" disk_size];
-  NBD.connect_command dst ["nbdkit"; "-s"; "--exit-with-parent";
+  NBD.connect_command dst [nbdkit; "-s"; "--exit-with-parent";
                            "memory"; sprintf "size=%d" disk_size];
   asynch_copy src dst
 

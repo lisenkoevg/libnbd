@@ -26,6 +26,8 @@
  * If the $unixsocket parameter is present then we run the test.
  *)
 
+open Ocaml_test_config
+
 open Unix
 open Printf
 
@@ -35,9 +37,9 @@ let () =
   match Array.length Sys.argv with
   | 1 ->                        (* exec nbdkit *)
      let runcmd = sprintf "%s $unixsocket" (Filename.quote argv0) in
-     execvp "nbdkit" [| "nbdkit"; "-U"; "-"; "--exit-with-parent"; "-v";
-                        "memory"; "size=512";
-                        "--run"; runcmd |]
+     execvp nbdkit [| "nbdkit"; "-U"; "-"; "--exit-with-parent"; "-v";
+                      "memory"; "size=512";
+                      "--run"; runcmd |]
 
   | 2 ->                        (* run the test *)
      let unixsocket = Sys.argv.(1) in

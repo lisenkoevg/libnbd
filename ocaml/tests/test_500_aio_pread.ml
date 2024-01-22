@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 (* NB: OCaml 4.08 has endian functions in the Bytes module which
  * would make this loop much simpler.
  *)
@@ -36,7 +38,7 @@ let expected =
 
 let () =
   let nbd = NBD.create () in
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "-v";
                            "pattern"; "size=512"];
 
   let buf = NBD.Buffer.alloc 512 in

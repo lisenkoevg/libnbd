@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 let () =
   let nbd = NBD.create () in
 
@@ -34,7 +36,7 @@ let () =
    * The number of bytes/chunks here may grow over time as more features get
    * automatically negotiated, so merely check that they are non-zero.
    *)
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "null"];
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "null"];
 
   let bs1 = NBD.stats_bytes_sent nbd in
   let cs1 = NBD.stats_chunks_sent nbd in

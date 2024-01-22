@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 let messages = ref []
 let f id context msg =
   assert (id = 42);
@@ -27,7 +29,7 @@ let () =
   let nbd = NBD.create () in
   NBD.set_debug_callback nbd (f 42);
 
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "null"];
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "null"];
   NBD.shutdown nbd;
 
   print_endline "<<<";

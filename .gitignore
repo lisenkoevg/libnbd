@@ -175,6 +175,7 @@ Makefile.in
 /ocaml/tests/*.bc
 /ocaml/tests/*.opt
 /ocaml/tests/.depend
+/ocaml/tests/ocaml_test_config.ml
 /podwrapper.pl
 /python/libnbdmod.c
 /python/methods.c

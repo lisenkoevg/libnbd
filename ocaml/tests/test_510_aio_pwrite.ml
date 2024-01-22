@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Unix
 
 let () =
@@ -32,7 +34,7 @@ let () =
   close_out chan;
 
   let nbd = NBD.create () in
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "-v";
                            "file"; datafile];
 
   let buf1 = NBD.Buffer.of_bytes buf in

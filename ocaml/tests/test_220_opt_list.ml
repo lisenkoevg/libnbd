@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 let script =
@@ -39,7 +41,7 @@ let conn mode body expect =
   NBD.set_opt_mode nbd true;
   let mode = sprintf "mode=%d" mode in
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "sh"; script; mode];
   body nbd;
   assert (!exports = expect);

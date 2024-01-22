@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 let count = ref 0
 let seen = ref false
 let f user_data name =
@@ -31,7 +33,7 @@ let () =
   let nbd = NBD.create () in
   NBD.set_opt_mode nbd true;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "memory"; "size=1M"];
 
   (* nbdkit does not match wildcard for SET, even though it does for LIST *)

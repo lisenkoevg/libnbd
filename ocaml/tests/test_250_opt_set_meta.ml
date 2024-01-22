@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 let count = ref 0
 let seen = ref false
 let f user_data name =
@@ -32,7 +34,7 @@ let () =
   NBD.set_opt_mode nbd true;
   NBD.set_request_structured_replies nbd false;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "memory"; "size=1M"];
 
   (* No contexts negotiated yet; can_meta should be error if any requested *)

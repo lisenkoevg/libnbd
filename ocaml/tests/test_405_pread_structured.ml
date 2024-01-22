@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 (* NB: OCaml 4.08 has endian functions in the Bytes module which
@@ -51,7 +53,7 @@ let f user_data buf2 offset s err =
 let () =
   let nbd = NBD.create () in
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "pattern"; "size=512"];
   let buf = Bytes.create 512 in
 

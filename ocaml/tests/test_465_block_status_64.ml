@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 let script =
@@ -37,7 +39,7 @@ let f user_data metacontext offset e err =
 let () =
   let nbd = NBD.create () in
   NBD.add_meta_context nbd "base:allocation";
-  NBD.connect_command nbd ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+  NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "-v";
                            "sh"; script];
 
   NBD.block_status_64 nbd 65536_L 0_L (f 42);

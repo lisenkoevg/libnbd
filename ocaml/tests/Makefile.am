@@ -73,7 +73,10 @@ endif
 	LD_LIBRARY_PATH=../../lib/.libs \
 	$(OCAMLFIND) ocamlc \
 	  $(OCAMLFLAGS) $(OCAMLPACKAGES) -linkpkg \
-	  mlnbd.cma $< -o $@
+	  mlnbd.cma ocaml_test_config.cmo $< -o $@
+
+ocaml_test_config.cmo: ocaml_test_config.ml
+	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -c $< -o $@
 
 if HAVE_OCAMLOPT
 %.opt: %.cmx ../mlnbd.cmxa
@@ -81,7 +84,10 @@ if HAVE_OCAMLOPT
 	$(OCAMLFIND) ocamlopt \
 	  $(OCAMLFLAGS) $(OCAMLPACKAGES) \
 	  -cclib -L$(top_builddir)/lib/.libs -linkpkg \
-	  mlnbd.cmxa $< -o $@
+	  mlnbd.cmxa ocaml_test_config.cmx $< -o $@
+
+ocaml_test_config.cmx: ocaml_test_config.ml
+	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) -c $< -o $@
 endif
 
 TESTS_ENVIRONMENT = \

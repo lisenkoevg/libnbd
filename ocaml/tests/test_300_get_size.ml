@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 let expected = 1048576_L
@@ -24,7 +26,7 @@ let expected = 1048576_L
 let () =
   let nbd = NBD.create () in
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v"; "null";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v"; "null";
                        sprintf "size=%Ld" expected];
   let actual = NBD.get_size nbd in
 

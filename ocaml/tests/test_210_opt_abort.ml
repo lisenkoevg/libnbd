@@ -17,11 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 let () =
   let nbd = NBD.create () in
   NBD.set_opt_mode nbd true;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v"; "null"];
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v"; "null"];
   let proto = NBD.get_protocol nbd in
     assert (proto = "newstyle-fixed");
   let sr = NBD.get_structured_replies_negotiated nbd in

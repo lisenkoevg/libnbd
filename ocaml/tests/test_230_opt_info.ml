@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+open Ocaml_test_config
+
 open Printf
 
 let script =
@@ -44,7 +46,7 @@ let () =
   let nbd = NBD.create () in
   NBD.set_opt_mode nbd true;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "sh"; script];
   NBD.add_meta_context nbd NBD.context_base_allocation;
 
@@ -120,7 +122,7 @@ let () =
   let nbd = NBD.create () in
   NBD.set_opt_mode nbd true;
   NBD.connect_command nbd
-                      ["nbdkit"; "-s"; "--exit-with-parent"; "-v";
+                      [nbdkit; "-s"; "--exit-with-parent"; "-v";
                        "sh"; script];
   NBD.add_meta_context nbd "x-unexpected:bogus";
 
