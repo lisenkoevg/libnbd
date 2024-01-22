@@ -17,10 +17,13 @@
 
 import nbd
 import errno
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 h = nbd.NBD()
 h.set_opt_mode(True)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "null"])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "null"])
 assert h.get_protocol() == "newstyle-fixed"
 assert h.get_structured_replies_negotiated()
 h.opt_abort()

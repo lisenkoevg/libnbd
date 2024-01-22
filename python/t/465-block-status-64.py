@@ -15,15 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import nbd
 import os
 
-import nbd
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 script = "%s/../tests/meta-base-allocation.sh" % os.getenv("srcdir", ".")
 
 h = nbd.NBD()
 h.add_meta_context("base:allocation")
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "sh", script])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "sh", script])
 
 entries = []
 

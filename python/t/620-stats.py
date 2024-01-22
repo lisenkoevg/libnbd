@@ -16,6 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import nbd
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 h = nbd.NBD()
 
@@ -33,7 +36,7 @@ assert cr0 == 0
 # Connection performs handshaking, which increments stats.
 # The number of bytes/chunks here may grow over time as more features get
 # automatically negotiated, so merely check that they are non-zero.
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "null"])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "null"])
 
 bs1 = h.stats_bytes_sent()
 cs1 = h.stats_chunks_sent()

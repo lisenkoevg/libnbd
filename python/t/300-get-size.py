@@ -16,11 +16,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import nbd
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 expected = 1048576
 
 h = nbd.NBD()
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "null",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "null",
                    "size=%d" % expected])
 actual = h.get_size()
 

@@ -19,6 +19,7 @@ import select
 import nbd
 import os
 
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 disk_size = 512 * 1024 * 1024
 bs = 65536
 max_reads_in_flight = 16
@@ -119,9 +120,9 @@ src = nbd.NBD()
 src.set_handle_name("src")
 dst = nbd.NBD()
 dst.set_handle_name("dst")
-src.connect_command(["nbdkit", "-s", "--exit-with-parent", "-r",
+src.connect_command([nbdkit, "-s", "--exit-with-parent", "-r",
                      "pattern", "size=%d" % disk_size])
-dst.connect_command(["nbdkit", "-s", "--exit-with-parent",
+dst.connect_command([nbdkit, "-s", "--exit-with-parent",
                      "memory", "size=%d" % disk_size])
 asynch_copy(src, dst)
 

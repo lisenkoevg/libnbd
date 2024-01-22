@@ -16,7 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import nbd
+import os
 
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 count = 0
 seen = False
@@ -34,7 +36,7 @@ def f(user_data, name):
 # Get into negotiating state.
 h = nbd.NBD()
 h.set_opt_mode(True)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "memory", "size=1M"])
 
 # nbdkit does not match wildcard for SET, even though it does for LIST

@@ -16,7 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import nbd
+import os
 
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 count = 0
 seen = False
@@ -42,7 +44,7 @@ def must_fail(f, *args, **kwds):
 # Get into negotiating state.
 h = nbd.NBD()
 h.set_opt_mode(True)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "memory", "size=1M"])
 
 # First pass: empty query should give at least "base:allocation".
@@ -109,7 +111,7 @@ h.opt_abort()
 h = nbd.NBD()
 h.set_opt_mode(True)
 h.set_request_structured_replies(False)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "memory", "size=1M"])
 bytes = h.stats_bytes_sent()
 

@@ -19,9 +19,12 @@ import nbd
 import errno
 import sys
 from array import array
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 h = nbd.NBD()
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "pattern", "size=512"])
 
 # The nbdkit pattern plugin exposes 64-bit numbers in bigendian order

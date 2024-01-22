@@ -18,9 +18,12 @@
 import nbd
 import sys
 from array import array
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 h = nbd.NBD()
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "pattern", "size=1024"])
 buf = nbd.Buffer(512)
 cookie = h.aio_pread(buf, 0)

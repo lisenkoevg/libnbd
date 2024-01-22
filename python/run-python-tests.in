@@ -24,6 +24,10 @@ set -x
 # can locate static files in the source dir.
 export srcdir="@srcdir@"
 
+# Export $NBDKIT shell variable (set in tests/functions.sh) so the
+# tests may use it.
+export NBDKIT
+
 shopt -s nullglob
 for f in "@srcdir@"/t/*.py; do
     basename "$f"

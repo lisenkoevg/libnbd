@@ -15,9 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import nbd
 import os
 
-import nbd
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 buf1 = bytearray(512)
 buf1[10] = 1
@@ -30,7 +31,7 @@ with open(datafile, "wb") as f:
     f.truncate(512)
 
 h = nbd.NBD()
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v",
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v",
                    "file", datafile])
 h.pwrite(buf1, 0, nbd.CMD_FLAG_FUA)
 buf2 = h.pread(512, 0)

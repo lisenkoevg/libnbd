@@ -19,9 +19,11 @@ import nbd
 import os
 from contextlib import contextmanager
 
+nbdkit = os.getenv("NBDKIT", "nbdkit")
+
 # Require new-enough nbdkit
-if os.system("nbdkit sh --dump-plugin | grep -q has_list_exports=1"):
-    print("skipping: nbdkit too old for this test")
+if os.system(nbdkit + " sh --dump-plugin | grep -q has_list_exports=1"):
+    print("skipping: " + nbdkit + " too old for this test")
     exit(0)
 
 script = "%s/../tests/opt-list.sh" % os.getenv("srcdir", ".")
@@ -36,7 +38,7 @@ def conn(mode):
     h = nbd.NBD()
     try:
         h.set_opt_mode(True)
-        h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "sh",
+        h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "sh",
                            script, "mode=%d" % mode])
         yield h
     finally:

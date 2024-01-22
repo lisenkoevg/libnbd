@@ -18,6 +18,8 @@
 import nbd
 import os
 
+nbdkit = os.getenv("NBDKIT", "nbdkit")
+
 script = "%s/../tests/opt-info.sh" % os.getenv("srcdir", ".")
 
 
@@ -31,7 +33,7 @@ def must_fail(f, *args, **kwds):
 
 h = nbd.NBD()
 h.set_opt_mode(True)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "sh", script])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "sh", script])
 h.add_meta_context(nbd.CONTEXT_BASE_ALLOCATION)
 
 # No size, flags, or meta-contexts yet
@@ -93,7 +95,7 @@ h.shutdown()
 # persists through nbd_opt_go with set_request_meta_context disabled.
 h = nbd.NBD()
 h.set_opt_mode(True)
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "-v", "sh", script])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "-v", "sh", script])
 h.add_meta_context("x-unexpected:bogus")
 
 must_fail(h.can_meta_context, nbd.CONTEXT_BASE_ALLOCATION)

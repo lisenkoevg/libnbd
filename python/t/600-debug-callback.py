@@ -16,6 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import nbd
+import os
+
+nbdkit = os.getenv("NBDKIT", "nbdkit")
 
 h = nbd.NBD()
 
@@ -31,7 +34,7 @@ def f(id, context, msg):
 
 h.set_debug_callback(lambda *args: f(42, *args))
 
-h.connect_command(["nbdkit", "-s", "--exit-with-parent", "null"])
+h.connect_command([nbdkit, "-s", "--exit-with-parent", "null"])
 h.shutdown()
 
 # Try to trigger garbage collection of h
