@@ -34,30 +34,10 @@ sock2=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile1 $pidfile2 $file1 $file2 $sock1 $sock2
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile1; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile1; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile1
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=10M &
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile2; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile2; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile2
 
 $VG nbdcopy "nbd+unix:///?socket=$sock1" "nbd+unix:///?socket=$sock2"
 

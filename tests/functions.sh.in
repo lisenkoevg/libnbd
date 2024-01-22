@@ -202,7 +202,7 @@ pick_unused_port ()
     echo picked unused port $port
 }
 
-# Wait for qemu-nbd to start up.
+# Wait for a server to start up and write a PID file.
 wait_for_pidfile ()
 {
     local binary=$1

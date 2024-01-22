@@ -49,18 +49,7 @@ qemu-img convert -f raw $data -O qcow2 $qcow2
 rm -rf $mp
 mkdir -p $mp
 $VG nbdfuse -r -P $pidfile $mp [ $QEMU_NBD -f qcow2 --cache=writeback $qcow2 ] &
-
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile; then
-    echo "$0: nbdfuse PID file $pidfile was not created"
-    exit 1
-fi
+wait_for_pidfile nbdfuse $pidfile
 
 ls -al $mp
 

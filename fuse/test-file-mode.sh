@@ -41,19 +41,8 @@ cleanup_fn rm -f $pidfile $mp $data
 
 touch $mp
 $VG nbdfuse -P $pidfile $mp \
-        --command $NBDKIT -s --exit-with-parent memory size=10M &
-
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile; then
-    echo "$0: nbdfuse PID file $pidfile was not created"
-    exit 1
-fi
+            --command $NBDKIT -s --exit-with-parent memory size=10M &
+wait_for_pidfile nbdfuse $pidfile
 
 dd if=/dev/urandom of=$data bs=1M count=10
 # Use a weird block size when writing.  It's a bit pointless because

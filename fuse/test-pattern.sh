@@ -46,18 +46,7 @@ cleanup_fn rm -rf $mp $out $pidfile
 
 mkdir $mp
 $VG nbdfuse -P $pidfile $mp [ $NBDKIT --exit-with-parent pattern size=1G ] &
-
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile; then
-    echo "$0: nbdfuse PID file $pidfile was not created"
-    exit 1
-fi
+wait_for_pidfile nbdfuse $pidfile
 
 ls -al $mp
 

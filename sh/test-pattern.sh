@@ -26,18 +26,7 @@ sock=$(mktemp -u /tmp/libnbd-test-nbdsh.XXXXXX)
 pidfile=test-pattern.pid
 cleanup_fn rm -f $sock $pidfile
 $NBDKIT -v -P $pidfile --exit-with-parent -U $sock pattern size=1m &
-
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f "$pidfile"; then
-	break
-    fi
-    sleep 1
-done
-if ! test -f "$pidfile"; then
-    echo "$0: $NBDKIT PID file $pidfile was not created"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile
 
 nbdsh -u "nbd+unix://?socket=$sock" \
     -c '

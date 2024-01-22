@@ -47,17 +47,7 @@ done
 size="$( stat -c %s $file )"
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile -U $sock memory size=$size &
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile
 
 $VG nbdcopy $file "nbd+unix:///?socket=$sock"
 $VG nbdcopy "nbd+unix:///?socket=$sock" $file2

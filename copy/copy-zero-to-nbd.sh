@@ -28,16 +28,6 @@ sock=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile $sock
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile -U $sock memory size=10M &
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile
 
 $VG nbdcopy -p /dev/null "nbd+unix:///?socket=$sock"

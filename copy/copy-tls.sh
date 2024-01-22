@@ -46,33 +46,13 @@ $NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 \
         --tls=require --tls-psk=$pskfile \
         pattern size=100M &
 uri1="nbds+unix://alice@/?socket=$sock1&tls-psk-file=$pskfile"
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile1; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile1; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile1
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 \
         --tls=require --tls-psk=$pskfile \
         memory size=100M &
 uri2="nbds+unix://alice@/?socket=$sock2&tls-psk-file=$pskfile"
-# Wait for the pidfile to appear.
-for i in {1..60}; do
-    if test -f $pidfile2; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile2; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile2
 
 $VG nbdcopy "$uri1" "$uri2"
 

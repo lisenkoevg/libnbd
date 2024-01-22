@@ -37,18 +37,9 @@ cleanup_fn rm -f $pidfile1 $pidfile2 $sock1 $sock2
 cleanup_fn nbd-client -d /dev/nbd0
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile1 -U $sock1 pattern size=10M &
+wait_for_pidfile $NBDKIT $pidfile1
 $NBDKIT --exit-with-parent -f -v -P $pidfile2 -U $sock2 memory size=5M &
-# Wait for the pidfiles to appear.
-for i in {1..60}; do
-    if test -f $pidfile1 && test -f $pidfile2; then
-        break
-    fi
-    sleep 1
-done
-if ! test -f $pidfile1 || ! test -f $pidfile2; then
-    echo "$0: $NBDKIT did not start up"
-    exit 1
-fi
+wait_for_pidfile $NBDKIT $pidfile2
 
 nbd-client -unix $sock2 /dev/nbd0 -b 512
 
