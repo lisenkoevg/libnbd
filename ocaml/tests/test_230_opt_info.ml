@@ -21,12 +21,7 @@ open Ocaml_test_config
 
 open Printf
 
-let script =
-  try
-    let srcdir = Sys.getenv "srcdir" in
-    sprintf "%s/../../tests/opt-info.sh" srcdir
-  with
-    Not_found -> failwith "error: srcdir is not defined"
+let script = sprintf "%s/../../tests/opt-info.sh" srcdir
 
 let fail_unary f nbd =
   try

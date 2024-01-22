@@ -19,3 +19,8 @@
  *)
 
 let nbdkit = "@NBDKIT@"
+
+(* Environment variable $srcdir is set by the test harness. *)
+let srcdir =
+  try Sys.getenv "srcdir"
+  with Not_found -> failwith "error: srcdir is not defined"

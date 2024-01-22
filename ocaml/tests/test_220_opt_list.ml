@@ -21,12 +21,7 @@ open Ocaml_test_config
 
 open Printf
 
-let script =
-  try
-    let srcdir = Sys.getenv "srcdir" in
-    sprintf "%s/../../tests/opt-list.sh" srcdir
-  with
-    Not_found -> failwith "error: srcdir is not defined"
+let script = sprintf "%s/../../tests/opt-list.sh" srcdir
 
 let exports = ref []
 let f user_data name desc =

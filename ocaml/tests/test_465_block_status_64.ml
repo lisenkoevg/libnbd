@@ -21,12 +21,7 @@ open Ocaml_test_config
 
 open Printf
 
-let script =
-  try
-    let srcdir = Sys.getenv "srcdir" in
-    sprintf "%s/../../tests/meta-base-allocation.sh" srcdir
-  with
-    Not_found -> failwith "error: srcdir is not defined"
+let script = sprintf "%s/../../tests/meta-base-allocation.sh" srcdir
 
 let entries = ref [||]
 let f user_data metacontext offset e err =
