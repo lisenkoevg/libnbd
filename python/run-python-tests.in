@@ -16,11 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+source ../tests/functions.sh
 set -e
-shopt -s nullglob
-export srcdir=@srcdir@
+set -x
 
-for f in @srcdir@/t/*.py; do
-  basename "$f"
-  $PYTHON "$f"
+# This is used as an environment variable by some of the tests so they
+# can locate static files in the source dir.
+export srcdir="@srcdir@"
+
+shopt -s nullglob
+for f in "@srcdir@"/t/*.py; do
+    basename "$f"
+    $PYTHON "$f"
 done

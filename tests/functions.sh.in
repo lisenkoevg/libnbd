@@ -35,6 +35,7 @@
 # to use.
 abs_top_srcdir="@abs_top_srcdir@"
 NBDKIT="@NBDKIT@"
+PYTHON="@PYTHON@"
 QEMU_NBD="@QEMU_NBD@"
 QEMU_STORAGE_DAEMON="@QEMU_STORAGE_DAEMON@"
 REALPATH="@REALPATH@"

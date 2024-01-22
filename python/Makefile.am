@@ -81,7 +81,6 @@ if HAVE_NBDKIT
 TESTS_ENVIRONMENT = \
 	LIBNBD_DEBUG=1 \
 	$(MALLOC_CHECKS) \
-	PYTHON="$(PYTHON)" \
 	$(NULL)
 LOG_COMPILER = $(top_builddir)/run
 TESTS += \

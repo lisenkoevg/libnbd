@@ -21,10 +21,10 @@
 set -e
 set -x
 
-requires nbdkit --version
+requires $NBDKIT --version
 requires $PYTHON --version
 
-nbdkit -U - null --run '$PYTHON -c "
+$NBDKIT -U - null --run '$PYTHON -c "
 import nbd
 import sys
 h = nbd.NBD()
