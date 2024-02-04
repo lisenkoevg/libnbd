@@ -2517,9 +2517,14 @@ signed integer."
     permitted_states = [ Negotiating; Connected; Closed ];
     shortdesc = "return a specific server block size constraint";
     longdesc = "\
-Returns a specific size constraint advertised by the server, if any.  If
-the return is zero, the server did not advertise a constraint.  C<size_type>
-must be one of the following constraints:
+Returns a specific block size constraint advertised by the server.
+If zero is returned it means the server did not advertise a constraint.
+
+Constraints are hints.  Servers differ in their behaviour as to
+whether they enforce constraints or not.
+
+The C<size_type> parameter selects which constraint to read.
+It can be one of:
 
 =over 4
 
@@ -2529,11 +2534,15 @@ If non-zero, this will be a power of 2 between 1 and 64k; any client
 request that is not aligned in length or offset to this size is likely
 to fail with C<EINVAL>.  The image size will generally also be a
 multiple of this value (if not, the final few bytes are inaccessible
-while obeying alignment constraints).  If zero, it is safest to
-assume a minimum block size of 512, although many servers support
-a minimum block size of 1.  If the server provides a constraint,
-then libnbd defaults to honoring that constraint client-side unless
-C<LIBNBD_STRICT_ALIGN> is cleared in C<nbd_set_strict_mode(3)>.
+while obeying alignment constraints).
+
+If zero (meaning no information was returned by the server), it is
+safest to assume a minimum block size of 512, although many servers
+support a minimum block size of 1.
+
+If the server provides a constraint, then libnbd defaults to honoring
+that constraint client-side unless C<LIBNBD_STRICT_ALIGN> is cleared
+in C<nbd_set_strict_mode(3)>.
 
 =item C<LIBNBD_SIZE_PREFERRED> = 1
 
@@ -2541,8 +2550,10 @@ If non-zero, this is a power of 2 representing the preferred size for
 efficient I/O.  Smaller requests may incur overhead such as
 read-modify-write cycles that will not be present when using I/O that
 is a multiple of this value.  This value may be larger than the size
-of the export.  If zero, using 4k as a preferred block size tends to
-give decent performance.
+of the export.
+
+If zero (meaning no information was returned by the server), using 4k
+as a preferred block size tends to give decent performance.
 
 =item C<LIBNBD_SIZE_MAXIMUM> = 2
 
@@ -2550,8 +2561,11 @@ If non-zero, this represents the maximum length that the server is
 willing to handle during L<nbd_pread(3)> or L<nbd_pwrite(3)>.  Other
 functions like L<nbd_zero(3)> may still be able to use larger sizes.
 Note that this function returns what the server advertised, but libnbd
-itself imposes a maximum of 64M.  If zero, some NBD servers will
-abruptly disconnect if a transaction involves more than 32M.
+itself imposes a maximum of 64M.
+
+If zero (meaning no information was returned by the server), some NBD
+servers will abruptly disconnect if a transaction sends or receives
+more than 32M of data.
 
 =item C<LIBNBD_SIZE_PAYLOAD> = 3
 
