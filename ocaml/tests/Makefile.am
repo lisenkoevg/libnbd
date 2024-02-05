@@ -69,7 +69,7 @@ if HAVE_OCAMLOPT
 check_SCRIPTS += $(tests_opt)
 endif
 
-%.bc: %.cmo ../mlnbd.cma
+%.bc: %.cmo ../mlnbd.cma ocaml_test_config.cmo
 	LD_LIBRARY_PATH=../../lib/.libs \
 	$(OCAMLFIND) ocamlc \
 	  $(OCAMLFLAGS) $(OCAMLPACKAGES) -linkpkg \
@@ -79,7 +79,7 @@ ocaml_test_config.cmo: ocaml_test_config.ml
 	$(OCAMLFIND) ocamlc $(OCAMLFLAGS) -c $< -o $@
 
 if HAVE_OCAMLOPT
-%.opt: %.cmx ../mlnbd.cmxa
+%.opt: %.cmx ../mlnbd.cmxa ocaml_test_config.cmx
 	LD_LIBRARY_PATH=../../lib/.libs \
 	$(OCAMLFIND) ocamlopt \
 	  $(OCAMLFLAGS) $(OCAMLPACKAGES) \
