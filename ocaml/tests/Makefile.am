@@ -51,7 +51,10 @@ ML_TESTS = \
 	test_620_stats.ml \
 	$(NULL)
 
-EXTRA_DIST = $(ML_TESTS)
+EXTRA_DIST = \
+	$(ML_TESTS) \
+	ocaml_test_config.mli \
+	$(NULL)
 
 if HAVE_OCAML
 if HAVE_NBDKIT

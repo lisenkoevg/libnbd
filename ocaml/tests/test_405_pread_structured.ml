@@ -21,20 +21,11 @@ open Ocaml_test_config
 
 open Printf
 
-(* NB: OCaml 4.08 has endian functions in the Bytes module which
- * would make this loop much simpler.
- *)
 let expected =
   let b = Bytes.create 512 in
   for i = 0 to 512/8-1 do
-    let i64 = ref (Int64.of_int (i*8)) in
-    for j = 0 to 7 do
-      let c = Int64.shift_right_logical !i64 56 in
-      let c = Int64.to_int c in
-      let c = Char.chr c in
-      Bytes.unsafe_set b (i*8+j) c;
-      i64 := Int64.shift_left !i64 8
-    done
+    let i64 = Int64.of_int (i*8) in
+    bytes_set_int64_be b (i*8) i64
   done;
   b
 

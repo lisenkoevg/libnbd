@@ -1,5 +1,5 @@
 (* hey emacs, this is OCaml code: -*- tuareg -*- *)
-(* libnbd OCaml test case
+(* libnbd OCaml test configuration
  * Copyright Red Hat
  *
  * This library is free software; you can redistribute it and/or
@@ -17,33 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
-open Ocaml_test_config
+val nbdkit : string
+(** The expansion of [@NBDKIT@] from [./configure] *)
 
-open Printf
+val srcdir : string
+(** [$srcdir] from the environment *)
 
-let expected =
-  let b = Bytes.create 512 in
-  for i = 0 to 512/8-1 do
-    let i64 = Int64.of_int (i*8) in
-    bytes_set_int64_be b (i*8) i64
-  done;
-  b
-
-let () =
-  let buf =
-    NBD.with_handle (
-      fun nbd ->
-        NBD.connect_command nbd
-                            [nbdkit; "-s"; "--exit-with-parent"; "-v";
-                             "pattern"; "size=512"];
-        let buf = Bytes.create 512 in
-        NBD.pread nbd buf 0_L;
-        buf
-    ) in
-
-  printf "buf = %S\n" (Bytes.to_string buf);
-  printf "expected = %S\n" (Bytes.to_string expected);
-
-  assert (buf = expected)
-
-let () = Gc.compact ()
+val bytes_set_int64_be : bytes -> int -> int64 -> unit
+(** Replacement for [Bytes.set_int64_be] *)
