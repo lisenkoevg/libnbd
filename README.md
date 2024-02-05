@@ -101,7 +101,7 @@ Recommended - if not present, some features will be disabled:
 Optional:
 
 * Perl Pod::Man and Pod::Simple to generate the documentation.
-* OCaml and ocamlfind are both needed to generate the OCaml bindings.
+* OCaml >= 4.05 and ocamlfind are both needed to generate the OCaml bindings.
 * Python >= 3.3 to build the Python 3 bindings and NBD shell (nbdsh).
 * FUSE 3 to build the nbdfuse program.
 * Linux >= 6.0 and ublksrv library to build nbdublk program.

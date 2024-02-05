@@ -438,9 +438,8 @@ PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
 ])
 AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
 
-dnl OCaml, required for running the generator when building from git,
-dnl optional the rest of the time unless you want to build the OCaml
-dnl bindings.
+dnl OCaml >= 4.05, required for running the generator when building
+dnl from git, or optional unless you want to build the OCaml bindings.
 AC_PROG_OCAML
 AC_PROG_FINDLIB
 
@@ -467,6 +466,23 @@ AM_CONDITIONAL([HAVE_OCAMLDOC],
 dnl HAVE_OCAMLC can be used to detect if we are able to run the
 dnl generator.  We should NOT require ocamlfind for this.
 AM_CONDITIONAL([HAVE_OCAMLC], [test "x$OCAMLC" != "xno"])
+
+dnl OCaml if present should be >= 4.05
+AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
+       test "x$enable_ocaml" = "xyes"],[
+    ocaml_ver_str=4.05
+    ocaml_min_major=4
+    ocaml_min_minor=5
+    AC_MSG_CHECKING([if OCaml version >= $ocaml_ver_str])
+    ocaml_major="`echo $OCAMLVERSION | $AWK -F. '{print $1}'`"
+    ocaml_minor="`echo $OCAMLVERSION | $AWK -F. '{print $2}' | sed 's/^0//'`"
+    AS_IF([test "$ocaml_major" -ge $((ocaml_min_major+1)) || ( test "$ocaml_major" -eq $ocaml_min_major && test "$ocaml_minor" -ge $ocaml_min_minor )],[
+        AC_MSG_RESULT([yes ($ocaml_major, $ocaml_minor)])
+    ],[
+        AC_MSG_RESULT([no])
+        AC_MSG_FAILURE([OCaml compiler is not new enough.  At least OCaml $ocaml_ver_str is required])
+    ])
+])
 
 dnl Check if OCaml has caml_alloc_custom_mem (added in OCaml 4.08).
 AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
