@@ -4436,7 +4436,7 @@ let sort_uniq_links links =
     | URLLink url -> 4, url
   in
   let cmp link1 link2 = compare (score link1) (score link2) in
-  sort_uniq ~cmp links
+  List.sort_uniq cmp links
 
 let extract_links =
   let link_rex = Str.regexp "L<\\([a-z0-9_]+\\)(\\([0-9]\\))>" in

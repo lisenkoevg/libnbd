@@ -367,7 +367,7 @@ let print_closure_structs () =
     let optargs = List.flatten optargs in
     let optargs =
       filter_map (function OClosure cb -> Some cb | _ -> None) optargs in
-    sort_uniq optargs in
+    List.sort_uniq compare optargs in
   List.iter (
     fun { cbname } ->
       pr "#define NBD_NULL_%s ((nbd_%s_callback) { .callback = NULL })\n"

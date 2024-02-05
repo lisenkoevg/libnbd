@@ -36,7 +36,6 @@ val failwithf : ('a, unit, string, 'b) format4 -> 'a
 val filter_map : ('a -> 'b option) -> 'a list -> 'b list
 val group_by : ('a * 'b) list -> ('a * 'b list) list
 val uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
-val sort_uniq : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
 val is_prefix : string -> string -> bool
 val find : string -> string -> int
 val split : string -> string -> string * string

@@ -56,14 +56,6 @@ let uniq ?(cmp = compare) xs =
   in
   List.rev (loop [] xs)
 
-(* This is present in OCaml 4.04, so we can remove it when
- * we depend on OCaml >= 4.04.
- *)
-let sort_uniq ?(cmp = compare) xs =
-  let xs = List.sort cmp xs in
-  let xs = uniq ~cmp xs in
-  xs
-
 let is_prefix str prefix =
   let n = String.length prefix in
   String.length str >= n && String.sub str 0 n = prefix
