@@ -18,8 +18,7 @@
 
 # Test AIO random load.
 
-. ../tests/functions.sh
-
+source ./functions.sh
 set -e
 set -x
 

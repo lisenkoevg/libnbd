@@ -18,8 +18,7 @@
 
 # Test synchronous parallel high level API requests.
 
-. ../tests/functions.sh
-
+source ./functions.sh
 set -e
 set -x
 

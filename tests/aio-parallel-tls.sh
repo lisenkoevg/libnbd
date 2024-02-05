@@ -18,8 +18,7 @@
 
 # Test AIO parallel data integrity.
 
-. ../tests/functions.sh
-
+source ./functions.sh
 set -e
 set -x
 

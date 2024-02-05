@@ -18,6 +18,10 @@
 
 # Test synchronous parallel high level API requests.
 
+source ./functions.sh
+set -e
+set -x
+
 nbdkit -U - \
        --filter=cow \
        pattern size=8M \
