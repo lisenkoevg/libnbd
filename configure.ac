@@ -468,7 +468,7 @@ dnl HAVE_OCAMLC can be used to detect if we are able to run the
 dnl generator.  We should NOT require ocamlfind for this.
 AM_CONDITIONAL([HAVE_OCAMLC], [test "x$OCAMLC" != "xno"])
 
-dnl Check if OCaml has caml_alloc_custom_mem (added late 2018).
+dnl Check if OCaml has caml_alloc_custom_mem (added in OCaml 4.08).
 AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
        test "x$enable_ocaml" = "xyes"],[
     AC_MSG_CHECKING([for caml_alloc_custom_mem])
@@ -486,7 +486,7 @@ EOF
     rm -f conftest.c conftest.o
 ])
 
-dnl Check if OCaml has caml_alloc_initialized_string (added 2017).
+dnl Check if OCaml has caml_alloc_initialized_string (added in OCaml 4.06).
 AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
        test "x$enable_ocaml" = "xyes"],[
     AC_MSG_CHECKING([for caml_alloc_initialized_string])
@@ -504,7 +504,8 @@ EOF
     rm -f conftest.c conftest.o
 ])
 
-dnl Check if OCaml has caml_unix_get_sockaddr (added 2022).
+dnl Check if OCaml has caml_unix_get_sockaddr
+dnl (added in OCaml 4.14, previously called 'get_sockaddr').
 AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
        test "x$enable_ocaml" = "xyes"],[
     AC_MSG_CHECKING([for caml_unix_get_sockaddr])
