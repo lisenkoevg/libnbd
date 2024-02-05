@@ -22,7 +22,7 @@ source ./functions.sh
 set -e
 set -x
 
-nbdkit -U - \
-       --filter=cow \
-       pattern size=8M \
-       --run '$VG ./synch-parallel $unixsocket'
+$NBDKIT -U - \
+        --filter=cow \
+        pattern size=8M \
+        --run '$VG ./synch-parallel $unixsocket'

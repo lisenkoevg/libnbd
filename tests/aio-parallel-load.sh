@@ -22,5 +22,5 @@ source ./functions.sh
 set -e
 set -x
 
-nbdkit -U - memory size=64M \
-       --run './aio-parallel-load $unixsocket'
+$NBDKIT -U - memory size=64M \
+        --run './aio-parallel-load $unixsocket'

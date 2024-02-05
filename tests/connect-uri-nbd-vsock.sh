@@ -28,11 +28,11 @@ requires_linux_kernel_version 5.6
 requires_vsock_support
 
 # This test requires nbdkit >= 1.16 which added the --vsock option.
-requires nbdkit --version
-minor=$( nbdkit --dump-config | grep ^version_minor | cut -d= -f2 )
+requires $NBDKIT --version
+minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
 requires test $minor -ge 16
 
-requires nbdkit pattern --version
+requires $NBDKIT pattern --version
 
 # Check we built nbdinfo (this implicitly checks we have libxml2).
 requires nbdinfo --version
@@ -52,6 +52,6 @@ port=$(( 1024 + $RANDOM + ($RANDOM << 11) ))
 # 1 == VMADDR_CID_LOCAL
 export our_uri="nbd+vsock://1:$port"
 
-nbdkit --vsock --port $port \
-       pattern size=8M \
-       --run 'nbdinfo "$our_uri"'
+$NBDKIT --vsock --port $port \
+        pattern size=8M \
+        --run 'nbdinfo "$our_uri"'

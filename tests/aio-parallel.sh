@@ -22,7 +22,7 @@ source ./functions.sh
 set -e
 set -x
 
-nbdkit -U - \
+$NBDKIT -U - \
        --filter=cow \
        pattern size=64M \
        --run '$VG ./aio-parallel $unixsocket'

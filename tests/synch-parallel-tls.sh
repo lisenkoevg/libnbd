@@ -22,9 +22,9 @@ source ./functions.sh
 set -e
 set -x
 
-requires nbdkit --tls-verify-peer -U - null --run 'exit 0'
+requires $NBDKIT --tls-verify-peer -U - null --run 'exit 0'
 
-nbdkit -U - --tls=require --tls-verify-peer --tls-psk=keys.psk \
-       --filter=cow \
-       pattern size=8M \
-       --run './synch-parallel-tls $unixsocket'
+$NBDKIT -U - --tls=require --tls-verify-peer --tls-psk=keys.psk \
+        --filter=cow \
+        pattern size=8M \
+        --run './synch-parallel-tls $unixsocket'
