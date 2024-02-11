@@ -354,6 +354,18 @@ die "$progname: $input: NAME doesn't match man page name\n"
 die "$progname: $input: NAME does not conform with Linux man pages standard\n"
     if $name[0] !~ m/- [a-z]/ || $name[@name-1] =~ m/\.$/;
 
+unless ($allow_long_lines) {
+    # Check no over-long lines in the input.  (As a special exception
+    # this is permitted in verbatim sections or if the line contains a
+    # URL).
+    foreach (@lines) {
+        die "$progname: $input: line too long:\n$_\n"
+            if length $_ > 76 &&
+            substr ($_, 0, 1) ne ' ' &&
+            ! m/https?:/;
+    }
+}
+
 # Add standard LICENSE section at the end.
 my $license_lgplv2plus = "\
 This library is free software; you can redistribute it and/or
@@ -413,19 +425,6 @@ SUCH DAMAGE.
 
 $content .= "\n=head1 LICENSE\n";
 $content .= eval "\$license_$package_license";
-
-@lines = split /\n/, $content;
-unless ($allow_long_lines) {
-    # Check no over-long lines in the input.  (As a special exception
-    # this is permitted in verbatim sections or if the line contains a
-    # URL).
-    foreach (@lines) {
-        die "$progname: $input: line too long:\n$_\n"
-            if length $_ > 76 &&
-            substr ($_, 0, 1) ne ' ' &&
-            ! m/https?:/;
-    }
-}
 
 # Output man page.
 SUBMAN: {
