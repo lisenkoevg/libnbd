@@ -25,6 +25,7 @@ EXTRA_DIST = \
 	.gitattributes \
 	.gitignore \
 	.ocamlformat \
+	contrib/libnbd.m4 \
 	html/pod.css \
 	README.md \
 	rustfmt.toml \
