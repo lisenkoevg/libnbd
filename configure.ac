@@ -421,21 +421,31 @@ AC_ARG_ENABLE([libfuzzer],
 AM_CONDITIONAL([ENABLE_LIBFUZZER],[test "x$enable_libfuzzer" = "xyes"])
 
 dnl Bash completion.
-PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
-    bash_completion=yes
-    AC_MSG_CHECKING([for bash-completions directory])
-    m4_ifdef([PKG_CHECK_VAR],[
-        PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir])
+AC_ARG_WITH([bash-completions],
+    [AS_HELP_STRING([--without-bash-completions], [disable installing bash completions @<:@default=check@:>@])])
+
+AS_IF([test "x$with_bash_completions" != xno], [
+    PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0], [
+        bash_completion=yes
+        AC_MSG_CHECKING([for bash-completions directory])
+        m4_ifdef([PKG_CHECK_VAR],[
+            PKG_CHECK_VAR(bashcompdir, [bash-completion], [completionsdir])
+        ])
+        AS_IF([test -z "$bashcompdir"], [
+            bashcompdir="${sysconfdir}/bash_completion.d"
+        ])
+        AC_MSG_RESULT([$bashcompdir])
+        AC_SUBST([bashcompdir])
+    ],[
+        bash_completion=no
+        AC_MSG_WARN([bash-completion not installed])
     ])
-    AS_IF([test -z "$bashcompdir"], [
-        bashcompdir="${sysconfdir}/bash_completion.d"
-    ])
-    AC_MSG_RESULT([$bashcompdir])
-    AC_SUBST([bashcompdir])
-],[
-    bash_completion=no
-    AC_MSG_WARN([bash-completion not installed])
 ])
+
+AS_IF([test "x$bash_completion" = xno && test "x$with_bash_completions" = xyes], [
+    AC_MSG_ERROR([bash-completions requested but required packages not found])
+])
+
 AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
 
 dnl OCaml >= 4.05, required for running the generator when building
