@@ -281,6 +281,9 @@ STATE_MACHINE {
       SET_NEXT_STATE (%.NEGOTIATING);
     }
     else {
+      /* Treat ignored error as success only if list is still empty */
+      if (opt == NBD_OPT_SET_META_CONTEXT)
+        h->meta_valid = h->meta_contexts.len == 0;
       debug (h, "handshake: ignoring unexpected error from "
              "NBD_OPT_SET_META_CONTEXT (%" PRIu32 ")", reply);
       SET_NEXT_STATE (%^OPT_GO.START);
