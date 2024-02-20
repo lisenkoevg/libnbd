@@ -94,7 +94,7 @@ Requirements:
   Other OSes may also work but we have only tested these three.
 * GCC or Clang
 * GNU make
-* bash
+* bash >= 4
 
 Required for building from git, optional for building from tarballs:
 
