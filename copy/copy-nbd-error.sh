@@ -31,9 +31,17 @@ requires $NBDKIT --filter=nozero memory --version
 
 fail=0
 
+# Failure to negotiate block status should not be fatal, but merely downgrade
+# to reading the entire image as if data
+if $NBDKIT --help | grep 'no-meta-contexts'; then
+    echo "Testing early extents failures on source"
+    $VG nbdcopy -- [ $NBDKIT --exit-with-parent -v --no-meta-contexts \
+        pattern 5M ] null: || fail=1
+fi
+
 # Failure to get block status should not be fatal, but merely downgrade to
 # reading the entire image as if data
-echo "Testing extents failures on source"
+echo "Testing late extents failures on source"
 $VG nbdcopy -- [ $NBDKIT --exit-with-parent -v --filter=error pattern 5M \
     error-extents-rate=1 ] null: || fail=1
 
