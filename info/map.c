@@ -62,7 +62,7 @@ do_map (void)
   }
 
   /* Did we get the requested map? */
-  if (!nbd_can_meta_context (nbd, map)) {
+  if (nbd_can_meta_context (nbd, map) < 1) {
     fprintf (stderr,
              "%s: --map: server does not support metadata context \"%s\"\n",
              progname, map);

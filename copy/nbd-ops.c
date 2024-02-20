@@ -236,7 +236,7 @@ nbd_ops_can_extents (struct rw *rw)
   struct rw_nbd *rwn = (struct rw_nbd *)rw;
 
   if (rwn->handles.len > 0)
-    return nbd_can_meta_context (rwn->handles.ptr[0], "base:allocation");
+    return nbd_can_meta_context (rwn->handles.ptr[0], "base:allocation") > 0;
   else
     return false;
 }
