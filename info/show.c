@@ -355,10 +355,20 @@ get_content (struct nbd_handle *nbd, int64_t size)
   if (!probe_content)
     return NULL;
 
-  if (nbd_aio_is_negotiating (nbd) &&
-      nbd_opt_go (nbd) == -1) {
-    fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
-    exit (EXIT_FAILURE);
+  if (nbd_aio_is_negotiating (nbd)) {
+    if (nbd_opt_go (nbd) == -1) {
+      fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
+      exit (EXIT_FAILURE);
+    }
+    /* nbd-server 3.25 only reports accurate size to NBD_OPT_GO and 0
+     * to NBD_OPT_INFO; this hack won't fix what we report for size,
+     * but improves what we report for contents.
+     */
+    if (size == 0) {
+      size = nbd_get_size (nbd);
+      if (size == -1)
+        size = 0;
+    }
   }
 
   /* Write the first part of the NBD export to a temporary file. */
