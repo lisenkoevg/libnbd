@@ -201,6 +201,7 @@ main (int argc, char *argv[])
     fprintf (stderr, "expecting export name 'good', got '%s'\n", s);
     exit (EXIT_FAILURE);
   }
+  free (s);
   if (nbd_opt_info (nbd) != -1) {
     fprintf (stderr, "expecting error for opt_info\n");
     exit (EXIT_FAILURE);
