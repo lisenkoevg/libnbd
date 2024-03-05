@@ -16,11 +16,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* This is a libFuzzer test case for libnbd.  The way it works is
- * similar to the AFL wrapper (libnbd-fuzz-wrapper), feeding the
- * binary data into the libnbd socket from a forked process.  But the
- * mechanics are slightly different because libFuzzer calls a C
- * function with the test case instead of providing it in a file.
+/* This is a libFuzzer test case for libnbd.
+ *
+ * XXX Note:
+ *
+ * - This case is mostly unmaintained.  The maintainers use AFL++ for
+ *   fuzzing (see libnbd-fuzz-wrapper.c).
  */
 
 #include <config.h>
