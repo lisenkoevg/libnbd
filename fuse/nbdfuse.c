@@ -406,7 +406,7 @@ main (int argc, char *argv[])
   if (connections > 1 &&
       mode_is_multi_conn_compatible (mode) &&
       nbd_can_multi_conn (nbd.ptr[0]) >= 1) {
-    if (handles_reserve (&nbd, connections-1) == -1) {
+    if (handles_reserve_exactly (&nbd, connections-1) == -1) {
       perror ("realloc");
       exit (EXIT_FAILURE);
     }

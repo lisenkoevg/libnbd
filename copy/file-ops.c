@@ -116,7 +116,7 @@ page_cache_map (struct rw_file *rwf)
 
   const size_t veclen = ROUND_UP (rwf->rw.size, page_size) / page_size;
 
-  if (byte_vector_reserve (&rwf->cached_pages, veclen) == -1)
+  if (byte_vector_reserve_exactly (&rwf->cached_pages, veclen) == -1)
     goto out;
   if (mincore (ptr, rwf->rw.size, rwf->cached_pages.ptr) == -1)
     goto out;
