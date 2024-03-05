@@ -398,8 +398,11 @@ get_content (struct nbd_handle *nbd, int64_t size)
   if (fp == NULL)
     goto out;
   r = getline (&ret, &len, fp);
-  if (r == -1)
+  if (r == -1) {
+    free(ret);
+    ret = NULL;
     goto out;
+  }
 
   /* Remove trailing \n. */
   if (r > 0 && ret[r-1] == '\n')
