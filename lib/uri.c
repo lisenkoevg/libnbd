@@ -422,7 +422,9 @@ nbd_unlocked_get_uri (struct nbd_handle *h)
   else
     using_tls = false;
 
-  /* Set scheme, server or socket. */
+  /* First set uri.scheme and uri.server. */
+
+  /* We have a defined hostname and/or port number (nbd_connect_tcp). */
   if (h->hostname && h->port) {
     int r;
 
@@ -442,6 +444,7 @@ nbd_unlocked_get_uri (struct nbd_handle *h)
     uri.server = server;
   }
 
+  /* We have a sockaddr (nbd_connect, nbd_connect_unix, nbd_connect_vsock). */
   else if (h->connaddrlen > 0) {
     switch (h->connaddr.ss_family) {
     case AF_INET:
@@ -514,12 +517,13 @@ nbd_unlocked_get_uri (struct nbd_handle *h)
     }
   }
 
+  /* Not enough information (nbd_connect_socket). */
   else {
     set_error (EINVAL, "cannot construct a URI for this connection type");
     goto out;
   }
 
-  /* Set other fields. */
+  /* Set other uri.* fields. */
   if (h->tls_username)
     uri.user = h->tls_username;
   if (h->export_name) {
