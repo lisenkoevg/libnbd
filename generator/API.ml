@@ -2505,7 +2505,10 @@ Returns the size in bytes of the NBD export.
 
 Note that this call fails with C<EOVERFLOW> for an unlikely
 server that advertises a size which cannot fit in a 64-bit
-signed integer."
+signed integer.
+
+L<nbdinfo(1)> I<--size> option is a way to access this API
+from shell scripts."
 ^ non_blocking_test_call_description;
     see_also = [SectionLink "Size of the export"; Link "opt_info"];
     example = Some "examples/get-size.c";
