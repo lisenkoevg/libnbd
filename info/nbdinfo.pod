@@ -17,6 +17,10 @@ C<NBD> is an NBD URI or subprocess:
 
 =for paragraph
 
+ nbdinfo --uri [--json] NBD
+
+=for paragraph
+
  nbdinfo --is read-only|rotational NBD
 
 =for paragraph
@@ -123,6 +127,13 @@ scripting) use the I<--size> parameter:
 
  $ nbdinfo --size [ nbdkit null 1M ]
  1048576
+
+=head2 URI
+
+To display the canonical URI:
+
+ $ nbdinfo --uri nbd://localhost
+ nbd://localhost:10809/
 
 =head2 Test for flags
 
@@ -447,6 +458,11 @@ See the L</Map totals> section above.
 =item B<--size>
 
 Display only the size in bytes of the export.
+
+=item B<--uri>
+
+Display only the canonical URI.  If combined with I<--json> then the
+output is a JSON-quoted string.
 
 =item B<-V>
 

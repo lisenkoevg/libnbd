@@ -34,6 +34,7 @@ extern const char *can;
 extern const char *map;
 extern bool size_only;
 extern bool totals;
+extern bool uri_only;
 
 void do_connect (struct nbd_handle *);
 bool uri_is_meaningful (void);
@@ -56,6 +57,9 @@ extern bool show_one_export (struct nbd_handle *nbd, const char *desc,
 
 /* size.c */
 extern void do_size (void);
+
+/* uri.c */
+extern void do_uri (void);
 
 /* utils.c */
 extern void print_json_string (const char *);

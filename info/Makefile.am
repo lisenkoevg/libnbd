@@ -38,7 +38,9 @@ info_sh_files = \
 	info-size.sh \
 	info-text.sh \
 	info-uri.sh \
+	info-uri-json.sh \
 	info-uri-nbds.sh \
+	info-uri-quoting.sh \
 	info-description.sh \
 	info-description-qemu.sh \
 	info-map-base-allocation.sh \
@@ -77,6 +79,7 @@ nbdinfo_SOURCES = \
 	map.c \
 	show.c \
 	size.c \
+	uri.c \
 	utils.c \
 	$(NULL)
 nbdinfo_CPPFLAGS = \

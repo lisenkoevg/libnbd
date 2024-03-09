@@ -4204,7 +4204,10 @@ C<NULL> and further diagnostic information is available
 via L<nbd_get_errno(3)> and L<nbd_get_error(3)> as usual.
 
 Even if a URI is returned it is not guaranteed to work, and
-it may not be optimal.";
+it may not be optimal.
+
+L<nbdinfo(1)> I<--uri> option is a way to access this API
+from shell scripts.";
     see_also = [Link "connect_uri"; Link "aio_connect_uri";
                 Link "supports_uri"];
   };

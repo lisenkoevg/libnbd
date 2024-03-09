@@ -46,6 +46,7 @@ const char *can = NULL;         /* --is/--can option */
 const char *map = NULL;         /* --map option */
 bool size_only = false;         /* --size option */
 bool totals = false;            /* --totals option */
+bool uri_only = false;          /* --uri option */
 
 /* See do_connect () */
 static enum { MODE_URI = 1, MODE_SQUARE_BRACKET } mode;
@@ -60,6 +61,7 @@ usage (FILE *fp, int exitcode)
 "\n"
 "    nbdinfo [--json] NBD-URI | [ CMD ARGS ... ]\n"
 "    nbdinfo --size [--json] NBD-URI | [ CMD ARGS ... ]\n"
+"    nbdinfo --uri [--json] NBD-URI\n"
 "    nbdinfo --is read-only|rotational NBD-URI | [ CMD ARGS ... ]\n"
 "    nbdinfo --can cache|connect|... NBD-URI | [ CMD ARGS ... ]\n"
 "    nbdinfo --map [--totals] [--json] NBD-URI | [ CMD ARGS ... ]\n"
@@ -75,6 +77,7 @@ usage (FILE *fp, int exitcode)
 "    nbdinfo nbd://localhost\n"
 "    nbdinfo \"nbd+unix:///?socket=/tmp/unixsock\"\n"
 "    nbdinfo --size nbd://example.com\n"
+"    nbdinfo --uri nbd://example.com\n"
 "    nbdinfo --can connect nbd://example.com\n"
 "    nbdinfo --is read-only nbd://example.com\n"
 "    nbdinfo --map nbd://example.com\n"
@@ -115,6 +118,7 @@ main (int argc, char *argv[])
     MAP_OPTION,
     SIZE_OPTION,
     TOTALS_OPTION,
+    URI_OPTION,
   };
   const char *short_options = "LV";
   const struct option long_options[] = {
@@ -141,6 +145,7 @@ main (int argc, char *argv[])
     { "size",               no_argument,       NULL, SIZE_OPTION },
     { "total",              no_argument,       NULL, TOTALS_OPTION },
     { "totals",             no_argument,       NULL, TOTALS_OPTION },
+    { "uri",                no_argument,       NULL, URI_OPTION },
     { "version",            no_argument,       NULL, 'V' },
     { NULL }
   };
@@ -213,6 +218,10 @@ main (int argc, char *argv[])
       totals = true;
       break;
 
+    case URI_OPTION:
+      uri_only = true;
+      break;
+
     case 'L':
       list_all = true;
       break;
@@ -243,9 +252,9 @@ main (int argc, char *argv[])
   }
 
   /* You cannot combine certain options. */
-  if (!!list_all + !!can + !!map + !!size_only > 1) {
+  if (!!list_all + !!can + !!map + !!size_only + !!uri_only > 1) {
     fprintf (stderr,
-             "%s: you cannot use --list, --map and --size together.\n",
+             "%s: you cannot use --list, --map, --size and --uri together.\n",
              progname);
     exit (EXIT_FAILURE);
   }
@@ -293,7 +302,7 @@ main (int argc, char *argv[])
 
   /* Set optional modes in the handle. */
   nbd_set_opt_mode (nbd, true);
-  if (!can && !map && !size_only)
+  if (!can && !map && !size_only && !uri_only)
     nbd_set_full_info (nbd, true);
   if (map)
     nbd_add_meta_context (nbd, map);
@@ -307,11 +316,13 @@ main (int argc, char *argv[])
 
   if (size_only)                /* --size (!list_all) */
     do_size ();
+  else if (uri_only)            /* --uri (!list_all) */
+    do_uri ();
   else if (can)                 /* --is/--can/--has (!list_all) */
     do_can ();
   else if (map)                 /* --map (!list_all) */
     do_map ();
-  else {                        /* not --size or --map */
+  else {                        /* not --size, --uri, --is or --map */
     const char *protocol;
     int tls_negotiated;
     int sr_negotiated;

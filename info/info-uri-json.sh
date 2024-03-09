@@ -16,10 +16,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
-# This tests the --uri parameter.
-#
-# Note that 'info-uri-quoting.sh' is a more thorough test of the URI
-# feature in general (eg. of quoting).
+# This tests --uri + --json.
 
 . ../tests/functions.sh
 
@@ -29,10 +26,10 @@ set -x
 requires $NBDKIT --version
 requires $NBDKIT memory --version
 
-out=info-uri2.out
+out=info-uri-json.out
 cleanup_fn rm -f $out
 
 $NBDKIT -U - memory size=$((512*1024*1024)) \
-        --run '$VG nbdinfo --uri "nbd+unix:///?socket=$unixsocket"' > $out
+        --run '$VG nbdinfo --uri --json "nbd+unix:///?socket=$unixsocket"' > $out
 cat $out
-grep '^nbd+unix:///?socket=' $out
+grep '^"nbd+unix:///?socket=' $out
