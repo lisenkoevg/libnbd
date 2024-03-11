@@ -42,4 +42,5 @@ do_uri (void)
   else
     print_json_string (uri);
   fputc ('\n', fp);
+  free (uri);
 }
