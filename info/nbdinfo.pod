@@ -214,6 +214,9 @@ Test other properties of the NBD server export.
 
 =back
 
+In fact I<--can>, I<--is> and I<--has> are synonyms, you can use them
+interchangeably.
+
 =head2 Map
 
 To show a map of which areas of the disk are allocated and sparse, use
