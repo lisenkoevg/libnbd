@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <libnbd.h>
 
@@ -32,6 +33,8 @@ void
 do_can (void)
 {
   int feature;
+
+  assert (can);
 
   if (strcasecmp (can, "connect") == 0 ||
       strcasecmp (can, "read") == 0)
