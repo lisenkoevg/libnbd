@@ -16,6 +16,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/* Handle --can and --cannot flags (and synonyms). */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -109,8 +111,9 @@ do_can (void)
     feature = nbd_can_zero (nbd);
 
   else {
-    fprintf (stderr, "%s: unknown --can/--is/--has option: %s\n",
-             progname, can);
+    const char *what =
+      !cannot ? "--can/--is/--has" : "--cannot/--isnt/--hasnt";
+    fprintf (stderr, "%s: unknown %s option: %s\n", progname, what, can);
     exit (EXIT_FAILURE);
   }
 
@@ -118,6 +121,10 @@ do_can (void)
     fprintf (stderr, "%s: %s\n", progname, nbd_get_error ());
     exit (EXIT_FAILURE);
   }
+
+  /* If cannot, negate the result. */
+  if (cannot)
+    feature = !feature;
 
   /* Translate the feature bool into an exit code.  This is used in main(). */
   can_exit_code = feature ? EXIT_SUCCESS : 2;

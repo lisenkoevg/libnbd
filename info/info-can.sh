@@ -34,6 +34,8 @@ requires bash -c "$NBDKIT sh --dump-plugin | grep has_can_cache=1"
 
 # --can zero is tested in info-can-zero.sh
 
+# --cannot is tested in info-cannot.sh
+
 # --can df is hard to test.  nbdkit newstyle probably always sets this
 # and oldstyle never, but that feels like depending a bit too much on
 # the implementation.

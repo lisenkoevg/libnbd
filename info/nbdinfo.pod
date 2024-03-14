@@ -22,10 +22,12 @@ C<NBD> is an NBD URI or subprocess:
 =for paragraph
 
  nbdinfo --is read-only|rotational NBD
+ nbdinfo --isnt read-only|rotational NBD
 
 =for paragraph
 
  nbdinfo --can cache|connect|... NBD
+ nbdinfo --cannot cache|connect|... NBD
 
 =for paragraph
 
@@ -137,14 +139,17 @@ To display the canonical URI:
 
 =head2 Test for flags
 
-Use one of the options below to test NBD flags.  The command does not
-print anything.  Instead it exits with success (S<exit code 0>) if
-true, or failure (S<exit code 2>) if false.  (Other exit codes
-indicate an error querying the flag).  You can use it in shell scripts
-like this:
+Use one of the I<--can>, I<--is> or I<--has> options below to test NBD
+flags.  The command does not print anything.  Instead it exits with
+success (S<exit code 0>) if true, or failure (S<exit code 2>) if
+false.  (Other exit codes indicate an error querying the flag).
+
+I<--cannot>, I<--isnt> and I<--hasnt> negate the test.
+
+You can use it in shell scripts like this:
 
  if nbdinfo --is read-only nbd://localhost ||
-    ! nbdinfo --can trim nbd://localhost
+    nbdinfo --cannot trim nbd://localhost
  then
      error "the device must support writing and trimming"
  fi
@@ -214,7 +219,8 @@ Test other properties of the NBD server export.
 
 =back
 
-In fact I<--can>, I<--is> and I<--has> are synonyms, you can use them
+In fact I<--can>/I<--is>/I<--has>, and
+I<--cannot>/I<--isnt>/I<--hasnt> are synonyms, you can use them
 interchangeably.
 
 =head2 Map
@@ -368,6 +374,10 @@ L<nbd_can_df(3)>, L<nbd_can_fast_zero(3)>, L<nbd_can_flush(3)>,
 L<nbd_can_fua(3)>, L<nbd_can_multi_conn(3)>, L<nbd_can_trim(3)>,
 L<nbd_can_zero(3)>, L<nbd_is_read_only(3)>.
 
+=item B<--cannot> flag
+
+Test the negation of flag.
+
 =item B<--color>
 
 =item B<--colour>
@@ -410,6 +420,10 @@ and the following libnbd functions:
 L<nbd_get_extended_headers_negotiated(3)>,
 L<nbd_get_structured_replies_negotiated(3)>.
 
+=item B<--hasnt> flag
+
+Test the negation of flag.
+
 =item B<--is read-only>
 
 =item B<--is rotational>
@@ -426,6 +440,10 @@ For further information see the L<NBD
 protocol|https://github.com/NetworkBlockDevice/nbd/blob/master/doc/proto.md>
 and the following libnbd functions: L<nbd_is_read_only(3)>,
 L<nbd_is_rotational(3)>, L<nbd_get_tls_negotiated(3)>.
+
+=item B<--isnt> flag
+
+Test the negation of flag.
 
 =item B<--json>
 

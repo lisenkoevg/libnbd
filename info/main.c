@@ -43,6 +43,7 @@ bool list_all = false;          /* --list option */
 bool probe_content = false;     /* --content / --no-content option */
 bool json_output = false;       /* --json option */
 const char *can = NULL;         /* --is/--can option */
+bool cannot = false;            /* --can option is negated */
 const char *map = NULL;         /* --map option */
 bool size_only = false;         /* --size option */
 bool totals = false;            /* --totals option */
@@ -115,6 +116,7 @@ main (int argc, char *argv[])
     NO_CONTENT_OPTION,
     JSON_OPTION,
     CAN_OPTION,
+    CANNOT_OPTION,
     MAP_OPTION,
     SIZE_OPTION,
     TOTALS_OPTION,
@@ -124,6 +126,9 @@ main (int argc, char *argv[])
   const struct option long_options[] = {
     { "help",               no_argument,       NULL, HELP_OPTION },
     { "can",                required_argument, NULL, CAN_OPTION },
+    { "cannot",             required_argument, NULL, CANNOT_OPTION },
+    { "can-not",            required_argument, NULL, CANNOT_OPTION },
+    { "cant",               required_argument, NULL, CANNOT_OPTION },
     { "color",              no_argument,       NULL, COLOUR_OPTION },
     { "colors",             no_argument,       NULL, COLOUR_OPTION },
     { "colour",             no_argument,       NULL, COLOUR_OPTION },
@@ -135,8 +140,17 @@ main (int argc, char *argv[])
     { "content",            no_argument,       NULL, CONTENT_OPTION },
     { "no-content",         no_argument,       NULL, NO_CONTENT_OPTION },
     { "has",                required_argument, NULL, CAN_OPTION },
+    { "hasnot",             required_argument, NULL, CANNOT_OPTION },
+    { "has-not",            required_argument, NULL, CANNOT_OPTION },
+    { "hasnt",              required_argument, NULL, CANNOT_OPTION },
     { "have",               required_argument, NULL, CAN_OPTION },
+    { "havent",             required_argument, NULL, CANNOT_OPTION },
+    { "havenot",            required_argument, NULL, CANNOT_OPTION },
+    { "have-not",           required_argument, NULL, CANNOT_OPTION },
     { "is",                 required_argument, NULL, CAN_OPTION },
+    { "isnot",              required_argument, NULL, CANNOT_OPTION },
+    { "is-not",             required_argument, NULL, CANNOT_OPTION },
+    { "isnt",               required_argument, NULL, CANNOT_OPTION },
     { "json",               no_argument,       NULL, JSON_OPTION },
     { "list",               no_argument,       NULL, 'L' },
     { "long-options",       no_argument,       NULL, LONG_OPTIONS },
@@ -206,6 +220,11 @@ main (int argc, char *argv[])
       can = optarg;
       break;
 
+    case CANNOT_OPTION:
+      can = optarg;
+      cannot = true;
+      break;
+
     case MAP_OPTION:
       map = optarg ? optarg : "base:allocation";
       break;
@@ -254,7 +273,7 @@ main (int argc, char *argv[])
   /* You cannot combine certain options. */
   if (!!list_all + !!can + !!map + !!size_only + !!uri_only > 1) {
     fprintf (stderr,
-             "%s: you cannot use --can, --list, --map, --size "
+             "%s: you cannot use --can, --cannot, --list, --map, --size "
              "and --uri together.\n",
              progname);
     exit (EXIT_FAILURE);
@@ -319,7 +338,7 @@ main (int argc, char *argv[])
     do_size ();
   else if (uri_only)            /* --uri (!list_all) */
     do_uri ();
-  else if (can)                 /* --is/--can/--has (!list_all) */
+  else if (can)                 /* --can/--cannot (!list_all) */
     do_can ();
   else if (map)                 /* --map (!list_all) */
     do_map ();
