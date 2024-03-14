@@ -254,7 +254,8 @@ main (int argc, char *argv[])
   /* You cannot combine certain options. */
   if (!!list_all + !!can + !!map + !!size_only + !!uri_only > 1) {
     fprintf (stderr,
-             "%s: you cannot use --list, --map, --size and --uri together.\n",
+             "%s: you cannot use --can, --list, --map, --size "
+             "and --uri together.\n",
              progname);
     exit (EXIT_FAILURE);
   }
