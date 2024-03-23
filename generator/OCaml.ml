@@ -222,11 +222,17 @@ module Buffer : sig
       In libnbd ≥ 1.20 you can read from the bigarray directly to avoid
       copying if you want. *)
 
+  val to_string : t -> string
+  (** Same as {!to_bytes} but returns a [string] instead. *)
+
   val of_bytes : bytes -> t
   (** Copy an OCaml [bytes] object to a newly allocated buffer.
 
       In libnbd ≥ 1.20 you can write to the bigarray directly to avoid
       copying if you want. *)
+
+  val of_string : string -> t
+  (** Same as {!of_bytes} but takes a [string] instead. *)
 
   val size : t -> int
   (** Return the size of the buffer.
@@ -358,11 +364,18 @@ module Buffer = struct
   let size = Bigarray.Array1.dim
 
   external to_bytes : t -> bytes = \"nbd_internal_ocaml_buffer_to_bytes\"
+  external to_string : t -> string = \"nbd_internal_ocaml_buffer_to_bytes\"
   external _of_bytes : bytes -> t -> unit =
+    \"nbd_internal_ocaml_buffer_of_bytes\"
+  external _of_string : string -> t -> unit =
     \"nbd_internal_ocaml_buffer_of_bytes\"
   let of_bytes b =
     let buf = alloc (Bytes.length b) in
     _of_bytes b buf;
+    buf
+  let of_string s =
+    let buf = alloc (String.length s) in
+    _of_string s buf;
     buf
 end
 
