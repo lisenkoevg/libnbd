@@ -17,31 +17,49 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+(* Note: Uses the old NBD.Buffer.t from libnbd <= 1.18 *)
+
 open Ocaml_test_config
 
-let expected =
-  let b = Bytes.create 512 in
-  for i = 0 to 512/8-1 do
-    let i64 = Int64.of_int (i*8) in
-    bytes_set_int64_be b (i*8) i64
-  done;
-  Bytes.to_string b
+open Unix
 
 let () =
+  let buf = Bytes.make 512 '\000' in
+  Bytes.set buf 10 '\001';
+  Bytes.set buf 510 '\x55';
+  Bytes.set buf 511 '\xAA';
+
+  let datafile, chan =
+    Filename.open_temp_file ~mode:[Open_binary] "510" ".data" in
+  let fd = descr_of_out_channel chan in
+  ftruncate fd 512;
+  close_out chan;
+
   let nbd = NBD.create () in
   NBD.connect_command nbd [nbdkit; "-s"; "--exit-with-parent"; "-v";
-                           "pattern"; "size=512"];
+                           "file"; datafile];
 
-  let buf = NBD.Buffer.alloc 512 in
-  let cookie = NBD.aio_pread nbd buf 0_L in
+  let buf1 = NBD.Buffer.of_bytes buf in
+  let flags = let open NBD.CMD_FLAG in [FUA] in
+  let cookie = NBD.aio_pwrite nbd buf1 0_L ~flags in
   while not (NBD.aio_command_completed nbd cookie) do
     ignore (NBD.poll nbd (-1))
   done;
 
-  assert (NBD.Buffer.size buf = 512);
-  assert (String.length expected = 512);
-  for i = 0 to 511 do
-    assert (buf.{i} = expected.[i])
-  done
+  let buf2 = NBD.Buffer.alloc 512 in
+  let cookie = NBD.aio_pread nbd buf2 0_L in
+  while not (NBD.aio_command_completed nbd cookie) do
+    ignore (NBD.poll nbd (-1))
+  done;
+
+  assert (buf = NBD.Buffer.to_bytes buf2);
+
+  let fd = openfile datafile [O_RDONLY] 0 in
+  let content = Bytes.create 512 in
+  assert (512 = read fd content 0 512);
+  close fd;
+  assert (buf = content);
+
+  unlink datafile
 
 let () = Gc.compact ()

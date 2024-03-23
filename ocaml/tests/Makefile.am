@@ -42,8 +42,11 @@ ML_TESTS = \
 	test_460_block_status.ml \
 	test_465_block_status_64.ml \
 	test_500_aio_pread.ml \
+	test_500_aio_pread_old_buffer.ml \
 	test_505_aio_pread_structured_callback.ml \
+	test_505_aio_pread_structured_callback_old_buffer.ml \
 	test_510_aio_pwrite.ml \
+	test_510_aio_pwrite_old_buffer.ml \
 	test_580_aio_connect.ml \
 	test_590_aio_copy.ml \
 	test_600_debug_callback.ml \

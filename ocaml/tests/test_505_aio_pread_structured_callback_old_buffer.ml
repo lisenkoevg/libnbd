@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+(* Note: Uses the old NBD.Buffer.t from libnbd <= 1.18 *)
+
 open Ocaml_test_config
 
 open Printf
@@ -65,9 +67,9 @@ let () =
     ignore (NBD.poll nbd (-1))
   done;
 
-  for i = 0 to 511 do
-    assert (buf.{i} = Bytes.unsafe_get expected i)
-  done;
+  let buf = NBD.Buffer.to_bytes buf in
+
+  assert (buf = expected);
 
   (* Second try: fail only during callback *)
   let buf = NBD.Buffer.alloc 512 in

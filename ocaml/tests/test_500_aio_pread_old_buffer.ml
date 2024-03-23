@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *)
 
+(* Note: Uses the old NBD.Buffer.t from libnbd <= 1.18 *)
+
 open Ocaml_test_config
 
 let expected =
@@ -25,7 +27,7 @@ let expected =
     let i64 = Int64.of_int (i*8) in
     bytes_set_int64_be b (i*8) i64
   done;
-  Bytes.to_string b
+  b
 
 let () =
   let nbd = NBD.create () in
@@ -38,10 +40,8 @@ let () =
     ignore (NBD.poll nbd (-1))
   done;
 
-  assert (NBD.Buffer.size buf = 512);
-  assert (String.length expected = 512);
-  for i = 0 to 511 do
-    assert (buf.{i} = expected.[i])
-  done
+  let buf = NBD.Buffer.to_bytes buf in
+
+  assert (buf = expected)
 
 let () = Gc.compact ()

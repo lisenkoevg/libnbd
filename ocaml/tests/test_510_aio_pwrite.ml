@@ -50,7 +50,11 @@ let () =
     ignore (NBD.poll nbd (-1))
   done;
 
-  assert (buf = NBD.Buffer.to_bytes buf2);
+  assert (NBD.Buffer.size buf2 = 512);
+  assert (Bytes.length buf = 512);
+  for i = 0 to 511 do
+    assert (buf2.{i} = Bytes.unsafe_get buf i)
+  done;
 
   let fd = openfile datafile [O_RDONLY] 0 in
   let content = Bytes.create 512 in
