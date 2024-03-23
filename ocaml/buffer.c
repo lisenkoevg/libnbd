@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include <caml/alloc.h>
+#include <caml/bigarray.h>
 #include <caml/fail.h>
 #include <caml/memory.h>
 #include <caml/mlvalues.h>
@@ -31,69 +32,32 @@
 
 #include "nbd-c.h"
 
-void
-nbd_internal_ocaml_buffer_finalize (value bv)
-{
-  struct nbd_buffer *b = NBD_buffer_val (bv);
-
-  free (b->data);
-}
-
-/* Allocate an NBD persistent buffer. */
-value
-nbd_internal_ocaml_buffer_alloc (value sizev)
-{
-  CAMLparam1 (sizev);
-  CAMLlocal1 (rv);
-  struct nbd_buffer b;
-
-  b.len = Int_val (sizev);
-  b.data = malloc (b.len);
-  if (b.data == NULL)
-    caml_raise_out_of_memory ();
-
-  rv = Val_nbd_buffer (b);
-  CAMLreturn (rv);
-}
-
 /* Copy an NBD persistent buffer to an OCaml bytes. */
 value
-nbd_internal_ocaml_buffer_to_bytes (value bv)
+nbd_internal_ocaml_buffer_to_bytes (value bufv)
 {
-  CAMLparam1 (bv);
+  CAMLparam1 (bufv);
   CAMLlocal1 (rv);
-  struct nbd_buffer *b = NBD_buffer_val (bv);
+  struct caml_ba_array *buf = Caml_ba_array_val (bufv);
+  uint8_t *data = (uint8_t *)buf->data;
+  size_t len = (size_t)buf->dim[0];
 
-  rv = caml_alloc_string (b->len);
-  memcpy (Bytes_val (rv), b->data, b->len);
+  rv = caml_alloc_string (len);
+  memcpy (Bytes_val (rv), data, len);
 
   CAMLreturn (rv);
 }
 
 /* Copy an OCaml bytes into an NBD persistent buffer. */
 value
-nbd_internal_ocaml_buffer_of_bytes (value bytesv)
+nbd_internal_ocaml_buffer_of_bytes (value bytesv, value bufv)
 {
-  CAMLparam1 (bytesv);
-  CAMLlocal1 (rv);
-  struct nbd_buffer b;
+  CAMLparam2 (bytesv, bufv);
+  struct caml_ba_array *buf = Caml_ba_array_val (bufv);
+  uint8_t *data = (uint8_t *)buf->data;
+  size_t len = (size_t)buf->dim[0];
 
-  b.len = caml_string_length (bytesv);
-  b.data = malloc (b.len);
-  if (b.data == NULL)
-    caml_raise_out_of_memory ();
-  memcpy (b.data, Bytes_val (bytesv), b.len);
+  memcpy (data, Bytes_val (bytesv), len);
 
-  rv = Val_nbd_buffer (b);
-  CAMLreturn (rv);
-}
-
-value
-nbd_internal_ocaml_buffer_size (value bv)
-{
-  CAMLparam1 (bv);
-  CAMLlocal1 (rv);
-  struct nbd_buffer *b = NBD_buffer_val (bv);
-
-  CAMLreturn (Val_int (b->len));
+  CAMLreturn (Val_unit);
 }

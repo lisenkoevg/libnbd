@@ -69,7 +69,7 @@ endif HAVE_POD
 if HAVE_OCAML
 
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) -ccopt '$(CFLAGS)'
-OCAMLPACKAGES = -package unix -I $(srcdir) -I $(builddir)
+OCAMLPACKAGES = -package $(OCAMLFIND_PACKAGES) -I $(srcdir) -I $(builddir)
 
 noinst_DATA = mlnbd.cma META
 if HAVE_OCAMLOPT
@@ -130,11 +130,11 @@ libnbdocaml_a_SOURCES = \
 
 %.bc: %.cmo mlnbd.cma
 	$(top_builddir)/libtool -dlopen $(top_builddir)/lib/.libs/libnbd.la --mode=execute \
-        $(OCAMLFIND) ocamlc $(OCAMLFLAGS) -I . -package unix -linkpkg mlnbd.cma $< -o $@
+        $(OCAMLFIND) ocamlc $(OCAMLFLAGS) -I . -package $(OCAMLFIND_PACKAGES) -linkpkg mlnbd.cma $< -o $@
 
 if HAVE_OCAMLOPT
 %.opt: %.cmx mlnbd.cmxa
-	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) -cclib -L$(top_builddir)/lib/.libs -I . -package unix -linkpkg mlnbd.cmxa $< -o $@
+	$(OCAMLFIND) ocamlopt $(OCAMLFLAGS) -cclib -L$(top_builddir)/lib/.libs -I . -package $(OCAMLFIND_PACKAGES) -linkpkg mlnbd.cmxa $< -o $@
 endif
 
 # Dependencies.

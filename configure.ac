@@ -492,6 +492,17 @@ AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
         AC_MSG_RESULT([no])
         AC_MSG_FAILURE([OCaml compiler is not new enough.  At least OCaml $ocaml_ver_str is required])
     ])
+
+    dnl Which packages do we need to link to OCaml code?
+    dnl In OCaml >= 5, bigarray is part of the stdlib.
+    AC_MSG_CHECKING([what OCaml packages need to be linked in])
+    AS_IF([test "$ocaml_major" -ge 5],[
+        OCAMLFIND_PACKAGES="unix"
+    ],[
+        OCAMLFIND_PACKAGES="unix,bigarray"
+    ])
+    AC_MSG_RESULT([$OCAMLFIND_PACKAGES])
+    AC_SUBST([OCAMLFIND_PACKAGES])
 ])
 
 dnl Check if OCaml has caml_alloc_custom_mem (added in OCaml 4.08).

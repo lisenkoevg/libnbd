@@ -54,8 +54,6 @@ caml_alloc_initialized_string (mlsize_t len, const char *p)
 }
 #endif
 
-extern void nbd_internal_ocaml_buffer_finalize (value);
-
 extern void nbd_internal_ocaml_raise_error (void) Noreturn;
 extern void nbd_internal_ocaml_raise_closed (const char *func) Noreturn;
 
@@ -94,42 +92,6 @@ Val_nbd (struct nbd_handle *h)
                               sizeof (struct nbd_handle *),
                               5000);
   NBD_val (rv) = h;
-  CAMLreturn (rv);
-}
-
-/* Persistent buffer for AIO. */
-struct nbd_buffer {
-  void *data;
-  size_t len;
-};
-
-/* Extract a persistent buffer from an OCaml heap value.  Note the
- * whole struct is stored in the custom, not a pointer.  This macro
- * returns a pointer to the struct.
- */
-#define NBD_buffer_val(v) ((struct nbd_buffer *)Data_custom_val (v))
-
-static struct custom_operations nbd_buffer_custom_operations = {
-  "nbd_buffer_custom_operations",
-  nbd_internal_ocaml_buffer_finalize,
-  custom_compare_default,
-  custom_hash_default,
-  custom_serialize_default,
-  custom_deserialize_default,
-  custom_compare_ext_default,
-};
-
-/* Embed an NBD persistent buffer in an OCaml heap value. */
-static inline value
-Val_nbd_buffer (struct nbd_buffer b)
-{
-  CAMLparam0 ();
-  CAMLlocal1 (rv);
-
-  rv = caml_alloc_custom_mem (&nbd_buffer_custom_operations,
-                              sizeof (struct nbd_buffer),
-                              sizeof b + b.len);
-  *NBD_buffer_val (rv) = b;
   CAMLreturn (rv);
 }
 

@@ -198,21 +198,40 @@ type extent = int64 * int64
 
   pr "\
 module Buffer : sig
-  type t
-  (** Persistent, mutable C-compatible malloc'd buffer, used in AIO calls. *)
+  type t =
+    (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+  (** A buffer that persists across calls, used in {!aio_pread},
+      {!aio_pwrite} and similar.
+
+      In libnbd ≤ 1.18 this was a specially implemented type.
+      This was inefficient as zero copy was not possible.
+
+      In libnbd ≥ 1.20 this is just an alias for a {!Bigarray},
+      so you can use functions from {!Bigarray.Array1} directly
+      if you prefer.  This also allows zero copy. *)
 
   val alloc : int -> t
   (** Allocate an uninitialized buffer.  The parameter is the size
-      in bytes. *)
+      in bytes.
+
+      In libnbd ≥ 1.20 this is an alias for {!Bigarray.Array1.create}. *)
 
   val to_bytes : t -> bytes
-  (** Copy buffer to an OCaml [bytes] object. *)
+  (** Copy buffer to an OCaml [bytes] object.
+
+      In libnbd ≥ 1.20 you can read from the bigarray directly to avoid
+      copying if you want. *)
 
   val of_bytes : bytes -> t
-  (** Copy an OCaml [bytes] object to a newly allocated buffer. *)
+  (** Copy an OCaml [bytes] object to a newly allocated buffer.
+
+      In libnbd ≥ 1.20 you can write to the bigarray directly to avoid
+      copying if you want. *)
 
   val size : t -> int
-  (** Return the size of the buffer. *)
+  (** Return the size of the buffer.
+
+      In libnbd ≥ 1.20 this is an alias for {!Bigarray.Array1.dim}. *)
 
 end
 (** Persistent buffer used in AIO calls. *)
@@ -331,11 +350,20 @@ let () =
 
   pr "\
 module Buffer = struct
-  type t
-  external alloc : int -> t = \"nbd_internal_ocaml_buffer_alloc\"
+  type t =
+    (char, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
+  let alloc =
+    Bigarray.Array1.create Bigarray.Char Bigarray.c_layout
+  let size = Bigarray.Array1.dim
+
   external to_bytes : t -> bytes = \"nbd_internal_ocaml_buffer_to_bytes\"
-  external of_bytes : bytes -> t = \"nbd_internal_ocaml_buffer_of_bytes\"
-  external size : t -> int = \"nbd_internal_ocaml_buffer_size\"
+  external _of_bytes : bytes -> t -> unit =
+    \"nbd_internal_ocaml_buffer_of_bytes\"
+  let of_bytes b =
+    let buf = alloc (Bytes.length b) in
+    _of_bytes b buf;
+    buf
 end
 
 external errno_of_unix_error : Unix.error -> int =
@@ -690,16 +718,16 @@ let print_ocaml_binding (name, { args; optargs; ret }) =
        pr "  const void *%s = Bytes_val (%sv);\n" n n;
        pr "  size_t %s = caml_string_length (%sv);\n" count n
     | BytesPersistIn (n, count) ->
-       pr "  struct nbd_buffer *%s_buf = NBD_buffer_val (%sv);\n" n n;
-       pr "  const void *%s = %s_buf->data;\n" n n;
-       pr "  size_t %s = %s_buf->len;\n" count n
+       pr "  struct caml_ba_array *%s_ba = Caml_ba_array_val (%sv);\n" n n;
+       pr "  const void *%s = (const void *) %s_ba->data;\n" n n;
+       pr "  size_t %s = %s_ba->dim[0];\n" count n
     | BytesOut (n, count) ->
        pr "  void *%s = Bytes_val (%sv);\n" n n;
        pr "  size_t %s = caml_string_length (%sv);\n" count n
     | BytesPersistOut (n, count) ->
-       pr "  struct nbd_buffer *%s_buf = NBD_buffer_val (%sv);\n" n n;
-       pr "  void *%s = %s_buf->data;\n" n n;
-       pr "  size_t %s = %s_buf->len;\n" count n
+       pr "  struct caml_ba_array *%s_ba = Caml_ba_array_val (%sv);\n" n n;
+       pr "  void *%s = (void *) %s_ba->data;\n" n n;
+       pr "  size_t %s = %s_ba->dim[0];\n" count n
     | Closure { cbname } ->
        pr "  nbd_%s_callback %s_callback;\n" cbname cbname;
        pr "  struct user_data *%s_user_data = alloc_user_data ();\n" cbname;
@@ -855,6 +883,7 @@ let generate_ocaml_nbd_c () =
   pr "#include \"nbd-c.h\"\n";
   pr "\n";
   pr "#include <caml/alloc.h>\n";
+  pr "#include <caml/bigarray.h>\n";
   pr "#include <caml/callback.h>\n";
   pr "#include <caml/fail.h>\n";
   pr "#include <caml/memory.h>\n";
