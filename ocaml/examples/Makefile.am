@@ -37,7 +37,7 @@ if HAVE_OCAML
 
 OCAMLFLAGS = $(OCAML_FLAGS) $(OCAML_WARN_ERROR) -ccopt '$(CFLAGS)'
 OCAMLPACKAGES = \
-	-package unix \
+	-package $(OCAMLFIND_PACKAGES) \
 	-I $(srcdir)/.. -I $(builddir)/.. -I $(srcdir) -I $(builddir)
 
 noinst_SCRIPTS = $(ml_examples:.ml=.bc)
