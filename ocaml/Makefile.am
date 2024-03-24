@@ -30,39 +30,17 @@ EXTRA_DIST = \
 
 CLEANFILES += *.annot *.cmi *.cmo *.cmx *.o *.a *.so *.cma *.cmxa
 
+man_MANS =
+CLEANFILES += $(man_MANS)
+
 if HAVE_POD
 
-man_MANS = libnbd-ocaml.3
-if HAVE_OCAMLDOC
-man_MANS += \
-	NBD.3 \
-	NBD.ALLOW_TRANSPORT.3 \
-	NBD.Buffer.3 \
-	NBD.CMD_FLAG.3 \
-	NBD.HANDSHAKE_FLAG.3 \
-	NBD.SHUTDOWN.3 \
-	NBD.SIZE.3 \
-	NBD.STRICT.3 \
-	NBD.TLS.3 \
-	$(NULL)
-endif
-CLEANFILES += $(man_MANS)
+man_MANS += libnbd-ocaml.3
 
 libnbd-ocaml.3: libnbd-ocaml.pod $(top_builddir)/podwrapper.pl
 	$(PODWRAPPER) --section=3 --man $@ \
 	    --html $(top_builddir)/html/$@.html \
 	    $<
-
-if HAVE_OCAMLDOC
-NBD.3 NBD.ALLOW_TRANSPORT.3 NBD.Buffer.3 NBD.CMD_FLAG.3 \
-NBD.HANDSHAKE_FLAG.3 NBD.SHUTDOWN.3 NBD.SIZE.3 NBD.STRICT.3 \
-NBD.TLS.3: stamp-manpages
-stamp-manpages: NBD.mli
-	rm -f $@
-	$(OCAMLDOC) -man -man-mini -man-suffix 3 $<
-	touch $@
-CLEANFILES += stamp-manpages
-endif HAVE_OCAMLDOC
 
 endif HAVE_POD
 
@@ -177,5 +155,29 @@ all-local: nbd
 nbd:
 	rm -f $@
 	$(LN_S) . $@
+
+# OCaml documentation.
+
+if HAVE_OCAMLDOC
+ocamldoc_generated = \
+	NBD.3 \
+	NBD.ALLOW_TRANSPORT.3 \
+	NBD.Buffer.3 \
+	NBD.CMD_FLAG.3 \
+	NBD.HANDSHAKE_FLAG.3 \
+	NBD.SHUTDOWN.3 \
+	NBD.SIZE.3 \
+	NBD.STRICT.3 \
+	NBD.TLS.3 \
+	$(NULL)
+man_MANS += $(ocamldoc_generated)
+
+$(ocamldoc_generated): stamp-manpages
+stamp-manpages: NBD.mli
+	rm -f $@
+	$(OCAMLFIND) ocamldoc $(OCAMLPACKAGES) -man -man-mini -man-suffix 3 $<
+	touch $@
+CLEANFILES += stamp-manpages
+endif HAVE_OCAMLDOC
 
 endif HAVE_OCAML
