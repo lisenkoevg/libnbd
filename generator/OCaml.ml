@@ -208,7 +208,12 @@ module Buffer : sig
 
       In libnbd ≥ 1.20 this is just an alias for a {!Bigarray},
       so you can use functions from {!Bigarray.Array1} directly
-      if you prefer.  This also allows zero copy. *)
+      if you prefer.  This also allows zero copy.
+
+      This type is compatible with the
+      {{:https://v3.ocaml.org/p/bigstring/latest}[bigstring]} and
+      {{:https://v3.ocaml.org/p/bigstringaf/latest}[bigstringaf]}
+      libraries. *)
 
   val alloc : int -> t
   (** Allocate an uninitialized buffer.  The parameter is the size
