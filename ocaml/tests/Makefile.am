@@ -42,6 +42,7 @@ ML_TESTS = \
 	test_460_block_status.ml \
 	test_465_block_status_64.ml \
 	test_500_aio_pread.ml \
+	test_500_aio_pread_buffer_lifetime.ml \
 	test_500_aio_pread_old_buffer.ml \
 	test_505_aio_pread_structured_callback.ml \
 	test_505_aio_pread_structured_callback_old_buffer.ml \
