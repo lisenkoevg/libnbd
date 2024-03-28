@@ -175,6 +175,11 @@ nbd_close (struct nbd_handle *h)
   string_vector_empty (&h->request_meta_contexts);
   free (h->hname);
   pthread_mutex_destroy (&h->lock);
+
+  /* Although we are about to free the handle, set the h->magic field
+   * to something invalid so we can catch use-after-free.
+   */
+  h->magic = 0xdeaddead;
   free (h);
 }
 
