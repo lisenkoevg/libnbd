@@ -150,6 +150,7 @@ main (int argc, char *argv[])
 
   if (nbd_get_extended_headers_negotiated (nbd) != 1) {
     fprintf (stderr, "skipping: qemu-nbd lacks extended headers\n");
+    nbd_close (nbd);
     exit (77);
   }
 
