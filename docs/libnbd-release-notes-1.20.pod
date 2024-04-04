@@ -7,7 +7,7 @@ libnbd-release-notes-1.20 - release notes for libnbd 1.20
 These are the release notes for libnbd stable release 1.20.
 This describes the major changes since 1.18.
 
-libnbd 1.20.0 was released on B<XXX April 2024>.
+libnbd 1.20.0 was released on B<5 April 2024>.
 
 =head2 Security
 
@@ -26,9 +26,11 @@ L<libnbd-security(3)>.
 
 =head2 New APIs
 
+=end comment
+
 =head2 Enhancements to existing APIs
 
-=end comment
+L<nbd_connect_uri(3)> now correctly supports case insensitive URIs.
 
 =head2 Protocol
 
