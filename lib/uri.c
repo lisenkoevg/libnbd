@@ -173,32 +173,32 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 
   /* Scheme. */
   if (uri->scheme) {
-    if (strcmp (uri->scheme, "nbd") == 0) {
+    if (strcasecmp (uri->scheme, "nbd") == 0) {
       transport = tcp;
       tls = false;
       socket_required = false;
     }
-    else if (strcmp (uri->scheme, "nbds") == 0) {
+    else if (strcasecmp (uri->scheme, "nbds") == 0) {
       transport = tcp;
       tls = true;
       socket_required = false;
     }
-    else if (strcmp (uri->scheme, "nbd+unix") == 0) {
+    else if (strcasecmp (uri->scheme, "nbd+unix") == 0) {
       transport = unix_sock;
       tls = false;
       socket_required = true;
     }
-    else if (strcmp (uri->scheme, "nbds+unix") == 0) {
+    else if (strcasecmp (uri->scheme, "nbds+unix") == 0) {
       transport = unix_sock;
       tls = true;
       socket_required = true;
     }
-    else if (strcmp (uri->scheme, "nbd+vsock") == 0) {
+    else if (strcasecmp (uri->scheme, "nbd+vsock") == 0) {
       transport = vsock;
       tls = false;
       socket_required = false;
     }
-    else if (strcmp (uri->scheme, "nbds+vsock") == 0) {
+    else if (strcasecmp (uri->scheme, "nbds+vsock") == 0) {
       transport = vsock;
       tls = true;
       socket_required = false;
@@ -255,7 +255,7 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 
   /* Parse the socket parameter. */
   for (i = 0; i < queries.len; i++) {
-    if (strcmp (queries.ptr[i].name, "socket") == 0)
+    if (strcasecmp (queries.ptr[i].name, "socket") == 0)
       unixsocket = queries.ptr[i].value;
   }
 
@@ -278,7 +278,7 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 
   /* Look for some tls-* parameters. */
   for (i = 0; i < queries.len; i++) {
-    if (strcmp (queries.ptr[i].name, "tls-certificates") == 0) {
+    if (strcasecmp (queries.ptr[i].name, "tls-certificates") == 0) {
       if (! h->uri_allow_local_file) {
         set_error (EPERM,
                    "local file access (tls-certificates) is not allowed, "
@@ -288,7 +288,7 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       if (nbd_unlocked_set_tls_certificates (h, queries.ptr[i].value) == -1)
         goto cleanup;
     }
-    else if (strcmp (queries.ptr[i].name, "tls-psk-file") == 0) {
+    else if (strcasecmp (queries.ptr[i].name, "tls-psk-file") == 0) {
       if (! h->uri_allow_local_file) {
         set_error (EPERM,
                    "local file access (tls-psk-file) is not allowed, "
