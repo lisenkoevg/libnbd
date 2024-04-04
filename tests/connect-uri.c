@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
@@ -166,6 +167,37 @@ main (int argc, char *argv[])
   exit (EXIT_SUCCESS);
 }
 
+#ifdef HAVE_STRCASESTR
+#define case_insensitive_substring(s1, s2) (strcasestr ((s1), (s2)) != NULL)
+#else
+static int
+case_insensitive_substring (const char *haystack, const char *needle)
+{
+  /* strcasestr was implemented first in GNU libc, and later added to
+   * FreeBSD and OpenBSD.  However it is not in POSIX so far.
+   *
+   * Don't use this as a general replacement for strcasestr.  It's not
+   * unicode safe, nor efficient, so only suitable for this test.
+   */
+  char *s1 = strdup (haystack);
+  char *s2 = strdup (needle);
+  size_t i;
+  int r;
+
+  if (!s1 || !s2) abort ();
+
+  for (i = 0; i < strlen (s1); ++i)
+    s1[i] = tolower (s1[i]);
+  for (i = 0; i < strlen (s2); ++i)
+    s2[i] = tolower (s2[i]);
+  r = strstr (s1, s2) != NULL;
+
+  free (s1);
+  free (s2);
+  return r;
+}
+#endif
+
 /* Naive comparison of two URIs, enough to get the tests to pass but
  * it does not take into account things like quoting.  The difference
  * between the URI we set and the one we read back is the order of
@@ -179,7 +211,7 @@ compare_uris (const char *uri1, const char *uri2)
 
   /* Compare the parts before the query fields. */
   n = strcspn (uri1, "?");
-  r = strncmp (uri1, uri2, n);
+  r = strncasecmp (uri1, uri2, n);
   if (r != 0) return r;
 
   if (strlen (uri1) == n)
@@ -197,7 +229,7 @@ compare_uris (const char *uri1, const char *uri2)
     n = strcspn (uri1, "&");
     q = strndup (uri1, n);
     if (q == NULL) { perror ("strndup"); exit (EXIT_FAILURE); }
-    if (strstr (uri2, q) != NULL)
+    if (case_insensitive_substring (uri2, q))
       r = 0;
     else {
       fprintf (stderr, "error: compare_uris: query string '%s' does not appear "

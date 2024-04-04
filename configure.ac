@@ -149,6 +149,7 @@ AC_CHECK_FUNCS([\
         posix_fadvise \
         posix_memalign \
         prctl \
+        strcasestr \
         strerrordesc_np \
         valloc])
 

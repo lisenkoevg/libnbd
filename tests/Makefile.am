@@ -23,6 +23,7 @@ CLEANFILES += \
 	connect-unix.pid \
 	connect-uri-nbd.pid \
 	connect-uri-nbd-unix.pid \
+	connect-uri-nbd-unix-uppercase.pid \
 	connect-uri-nbds.pid \
 	connect-uri-nbds-unix.pid \
 	connect-uri-nbds-psk.pid \
@@ -758,10 +759,12 @@ endif HAVE_GNUTLS
 check_PROGRAMS += \
 	connect-uri-nbd \
 	connect-uri-nbd-unix \
+	connect-uri-nbd-unix-uppercase \
 	$(NULL)
 TESTS += \
 	connect-uri-nbd \
 	connect-uri-nbd-unix \
+	connect-uri-nbd-unix-uppercase \
 	connect-uri-nbd-vsock.sh \
 	$(NULL)
 
@@ -791,6 +794,19 @@ connect_uri_nbd_unix_CPPFLAGS = \
 	-DURI='"nbd+unix:///?socket=%s", str' \
 	$(NULL)
 connect_uri_nbd_unix_LDADD = $(top_builddir)/lib/libnbd.la
+
+connect_uri_nbd_unix_uppercase_SOURCES = \
+	connect-uri.c \
+	requires.c requires.h pick-a-port.c pick-a-port.h \
+	$(NULL)
+connect_uri_nbd_unix_uppercase_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str' \
+	-DPIDFILE='"connect-uri-nbd-unix-uppercase.pid"' \
+	-DURI='"NBD+UNIX:///?SOCKET=%s", str' \
+	$(NULL)
+connect_uri_nbd_unix_uppercase_LDADD = $(top_builddir)/lib/libnbd.la
 
 if HAVE_GNUTLS
 if HAVE_CERTTOOL

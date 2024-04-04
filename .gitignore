@@ -219,6 +219,7 @@ Makefile.in
 /tests/connect-unix
 /tests/connect-uri-nbd
 /tests/connect-uri-nbd-unix
+/tests/connect-uri-nbd-unix-uppercase
 /tests/connect-uri-nbds-certs
 /tests/connect-uri-nbds-psk
 /tests/connect-uri-nbds-unix-certs
