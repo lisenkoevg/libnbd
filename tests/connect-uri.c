@@ -196,14 +196,16 @@ case_insensitive_substring (const char *haystack, const char *needle)
    */
   char *s1 = strdup (haystack);
   char *s2 = strdup (needle);
-  size_t i;
+  size_t i, n;
   int r;
 
   if (!s1 || !s2) abort ();
 
-  for (i = 0; i < strlen (s1); ++i)
+  n = strlen (s1);
+  for (i = 0; i < n; ++i)
     s1[i] = tolower (s1[i]);
-  for (i = 0; i < strlen (s2); ++i)
+  n = strlen (s2);
+  for (i = 0; i < n; ++i)
     s2[i] = tolower (s2[i]);
   r = strstr (s1, s2) != NULL;
 
