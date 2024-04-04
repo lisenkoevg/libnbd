@@ -17,17 +17,7 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
-CLEANFILES += \
-	connect-tcp.pid \
-	connect-tcp6.pid \
-	connect-unix.pid \
-	connect-uri-nbd.pid \
-	connect-uri-nbd-unix.pid \
-	connect-uri-nbd-unix-uppercase.pid \
-	connect-uri-nbds.pid \
-	connect-uri-nbds-unix.pid \
-	connect-uri-nbds-psk.pid \
-	$(NULL)
+CLEANFILES += *.pid
 
 EXTRA_DIST = \
 	aio-parallel.sh \
@@ -776,7 +766,6 @@ connect_uri_nbd_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_PORT=1 \
 	-DSERVER_PARAMS='"-p", str' \
-	-DPIDFILE='"connect-uri-nbd.pid"' \
 	-DURI='"nbd://localhost:%s/", str' \
 	$(NULL)
 connect_uri_nbd_CFLAGS = $(AM_CFLAGS)
@@ -790,7 +779,6 @@ connect_uri_nbd_unix_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str' \
-	-DPIDFILE='"connect-uri-nbd-unix.pid"' \
 	-DURI='"nbd+unix:///?socket=%s", str' \
 	$(NULL)
 connect_uri_nbd_unix_LDADD = $(top_builddir)/lib/libnbd.la
@@ -803,7 +791,6 @@ connect_uri_nbd_unix_uppercase_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str' \
-	-DPIDFILE='"connect-uri-nbd-unix-uppercase.pid"' \
 	-DURI='"NBD+UNIX:///?SOCKET=%s", str' \
 	$(NULL)
 connect_uri_nbd_unix_uppercase_LDADD = $(top_builddir)/lib/libnbd.la
@@ -829,7 +816,6 @@ connect_uri_nbds_certs_CPPFLAGS = \
 	-DDEFINE_STR_AS_PORT=1 \
 	-DSERVER_PARAMS='"-p", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
-	-DPIDFILE='"connect-uri-nbds-certs.pid"' \
 	-DURI='"nbds://localhost:%s/?tls-certificates=pki", str' \
 	$(NULL)
 connect_uri_nbds_certs_LDADD = $(top_builddir)/lib/libnbd.la
@@ -843,7 +829,6 @@ connect_uri_nbds_unix_certs_CPPFLAGS = \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
-	-DPIDFILE='"connect-uri-nbds-unix-certs.pid"' \
 	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_certs_LDADD = $(top_builddir)/lib/libnbd.la
@@ -870,7 +855,6 @@ connect_uri_nbds_psk_CPPFLAGS = \
 	-DDEFINE_STR_AS_PORT=1 \
 	-DSERVER_PARAMS='"-p", str, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
-	-DPIDFILE='"connect-uri-nbds-psk.pid"' \
 	-DURI='"nbds://alice@localhost:%s/?tls-psk-file=keys.psk", str' \
 	$(NULL)
 connect_uri_nbds_psk_LDADD = $(top_builddir)/lib/libnbd.la
@@ -884,7 +868,6 @@ connect_uri_nbds_unix_psk_CPPFLAGS = \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
 	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
-	-DPIDFILE='"connect-uri-nbds-unix-psk.pid"' \
 	-DURI='"nbds+unix://alice@/?tls-psk-file=keys.psk&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_psk_LDADD = $(top_builddir)/lib/libnbd.la

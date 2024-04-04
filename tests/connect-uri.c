@@ -53,6 +53,8 @@ int
 main (int argc, char *argv[])
 {
   struct nbd_handle *nbd;
+  const char *s;
+  char *pidfile;
   pid_t pid;
   size_t i;
   char *get_uri;
@@ -89,7 +91,19 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
-  unlink (PIDFILE);
+  /* Generate a PID file (for nbdkit -P) derived from the basename of
+   * the current binary, which is unique for each test.
+   */
+  s = strrchr (argv[0], '/');
+  if (s) s++; else s = argv[0];
+  if (asprintf (&pidfile, "%s.pid", s) == -1) {
+    perror ("asprintf");
+    exit (EXIT_FAILURE);
+  }
+  if (strstr (pidfile, "connect") == NULL)
+    abort ();
+
+  unlink (pidfile);
 
   pid = fork ();
   if (pid == -1) {
@@ -100,7 +114,7 @@ main (int argc, char *argv[])
     execlp (NBDKIT,
             "nbdkit", "-f", "-v", "--exit-with-parent",
 //          "-D", "nbdkit.tls.log=99",
-            "-P", PIDFILE,
+            "-P", pidfile,
             SERVER_PARAMS,
             "null", NULL);
     perror ("nbdkit");
@@ -109,11 +123,12 @@ main (int argc, char *argv[])
 
   /* Wait for nbdkit to start listening. */
   for (i = 0; i < 60; ++i) {
-    if (access (PIDFILE, F_OK) == 0)
+    if (access (pidfile, F_OK) == 0)
       break;
     sleep (1);
   }
-  unlink (PIDFILE);
+  unlink (pidfile);
+  free (pidfile);
 
   nbd = nbd_create ();
   if (nbd == NULL) {
