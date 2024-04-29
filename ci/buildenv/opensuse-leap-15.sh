@@ -10,7 +10,7 @@ function install_buildenv() {
            autoconf \
            automake \
            awk \
-           bash-completion \
+           bash-completion-devel \
            ca-certificates \
            cargo \
            ccache \

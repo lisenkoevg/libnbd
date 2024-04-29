@@ -33,6 +33,7 @@ function install_buildenv() {
         golang \
         iproute \
         jq \
+        libev-devel \
         libtool \
         libxml2-devel \
         make \

@@ -34,6 +34,7 @@ RUN dnf distro-sync -y && \
         golang \
         iproute \
         jq \
+        libev-devel \
         libtool \
         libxml2-devel \
         make \
