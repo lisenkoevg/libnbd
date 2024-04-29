@@ -10,7 +10,7 @@ function install_buildenv() {
     dnf install -y \
         autoconf \
         automake \
-        bash-completion \
+        bash-completion-devel \
         ca-certificates \
         cargo \
         ccache \

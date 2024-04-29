@@ -32,22 +32,12 @@ include: '/ci/gitlab.yml'
     when: always
     expire_in: 1 week
 
-.native_build_job_prebuilt_env:
+.native_build_job:
   extends:
     - .base_build_job
-    - .gitlab_native_build_job_prebuilt_env
+    - .gitlab_native_build_job
 
-.native_build_job_local_env:
+.cross_build_job:
   extends:
     - .base_build_job
-    - .gitlab_native_build_job_local_env
-
-.cross_build_job_prebuilt_env:
-  extends:
-    - .base_build_job
-    - .gitlab_cross_build_job_prebuilt_env
-
-.cross_build_job_local_env:
-  extends:
-    - .base_build_job
-    - .gitlab_cross_build_job_local_env
+    - .gitlab_cross_build_job

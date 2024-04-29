@@ -48,7 +48,7 @@ RUN apk update && \
         qemu-img \
         sed \
         valgrind && \
-    apk list | sort > /packages.txt && \
+    apk list --installed | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/c++ && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \

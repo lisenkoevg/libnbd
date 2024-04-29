@@ -11,7 +11,7 @@ RUN zypper dist-upgrade -y && \
            autoconf \
            automake \
            awk \
-           bash-completion \
+           bash-completion-devel \
            ca-certificates \
            cargo \
            ccache \
