@@ -118,6 +118,8 @@ AC_CHECK_HEADERS([\
         linux/fs.h \
         linux/userfaultfd.h \
         stdatomic.h \
+        sys/disk.h \
+        sys/disklabel.h \
         sys/endian.h \
         sys/ioctl.h \
         sys/syscall.h])
