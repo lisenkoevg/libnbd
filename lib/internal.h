@@ -419,7 +419,7 @@ struct execvpe {
   /* Note: "const_string_vector" is not a good type for "sh_argv" below. Even if
    * we reserved enough space in a "const_string_vector",
    * const_string_vector_append() would still not be async-signal-safe, due to
-   * the underlying const_string_vector_insert() calling assert().
+   * the underlying const_string_vector_insert() calling assert.
    */
   char **sh_argv;
   size_t num_sh_args;

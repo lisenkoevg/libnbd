@@ -26,6 +26,7 @@
 #include <limits.h>
 #include <signal.h>
 #include <getopt.h>
+#include <assert.h>
 
 #include <ublksrv.h>
 

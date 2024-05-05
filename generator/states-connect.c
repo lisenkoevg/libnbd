@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <netdb.h>
+#include <assert.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <sys/types.h>

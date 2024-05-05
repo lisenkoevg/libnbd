@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "internal.h"
 #include "minmax.h"

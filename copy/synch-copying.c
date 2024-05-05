@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include <libnbd.h>
 

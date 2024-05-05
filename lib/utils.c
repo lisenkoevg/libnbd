@@ -20,12 +20,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <stdarg.h>
+#include <assert.h>
 #include <sys/uio.h>
 
 #include "array-size.h"
