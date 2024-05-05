@@ -529,8 +529,14 @@ open_local (const char *filename, direction d)
     /* If it's a block device and we're writing we don't want to turn
      * it into a truncated regular file by accident, so try to open
      * without O_CREAT first.
+     *
+     * A note about O_RDWR (instead of O_WRONLY): We may later call
+     * device_size on this device.  It might need to do seeking and
+     * reading to determine the device size (although not on Linux).
+     * Therefore we do in fact need read permission, even though
+     * nbdcopy itself will only write to the block device.
      */
-    flags = d == WRITING ? O_WRONLY : O_RDONLY;
+    flags = d == WRITING ? O_RDWR : O_RDONLY;
     fd = open (filename, flags);
     if (fd == -1) {
       if (d == WRITING) {

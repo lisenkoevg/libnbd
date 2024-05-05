@@ -41,6 +41,7 @@
 #include <linux/fs.h>       /* For BLKZEROOUT */
 #endif
 
+#include "device-size.h"
 #include "isaligned.h"
 #include "ispowerof2.h"
 #include "rounding.h"
@@ -287,11 +288,12 @@ file_create (const char *name, int fd,
 
   if (is_block) {
     /* Block device - ignore size passed in. */
-    rwf->rw.size = lseek (fd, 0, SEEK_END);
+    rwf->rw.size = device_size (fd, statbuf);
     if (rwf->rw.size == -1) {
-      perror ("lseek");
+      perror ("device_size");
       exit (EXIT_FAILURE);
     }
+    /* Since device_size may seek, reset the seek position. */
     if (lseek (fd, 0, SEEK_SET) == -1) {
       perror ("lseek");
       exit (EXIT_FAILURE);
