@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <inttypes.h>
 #include <time.h>
 #include <assert.h>

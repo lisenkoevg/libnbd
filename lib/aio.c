@@ -21,8 +21,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <errno.h>
+#include <stdint.h>
 #include <inttypes.h>
+#include <errno.h>
 #include <assert.h>
 
 #include "internal.h"

@@ -20,6 +20,7 @@
 #define LIBNBD_NBDUBLK_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include <ublksrv.h>
 

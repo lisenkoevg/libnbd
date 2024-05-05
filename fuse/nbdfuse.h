@@ -20,6 +20,7 @@
 #define LIBNBD_NBDFUSE_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <time.h>
 
 /* Define fuse API version and include the header file in one place so
