@@ -40,7 +40,7 @@ wait_for_pidfile $NBDKIT $pidfile
 
 nbd-client -unix $sock /dev/nbd0 -b 512
 
-$VG nbdcopy -- [ $NBDKIT --exit-with-parent -v pattern size=5M ] /dev/nbd0
+$VG nbdcopy -v -- [ $NBDKIT --exit-with-parent -v pattern size=5M ] /dev/nbd0
 
 # Check that /dev/nbd0 is still a block device and we didn't
 # accidentally overwrite it with a regular file.
