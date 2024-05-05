@@ -119,6 +119,7 @@ AC_CHECK_HEADERS([\
         linux/userfaultfd.h \
         stdatomic.h \
         sys/endian.h \
+        sys/ioctl.h \
         sys/syscall.h])
 
 AC_CHECK_HEADERS([linux/vm_sockets.h sys/vsock.h], [], [], [[
