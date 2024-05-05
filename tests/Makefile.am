@@ -147,7 +147,6 @@ dlopen_LDADD = -ldl $(PTHREAD_LIBS)
 
 endif
 
-
 #----------------------------------------------------------------------
 # The following tests require nbdkit as an NBD server to test against.
 
