@@ -33,7 +33,7 @@
 
 #include <pthread.h>
 
-#if defined (__linux__)
+#ifdef HAVE_LINUX_FS_H
 #include <linux/fs.h>       /* For BLKZEROOUT */
 #endif
 

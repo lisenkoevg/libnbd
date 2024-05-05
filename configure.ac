@@ -115,6 +115,7 @@ dnl Check for other headers, all optional.
 AC_CHECK_HEADERS([\
         byteswap.h \
         endian.h \
+        linux/fs.h \
         linux/userfaultfd.h \
         stdatomic.h \
         sys/endian.h \
