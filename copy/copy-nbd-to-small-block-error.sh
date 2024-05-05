@@ -29,8 +29,8 @@ requires nbd-client --version
 # /dev/nbd0 must not be in use.
 requires_not nbd-client -c /dev/nbd0
 
-pidfile1=copy-nbd-to-small-block-error.pid
-pidfile2=copy-nbd-to-small-block-error.pid
+pidfile1=copy-nbd-to-small-block-error.pid1
+pidfile2=copy-nbd-to-small-block-error.pid2
 sock1=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 sock2=$(mktemp -u /tmp/libnbd-test-copy.XXXXXX)
 cleanup_fn rm -f $pidfile1 $pidfile2 $sock1 $sock2
