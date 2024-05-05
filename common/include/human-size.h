@@ -33,6 +33,7 @@
 #ifndef NBDKIT_HUMAN_SIZE_H
 #define NBDKIT_HUMAN_SIZE_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <errno.h>

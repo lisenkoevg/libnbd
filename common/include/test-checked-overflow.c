@@ -30,6 +30,7 @@
  * SUCH DAMAGE.
  */
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #undef NDEBUG /* Keep test strong even for nbdkit built without assertions */

@@ -20,12 +20,13 @@
 
 #include <config.h>
 
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <inttypes.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/stat.h>
 
 #include <libnbd.h>
