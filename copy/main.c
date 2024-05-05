@@ -428,8 +428,9 @@ main (int argc, char *argv[])
    */
   if (src->size >= 0 && dst->size >= 0 && src->size > dst->size) {
     fprintf (stderr,
-             "%s: error: destination size is smaller than source size\n",
-             prog);
+             "%s: error: destination size (%" PRIi64
+             ") is smaller than source size (%" PRIi64 ")\n",
+             prog, dst->size, src->size);
     exit (EXIT_FAILURE);
   }
 

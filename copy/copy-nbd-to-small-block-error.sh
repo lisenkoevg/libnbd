@@ -45,7 +45,7 @@ nbd-client -unix $sock2 /dev/nbd0 -b 512
 
 # The source is larger than the destination device so we expect this
 # test to fail.  In the log you should see:
-#   nbdcopy: error: destination size is smaller than source size
+#   nbdcopy: error: destination size (...) is smaller than source size (...)
 if nbdcopy "nbd+unix:///?socket=$sock1" /dev/nbd0; then
     echo "$0: expected this test to fail"
     exit 1
