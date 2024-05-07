@@ -41,6 +41,7 @@
 #include <linux/fs.h>       /* For BLKZEROOUT */
 #endif
 
+#include "device-size.h"
 #include "isaligned.h"
 #include "ispowerof2.h"
 #include "rounding.h"
@@ -246,16 +247,39 @@ seek_hole_supported (int fd)
 
 struct rw *
 file_create (const char *name, int fd,
-             off_t st_size, uint64_t preferred,
-             bool is_block, direction d)
+             const struct stat *statbuf, direction d)
 {
-  struct rw_file *rwf = calloc (1, sizeof *rwf);
+  struct rw_file *rwf;
+  bool is_block;
+  uint64_t preferred;
+
+  is_block = S_ISBLK (statbuf->st_mode);
+  assert (is_block || S_ISREG (statbuf->st_mode));
+
+  rwf = calloc (1, sizeof *rwf);
   if (rwf == NULL) { perror ("calloc"); exit (EXIT_FAILURE); }
 
   rwf->rw.ops = &file_ops;
   rwf->rw.name = name;
   rwf->fd = fd;
   rwf->is_block = is_block;
+
+  if (is_block) {
+    unsigned int blkioopt;
+#ifdef BLKIOOPT
+    if (ioctl (fd, BLKIOOPT, &blkioopt) == -1) {
+      fprintf (stderr, "warning: cannot get optimal I/O size: %s: %m",
+               name);
+      blkioopt = 4096;
+    }
+#else
+    blkioopt = 4096;
+#endif
+    preferred = blkioopt;
+  }
+  else {
+    preferred = statbuf->st_blksize;
+  }
 
   if (preferred > 0 && is_power_of_2 (preferred))
     rwf->rw.preferred = preferred;
@@ -264,11 +288,12 @@ file_create (const char *name, int fd,
 
   if (is_block) {
     /* Block device - ignore size passed in. */
-    rwf->rw.size = lseek (fd, 0, SEEK_END);
+    rwf->rw.size = device_size (fd, statbuf);
     if (rwf->rw.size == -1) {
-      perror ("lseek");
+      perror ("device_size");
       exit (EXIT_FAILURE);
     }
+    /* Since device_size may seek, reset the seek position. */
     if (lseek (fd, 0, SEEK_SET) == -1) {
       perror ("lseek");
       exit (EXIT_FAILURE);
@@ -292,7 +317,7 @@ file_create (const char *name, int fd,
   }
   else {
     /* Regular file. */
-    rwf->rw.size = st_size;
+    rwf->rw.size = statbuf->st_size;
     rwf->seek_hole_supported = seek_hole_supported (fd);
     /* Possible efficient zero methods for regular file. */
 #ifdef FALLOC_FL_PUNCH_HOLE

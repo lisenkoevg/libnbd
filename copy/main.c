@@ -529,8 +529,14 @@ open_local (const char *filename, direction d)
     /* If it's a block device and we're writing we don't want to turn
      * it into a truncated regular file by accident, so try to open
      * without O_CREAT first.
+     *
+     * A note about O_RDWR (instead of O_WRONLY): We may later call
+     * device_size on this device.  It might need to do seeking and
+     * reading to determine the device size (although not on Linux).
+     * Therefore we do in fact need read permission, even though
+     * nbdcopy itself will only write to the block device.
      */
-    flags = d == WRITING ? O_WRONLY : O_RDONLY;
+    flags = d == WRITING ? O_RDWR : O_RDONLY;
     fd = open (filename, flags);
     if (fd == -1) {
       if (d == WRITING) {
@@ -549,26 +555,11 @@ open_local (const char *filename, direction d)
     fprintf (stderr, "%s: %s: %m\n", prog, filename);
     exit (EXIT_FAILURE);
   }
-  if (S_ISREG (stat.st_mode))   /* Regular file. */
-    return file_create (filename, fd,
-                        stat.st_size, stat.st_blksize, false, d);
-  else if (S_ISBLK (stat.st_mode)) { /* Block device. */
-    unsigned int blkioopt;
-
-#ifdef BLKIOOPT
-    if (ioctl (fd, BLKIOOPT, &blkioopt) == -1) {
-      fprintf (stderr, "warning: cannot get optimal I/O size: %s: %m",
-               filename);
-      blkioopt = 4096;
-    }
-#else
-    blkioopt = 4096;
-#endif
-
-    return file_create (filename, fd,
-                        stat.st_size, blkioopt, true, d);
-  }
-  else {              /* Probably stdin/stdout, a pipe or a socket. */
+  /* Regular file or block device. */
+  if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode))
+    return file_create (filename, fd, &stat, d);
+  /* Probably stdin/stdout, a pipe or a socket. */
+  else {
     synchronous = true;        /* Force synchronous mode for pipes. */
     return pipe_create (filename, fd);
   }

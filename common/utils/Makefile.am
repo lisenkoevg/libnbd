@@ -35,6 +35,8 @@ noinst_LTLIBRARIES = libutils.la
 
 libutils_la_SOURCES = \
 	const-string-vector.h \
+	device-size.c \
+	device-size.h \
 	nbdkit-string.h \
 	string-vector.h \
 	vector.c \
