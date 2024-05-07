@@ -24,6 +24,11 @@ EXTRA_DIST = \
 	aio-parallel-tls.sh \
 	aio-parallel-load.sh \
 	aio-parallel-load-tls.sh \
+	code-asserts.sh \
+	code-bool.sh \
+	code-errno.sh \
+	code-inttypes.sh \
+	code-stdint.sh \
 	connect-uri-nbd-vsock.sh \
 	eflags-plugin.sh \
 	functions.sh.in \
@@ -77,6 +82,11 @@ check_PROGRAMS += \
 	$(NULL)
 
 TESTS += \
+	code-asserts.sh \
+	code-bool.sh \
+	code-errno.sh \
+	code-inttypes.sh \
+	code-stdint.sh \
 	compile-header-only \
 	compile-c \
 	compile-iso-c99 \
