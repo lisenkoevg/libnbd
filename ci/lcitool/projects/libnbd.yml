@@ -21,6 +21,7 @@ packages:
   - ip
   - jq
   - libc
+  - libc-malloc-debug
   - libev
   - libtool
   - libxml2

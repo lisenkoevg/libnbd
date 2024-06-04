@@ -22,6 +22,7 @@ function install_buildenv() {
         gcc-c++ \
         git \
         glib2-devel \
+        glibc \
         glibc-devel \
         glibc-langpack-en \
         gnutls-devel \

@@ -132,6 +132,8 @@ Optional, only needed to run the test suite:
 * flake8 to keep Python code formatted uniformly.
 * ss (from iproute) for TCP-based tests.
 * "sudo modprobe vsock_loopback" to run tests of AF_VSOCK (Linux-only).
+* libc_malloc_debug.so.0 (from glibc-utils) for enhanced testing of
+  common malloc misuse.
 
 Optional, only needed to run some examples:
 

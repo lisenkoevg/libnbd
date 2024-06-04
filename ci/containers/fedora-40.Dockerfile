@@ -35,6 +35,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                glib2-devel \
                glibc-devel \
                glibc-langpack-en \
+               glibc-utils \
                gnutls-devel \
                gnutls-utils \
                golang \

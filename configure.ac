@@ -167,14 +167,19 @@ AC_CHECK_HEADERS([dlfcn.h],[have_dlfcn=yes],[have_dlfcn=no])
 AM_CONDITIONAL([HAVE_LIBDL],
                [test "x$have_libdl" = "xyes" && test "x$have_dlfcn" = "xyes"])
 
-dnl Does this platform require libc_malloc_debug.so.0 (glibc >= 2.34)?
+dnl Does this platform support libc_malloc_debug.so.0 (glibc >= 2.34)?
 AC_MSG_CHECKING([if this is glibc >= 2.34])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <limits.h>
 #if !defined(__GLIBC__) || __GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 34)
 #error "not glibc 2.34"
 #endif
-        ]])], [is_glibc_234=yes], [is_glibc_234=no]
+        ]])],
+   [if (LD_PRELOAD=libc_malloc_debug.so.0 /bin/true) 2>&1 | grep .; then
+      is_glibc_234='missing suitable libc_malloc_debug.so.0'
+    else
+      is_glibc_234=yes
+    fi], [is_glibc_234=no]
 )
 AC_MSG_RESULT([$is_glibc_234])
 AM_CONDITIONAL([HAVE_GLIBC_234], [test "x$is_glibc_234" = "xyes"])
