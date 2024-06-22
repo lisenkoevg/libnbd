@@ -539,6 +539,9 @@ create_and_connect (enum mode mode, int argc, char **argv)
   }
   nbd_set_debug (h, verbose);
 
+  /* Allow ?tls-psk-file and ?tls-certificates */
+  nbd_set_uri_allow_local_file (h, true);
+
   /* Connect to the NBD server synchronously. */
   switch (mode) {
   case MODE_URI:
