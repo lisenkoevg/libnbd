@@ -645,7 +645,7 @@ nbd_internal_crypto_create_session (struct nbd_handle *h,
       return NULL;
     }
 
-    if (h->hostname && h->tls_verify_peer)
+    if (h->tls_verify_peer)
       gnutls_session_set_verify_cert (session, h->hostname, 0);
   }
 
