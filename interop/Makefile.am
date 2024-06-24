@@ -276,6 +276,7 @@ check_PROGRAMS += \
 	interop-nbdkit-tls-certs \
 	interop-nbdkit-tls-certs-allow-enabled \
 	interop-nbdkit-tls-certs-allow-fallback \
+	interop-nbdkit-tls-certs-bad-CA \
 	interop-nbdkit-tls-psk \
 	interop-nbdkit-tls-psk-allow-enabled \
 	interop-nbdkit-tls-psk-allow-fallback \
@@ -287,6 +288,7 @@ TESTS += \
 	interop-nbdkit-tls-certs \
 	interop-nbdkit-tls-certs-allow-enabled \
 	interop-nbdkit-tls-certs-allow-fallback \
+	interop-nbdkit-tls-certs-bad-CA \
 	interop-nbdkit-tls-psk \
 	interop-nbdkit-tls-psk-allow-enabled \
 	interop-nbdkit-tls-psk-allow-fallback \
@@ -357,6 +359,30 @@ interop_nbdkit_tls_certs_allow_fallback_CPPFLAGS = \
 	-DTLS_FALLBACK=1 \
 	$(NULL)
 interop_nbdkit_tls_certs_allow_fallback_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(GNUTLS_LIBS) \
+	$(NULL)
+
+# In this test, nbdkit offers a server certificate signed by our CA in
+# the tests/pki directory, but we deliberately tell libnbd to test
+# against the system CA (-DCERTS=NULL).  This is expected to fail the
+# connection with the error:
+# libnbd: debug: nbd1: nbd_connect_command: handle dead: nbd_connect_command: gnutls_handshake: Error in the certificate verification. (15/1)
+interop_nbdkit_tls_certs_bad_CA_SOURCES = \
+	interop.c \
+	requires.c \
+	../tests/requires.h \
+	$(NULL)
+interop_nbdkit_tls_certs_bad_CA_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
+	-DSERVER=\"$(NBDKIT)\" \
+	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "null"' \
+	-DCERTS=NULL \
+	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
+	-DEXPECT_FAIL=1 \
+	$(NULL)
+interop_nbdkit_tls_certs_bad_CA_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
 	$(GNUTLS_LIBS) \
 	$(NULL)

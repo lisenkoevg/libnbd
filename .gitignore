@@ -115,6 +115,7 @@ Makefile.in
 /interop/interop-nbdkit-tls-certs
 /interop/interop-nbdkit-tls-certs-allow-enabled
 /interop/interop-nbdkit-tls-certs-allow-fallback
+/interop/interop-nbdkit-tls-certs-bad-CA
 /interop/interop-nbdkit-tls-psk
 /interop/interop-nbdkit-tls-psk-allow-enabled
 /interop/interop-nbdkit-tls-psk-allow-fallback
