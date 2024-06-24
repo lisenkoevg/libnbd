@@ -530,9 +530,6 @@ set_up_certificate_credentials (struct nbd_handle *h,
   return NULL;
 
  found_certificates:
-  if (h->hostname && h->tls_verify_peer)
-    gnutls_session_set_verify_cert (session, h->hostname, 0);
-
   err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, ret);
   if (err < 0) {
     set_error (0, "gnutls_credentials_set: %s", gnutls_strerror (err));
@@ -647,6 +644,9 @@ nbd_internal_crypto_create_session (struct nbd_handle *h,
       gnutls_deinit (session);
       return NULL;
     }
+
+    if (h->hostname && h->tls_verify_peer)
+      gnutls_session_set_verify_cert (session, h->hostname, 0);
   }
 
   /* Wrap the underlying socket with GnuTLS. */
