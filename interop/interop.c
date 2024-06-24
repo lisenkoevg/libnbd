@@ -77,6 +77,7 @@ main (int argc, char *argv[])
   int64_t actual_size;
   char buf[512], buf2[512];
   size_t i;
+  int r;
 
   /* Check requirements or skip the test. */
 #ifdef REQUIRES
@@ -171,10 +172,21 @@ main (int argc, char *argv[])
 #else
 #define NBD_CONNECT nbd_connect_command
 #endif
-  if (NBD_CONNECT (nbd, args) == -1) {
+  r = NBD_CONNECT (nbd, args);
+#if EXPECT_FAIL
+  if (r != -1) {
+    fprintf (stderr, "%s: expected connection to fail but it did not\n",
+             argv[0]);
+    exit (EXIT_FAILURE);
+  }
+  exit (EXIT_SUCCESS);
+  /*NOTREACHED*/
+#else
+  if (r == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);
   }
+#endif
 
 #if TLS
   if (TLS_MODE == LIBNBD_TLS_REQUIRE) {
