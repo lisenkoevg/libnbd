@@ -42,7 +42,7 @@
 
 #define SIZE (1024*1024)
 
-#if CERTS || PSK
+#if defined(CERTS) || defined(PSK)
 #define TLS 1
 #ifndef TLS_MODE
 #error "TLS_MODE must be defined when using CERTS || PSK"
@@ -146,13 +146,14 @@ main (int argc, char *argv[])
   }
 #endif
 
-#if CERTS
-  if (nbd_set_tls_certificates (nbd, "../tests/pki") == -1) {
+#if defined(CERTS)
+  const char *certs = CERTS;
+  if (certs && nbd_set_tls_certificates (nbd, certs) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);
   }
-#elif PSK
-  if (nbd_set_tls_psk_file (nbd, "../tests/keys.psk") == -1) {
+#elif defined(PSK)
+  if (nbd_set_tls_psk_file (nbd, PSK) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);
   }

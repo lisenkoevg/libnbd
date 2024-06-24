@@ -98,7 +98,7 @@ interop_nbd_server_tls_CPPFLAGS = \
 	-DSERVER=\"$(NBD_SERVER)\" \
 	-DSERVER_PARAMS='"-d", "-C", "nbd-server-tls.conf", "0", TMPFILE' \
 	-DEXPORT_NAME='""' \
-	-DCERTS=1 \
+	-DCERTS='"../tests/pki"' \
 	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
 	$(NULL)
 interop_nbd_server_tls_LDADD = \
@@ -182,7 +182,7 @@ interop_qemu_nbd_tls_certs_CPPFLAGS = \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-x509,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests/pki", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \
 	-DEXPORT_NAME='"/"' \
-	-DCERTS=1 \
+	-DCERTS='"../tests/pki"' \
 	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
 	$(NULL)
 interop_qemu_nbd_tls_certs_LDADD = \
@@ -203,7 +203,7 @@ interop_qemu_nbd_tls_psk_CPPFLAGS = \
 	-DSERVER=\"$(QEMU_NBD)\" \
 	-DSERVER_PARAMS='"--object", "tls-creds-psk,id=tls0,endpoint=server,dir=$(abs_top_builddir)/tests", "--tls-creds", "tls0", "-f", "raw", "-x", "/", TMPFILE' \
 	-DEXPORT_NAME='"/"' \
-	-DPSK=1 \
+	-DPSK='"../tests/keys.psk"' \
 	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
 	$(NULL)
 interop_qemu_nbd_tls_psk_LDADD = \
@@ -316,7 +316,7 @@ interop_nbdkit_tls_certs_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DCERTS=1 \
+	-DCERTS='"../tests/pki"' \
 	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
 	$(NULL)
 interop_nbdkit_tls_certs_LDADD = \
@@ -334,7 +334,7 @@ interop_nbdkit_tls_certs_allow_enabled_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DCERTS=1 \
+	-DCERTS='"../tests/pki"' \
 	-DTLS_MODE=LIBNBD_TLS_ALLOW \
 	$(NULL)
 interop_nbdkit_tls_certs_allow_enabled_LDADD = \
@@ -352,7 +352,7 @@ interop_nbdkit_tls_certs_allow_fallback_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=off", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DCERTS=1 \
+	-DCERTS='"../tests/pki"' \
 	-DTLS_MODE=LIBNBD_TLS_ALLOW \
 	-DTLS_FALLBACK=1 \
 	$(NULL)
@@ -371,7 +371,7 @@ interop_nbdkit_tls_psk_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-psk=../tests/keys.psk", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DPSK=1 \
+	-DPSK='"../tests/keys.psk"' \
 	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
 	$(NULL)
 interop_nbdkit_tls_psk_LDADD = \
@@ -389,7 +389,7 @@ interop_nbdkit_tls_psk_allow_enabled_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=require", "--tls-psk=../tests/keys.psk", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DPSK=1 \
+	-DPSK='"../tests/keys.psk"' \
 	-DTLS_MODE=LIBNBD_TLS_ALLOW \
 	$(NULL)
 interop_nbdkit_tls_psk_allow_enabled_LDADD = \
@@ -407,7 +407,7 @@ interop_nbdkit_tls_psk_allow_fallback_CPPFLAGS = \
 	-DREQUIRES=' requires ("test -f ../tests/keys.psk"); ' \
 	-DSERVER=\"$(NBDKIT)\" \
 	-DSERVER_PARAMS='"--tls=off", "-s", "--exit-with-parent", "file", TMPFILE' \
-	-DPSK=1 \
+	-DPSK='"../tests/keys.psk"' \
 	-DTLS_MODE=LIBNBD_TLS_ALLOW \
 	-DTLS_FALLBACK=1 \
 	$(NULL)
