@@ -51,6 +51,11 @@ assertion failure for 64-bit flags passed to nbd_block_status(3)
 See the full announcement here:
 L<https://lists.libguestfs.org/archives/list/guestfs@lists.libguestfs.org/thread/5CRC7LRTN35WPZZ4BT6NAMH4JGMF47IK/>
 
+=head2 multiple flaws in TLS server certificate checking
+
+See the full announcement here:
+L<https://lists.libguestfs.org/archives/list/guestfs@lists.libguestfs.org/thread/LHR3BW6RJ7K4BJBQIYV3GTZLSY27VZO2/>
+
 =head1 SEE ALSO
 
 L<libnbd(3)>.
