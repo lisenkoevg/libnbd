@@ -191,13 +191,13 @@ AC_ARG_WITH([gnutls],
     [],
     [with_gnutls=check])
 AS_IF([test "$with_gnutls" != "no"],[
-    PKG_CHECK_MODULES([GNUTLS], [gnutls >= 3.3.0], [
+    PKG_CHECK_MODULES([GNUTLS], [gnutls >= 3.5.18], [
         printf "gnutls version is "; $PKG_CONFIG --modversion gnutls
         AC_SUBST([GNUTLS_CFLAGS])
         AC_SUBST([GNUTLS_LIBS])
         AC_DEFINE([HAVE_GNUTLS],[1],[gnutls found at compile time.])
     ], [
-        AC_MSG_WARN([gnutls not found or < 3.3.0, TLS support will be disabled.])
+        AC_MSG_WARN([gnutls not found or < 3.5.18, TLS support will be disabled.])
     ])
 ])
 AM_CONDITIONAL([HAVE_GNUTLS], [test "x$GNUTLS_LIBS" != "x"])
@@ -223,7 +223,6 @@ AS_IF([test "$GNUTLS_LIBS" != ""],[
     old_LIBS="$LIBS"
     LIBS="$GNUTLS_LIBS $LIBS"
     AC_CHECK_FUNCS([\
-        gnutls_session_set_verify_cert \
         gnutls_transport_is_ktls_enabled \
     ])
     LIBS="$old_LIBS"

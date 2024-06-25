@@ -28,9 +28,7 @@
 
 #ifdef HAVE_GNUTLS
 #include <gnutls/gnutls.h>
-#ifdef HAVE_GNUTLS_SOCKET_H
 #include <gnutls/socket.h>
-#endif
 #endif
 
 #include "internal.h"
@@ -532,12 +530,8 @@ set_up_certificate_credentials (struct nbd_handle *h,
   return NULL;
 
  found_certificates:
-#ifdef HAVE_GNUTLS_SESSION_SET_VERIFY_CERT
   if (h->hostname && h->tls_verify_peer)
     gnutls_session_set_verify_cert (session, h->hostname, 0);
-#else
-  debug (h, "ignoring nbd_set_tls_verify_peer, this requires GnuTLS >= 3.4.6");
-#endif
 
   err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, ret);
   if (err < 0) {
