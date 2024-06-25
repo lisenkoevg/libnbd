@@ -151,6 +151,31 @@ error:
   return -1;
 }
 
+/* Similar to nbdkit_parse_bool */
+int
+parse_bool (const char *param, const char *value)
+{
+  if (!strcmp (value, "1") ||
+      !strcasecmp (value, "true") ||
+      !strcasecmp (value, "t") ||
+      !strcasecmp (value, "yes") ||
+      !strcasecmp (value, "y") ||
+      !strcasecmp (value, "on"))
+    return 1;
+
+  if (!strcmp (value, "0") ||
+      !strcasecmp (value, "false") ||
+      !strcasecmp (value, "f") ||
+      !strcasecmp (value, "no") ||
+      !strcasecmp (value, "n") ||
+      !strcasecmp (value, "off"))
+    return 0;
+
+  set_error (EINVAL, "could not parse %s parameter, expecting %s=true|false",
+             param, param);
+  return -1;
+}
+
 int
 nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 {
@@ -297,6 +322,13 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
         goto cleanup;
       }
       if (nbd_unlocked_set_tls_psk_file (h, queries.ptr[i].value) == -1)
+        goto cleanup;
+    }
+    else if (strcasecmp (queries.ptr[i].name, "tls-verify-peer") == 0) {
+      int v = parse_bool ("tls-verify-peer", queries.ptr[i].value);
+      if (v == -1)
+        goto cleanup;
+      if (nbd_unlocked_set_tls_verify_peer (h, v) == -1)
         goto cleanup;
     }
   }
