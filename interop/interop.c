@@ -145,7 +145,13 @@ main (int argc, char *argv[])
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);
   }
+#ifdef TLS_HOSTNAME
+  if (nbd_set_tls_hostname (nbd, TLS_HOSTNAME) == -1) {
+    fprintf (stderr, "%s\n", nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
 #endif
+#endif /* TLS */
 
 #if defined(CERTS)
   const char *certs = CERTS;

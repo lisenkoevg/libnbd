@@ -277,6 +277,7 @@ check_PROGRAMS += \
 	interop-nbdkit-tls-certs-allow-enabled \
 	interop-nbdkit-tls-certs-allow-fallback \
 	interop-nbdkit-tls-certs-bad-CA \
+	interop-nbdkit-tls-certs-bad-hostname \
 	interop-nbdkit-tls-psk \
 	interop-nbdkit-tls-psk-allow-enabled \
 	interop-nbdkit-tls-psk-allow-fallback \
@@ -289,6 +290,7 @@ TESTS += \
 	interop-nbdkit-tls-certs-allow-enabled \
 	interop-nbdkit-tls-certs-allow-fallback \
 	interop-nbdkit-tls-certs-bad-CA \
+	interop-nbdkit-tls-certs-bad-hostname \
 	interop-nbdkit-tls-psk \
 	interop-nbdkit-tls-psk-allow-enabled \
 	interop-nbdkit-tls-psk-allow-fallback \
@@ -383,6 +385,29 @@ interop_nbdkit_tls_certs_bad_CA_CPPFLAGS = \
 	-DEXPECT_FAIL=1 \
 	$(NULL)
 interop_nbdkit_tls_certs_bad_CA_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(GNUTLS_LIBS) \
+	$(NULL)
+
+# This test is expected to fail because even though the CA is correct,
+# we override tls_hostname with a bogus server name that won't match
+# the server's certificate.
+interop_nbdkit_tls_certs_bad_hostname_SOURCES = \
+	interop.c \
+	requires.c \
+	../tests/requires.h \
+	$(NULL)
+interop_nbdkit_tls_certs_bad_hostname_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DREQUIRES=' requires ("test -d ../tests/pki"); ' \
+	-DSERVER=\"$(NBDKIT)\" \
+	-DSERVER_PARAMS='"--tls=require", "--tls-certificates=../tests/pki", "-s", "--exit-with-parent", "null"' \
+	-DCERTS='"../tests/pki"' \
+	-DTLS_MODE=LIBNBD_TLS_REQUIRE \
+	-DTLS_HOSTNAME='"this.is.bad.example.com"' \
+	-DEXPECT_FAIL=1 \
+	$(NULL)
+interop_nbdkit_tls_certs_bad_hostname_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
 	$(GNUTLS_LIBS) \
 	$(NULL)

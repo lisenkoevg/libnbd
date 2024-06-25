@@ -777,7 +777,8 @@ This function may be called regardless of whether TLS is
 supported, but will have no effect unless L<nbd_set_tls(3)>
 is also used to request or require TLS.";
     example = Some "examples/encryption.c";
-    see_also = [Link "get_tls_username"; Link "set_tls"];
+    see_also = [Link "get_tls_username"; Link "set_tls_hostname";
+                Link "set_tls"];
   };
 
   "get_tls_username", {
@@ -787,6 +788,35 @@ is also used to request or require TLS.";
     longdesc = "\
 Get the current TLS username.";
     see_also = [Link "set_tls_username"];
+  };
+
+  "set_tls_hostname", {
+    default_call with
+    args = [String "hostname"]; ret = RErr;
+    permitted_states = [ Created ];
+    shortdesc = "set the TLS hostname";
+    longdesc = "\
+Set the TLS server hostname.  This is used in preference to the
+hostname supplied when connecting (eg. through L<nbd_connect_tcp(3)>),
+or when there is no explicit hostname at all (L<nbd_connect_unix(3)>).
+It can be useful when you are connecting to a proxy which is forwarding
+the data to the final server, to specify the name of the final server
+so that the server's certificate can be checked.
+
+This function may be called regardless of whether TLS is
+supported, but will have no effect unless L<nbd_set_tls(3)>
+is also used to request or require TLS.";
+    see_also = [Link "set_tls_username"; Link "set_tls"];
+  };
+
+  "get_tls_hostname", {
+    default_call with
+    args = []; ret = RString;
+    shortdesc = "get the effective TLS hostname";
+    longdesc = "\
+Get the TLS server hostname in effect.  If not set, this returns
+the empty string (not an error).";
+    see_also = [Link "set_tls_hostname"];
   };
 
   "set_tls_psk_file", {
@@ -4384,6 +4414,10 @@ let first_version = [
   "can_block_status_payload", (1, 18);
   "block_status_filter", (1, 18);
   "aio_block_status_filter", (1, 18);
+
+  (* Added in 1.21.x development cycle, will be stable and supported in 1.22 *)
+  "set_tls_hostname", (1, 22);
+  "get_tls_hostname", (1, 22);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.

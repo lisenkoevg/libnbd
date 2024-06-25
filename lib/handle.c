@@ -173,6 +173,7 @@ nbd_close (struct nbd_handle *h)
   free (h->sact_name);
   free (h->tls_certificates);
   free (h->tls_username);
+  free (h->tls_hostname);
   free (h->tls_psk_file);
   string_vector_empty (&h->request_meta_contexts);
   free (h->hname);

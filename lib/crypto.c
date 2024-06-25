@@ -160,6 +160,51 @@ nbd_unlocked_get_tls_username (struct nbd_handle *h)
 }
 
 int
+nbd_unlocked_set_tls_hostname (struct nbd_handle *h, const char *hostname)
+{
+  char *new_hostname;
+
+  new_hostname = strdup (hostname);
+  if (!new_hostname) {
+    set_error (errno, "strdup");
+    return -1;
+  }
+  free (h->tls_hostname);
+  h->tls_hostname = new_hostname;
+  return 0;
+}
+
+static const char *
+get_tls_hostname (struct nbd_handle *h)
+{
+  if (h->tls_hostname)
+    return h->tls_hostname;
+  else if (h->hostname)
+    return h->hostname;
+  else
+    return NULL;
+}
+
+char *
+nbd_unlocked_get_tls_hostname (struct nbd_handle *h)
+{
+  const char *hostname = get_tls_hostname (h);
+  char *ret;
+
+  if (hostname)
+    ret = strdup (hostname);
+  else
+    /* Otherwise, return "" (not an error). */
+    ret = strdup ("");
+
+  if (ret == NULL) {
+    set_error (errno, "strdup");
+    return NULL;
+  }
+  return ret;
+}
+
+int
 nbd_unlocked_set_tls_psk_file (struct nbd_handle *h, const char *filename)
 {
   char *new_file;
@@ -645,8 +690,13 @@ nbd_internal_crypto_create_session (struct nbd_handle *h,
       return NULL;
     }
 
-    if (h->tls_verify_peer)
-      gnutls_session_set_verify_cert (session, h->hostname, 0);
+    if (h->tls_verify_peer) {
+      /* Verify the server certificate using h->tls_hostname, falling
+       * back to h->hostname.
+       */
+      const char *hostname = get_tls_hostname (h);
+      gnutls_session_set_verify_cert (session, hostname, 0);
+    }
   }
 
   /* Wrap the underlying socket with GnuTLS. */

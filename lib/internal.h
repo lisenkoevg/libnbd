@@ -117,6 +117,7 @@ struct nbd_handle {
   char *tls_certificates;       /* Certs dir, NULL = use default path */
   bool tls_verify_peer;         /* Verify the peer certificate. */
   char *tls_username;           /* Username, NULL = use current username */
+  char *tls_hostname;           /* TLS hostname */
   char *tls_psk_file;           /* PSK filename, NULL = no PSK */
 
   /* Extended headers. */
