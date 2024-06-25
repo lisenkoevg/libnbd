@@ -2032,6 +2032,10 @@ Note this is not allowed by default - see next section.
 Set the PSK file.  See L<nbd_set_tls_psk_file(3)>.  Note
 this is not allowed by default - see next section.
 
+=item B<tls-hostname=>C<SERVER>
+
+Set the TLS hostname.  See L<nbd_set_tls_hostname(3)>.
+
 =item B<tls-verify-peer=false>
 
 Do not verify the server certificate.  See L<nbd_set_tls_verify_peer(3)>.

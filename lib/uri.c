@@ -324,6 +324,10 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       if (nbd_unlocked_set_tls_psk_file (h, queries.ptr[i].value) == -1)
         goto cleanup;
     }
+    else if (strcasecmp (queries.ptr[i].name, "tls-hostname") == 0) {
+      if (nbd_unlocked_set_tls_hostname (h, queries.ptr[i].value) == -1)
+        goto cleanup;
+    }
     else if (strcasecmp (queries.ptr[i].name, "tls-verify-peer") == 0) {
       int v = parse_bool ("tls-verify-peer", queries.ptr[i].value);
       if (v == -1)
