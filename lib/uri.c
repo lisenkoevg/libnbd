@@ -580,6 +580,16 @@ nbd_unlocked_get_uri (struct nbd_handle *h)
                              "tls-psk-file", h->tls_psk_file) == -1)
       goto out;
   }
+  if (h->tls_hostname) {
+    if (append_query_params (&query_params,
+                             "tls-hostname", h->tls_hostname) == -1)
+      goto out;
+  }
+  if (! h->tls_verify_peer) {
+    if (append_query_params (&query_params,
+                             "tls-verify-peer", "false") == -1)
+      goto out;
+  }
 
   uri.query_raw = query_params;
 

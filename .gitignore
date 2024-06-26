@@ -225,6 +225,8 @@ Makefile.in
 /tests/connect-uri-nbds-certs
 /tests/connect-uri-nbds-psk
 /tests/connect-uri-nbds-unix-certs
+/tests/connect-uri-nbds-unix-tls-hostname
+/tests/connect-uri-nbds-unix-tls-verify-peer-false
 /tests/connect-uri-nbds-unix-psk
 /tests/debug
 /tests/debug-environment

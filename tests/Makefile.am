@@ -810,10 +810,14 @@ if HAVE_CERTTOOL
 check_PROGRAMS += \
 	connect-uri-nbds-certs \
 	connect-uri-nbds-unix-certs \
+	connect-uri-nbds-unix-tls-hostname \
+	connect-uri-nbds-unix-tls-verify-peer-false \
 	$(NULL)
 TESTS += \
 	connect-uri-nbds-certs \
 	connect-uri-nbds-unix-certs \
+	connect-uri-nbds-unix-tls-hostname \
+	connect-uri-nbds-unix-tls-verify-peer-false \
 	$(NULL)
 
 connect_uri_nbds_certs_SOURCES = \
@@ -841,6 +845,36 @@ connect_uri_nbds_unix_certs_CPPFLAGS = \
 	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_certs_LDADD = $(top_builddir)/lib/libnbd.la
+
+connect_uri_nbds_unix_tls_hostname_SOURCES = \
+	connect-uri.c \
+	requires.c requires.h pick-a-port.c pick-a-port.h \
+	$(NULL)
+connect_uri_nbds_unix_tls_hostname_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
+	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s&tls-hostname=localhost", str' \
+	$(NULL)
+connect_uri_nbds_unix_tls_hostname_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(NULL)
+
+connect_uri_nbds_unix_tls_verify_peer_false_SOURCES = \
+	connect-uri.c \
+	requires.c requires.h pick-a-port.c pick-a-port.h \
+	$(NULL)
+connect_uri_nbds_unix_tls_verify_peer_false_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
+	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s&tls-verify-peer=false", str' \
+	$(NULL)
+connect_uri_nbds_unix_tls_verify_peer_false_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(NULL)
 
 endif HAVE_CERTTOOL
 
