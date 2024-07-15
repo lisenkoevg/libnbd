@@ -14,15 +14,6 @@ targets:
 
   alpine-edge: x86_64
 
-  almalinux-8:
-    jobs:
-      - arch: x86_64
-
-      - arch: x86_64
-        suffix: -clang
-        variables:
-          CC: clang
-
   almalinux-9: x86_64
 
   centos-stream-9: x86_64
