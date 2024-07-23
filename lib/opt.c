@@ -99,7 +99,7 @@ nbd_unlocked_opt_go (struct nbd_handle *h)
   if (r == 0 && err) {
     assert (nbd_internal_is_state_negotiating (get_next_state (h)) ||
             nbd_internal_is_state_dead (get_next_state (h)));
-    set_error (err, "server replied with error to opt_go request");
+    /* handle_reply_error already called set_error */
     return -1;
   }
   if (r == 0)
@@ -122,7 +122,7 @@ nbd_unlocked_opt_info (struct nbd_handle *h)
   if (r == 0 && err) {
     assert (nbd_internal_is_state_negotiating (get_next_state (h)) ||
             nbd_internal_is_state_dead (get_next_state (h)));
-    set_error (err, "server replied with error to opt_info request");
+    /* handle_reply_error already called set_error */
     return -1;
   }
   return r;
