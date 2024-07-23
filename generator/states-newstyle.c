@@ -79,14 +79,18 @@ prepare_for_reply_payload (struct nbd_handle *h, uint32_t opt)
   return 0;
 }
 
-/* Check an unexpected server reply. If it is an error, log any
- * message from the server and return 0; otherwise, return -1.
+/* Check an unexpected server reply error.
+ *
+ * This calls set_error with a descriptive error message and returns
+ * 0.  Unless there is a further unexpected error while processing
+ * this error, in which case it calls set_error and returns -1.
  */
 static int
 handle_reply_error (struct nbd_handle *h)
 {
   uint32_t len;
   uint32_t reply;
+  char *msg = NULL;
 
   len = be32toh (h->sbuf.or.option_reply.replylen);
   reply = be32toh (h->sbuf.or.option_reply.reply);
@@ -101,9 +105,63 @@ handle_reply_error (struct nbd_handle *h)
     return -1;
   }
 
-  if (len > 0)
-    debug (h, "handshake: server error message: %.*s", (int)len,
-           h->sbuf.or.payload.err_msg);
+  /* Decode expected errors into a nicer string.
+   *
+   * XXX Note this string comes directly from the server, and most
+   * libnbd users simply print the error using 'fprintf'.  We really
+   * ought to quote this string somehow, but we don't have a useful
+   * function for that.
+   */
+  if (len > 0) {
+    if (asprintf (&msg, ": %.*s",
+                  (int)len, h->sbuf.or.payload.err_msg) == -1) {
+      set_error (errno, "asprintf");
+      return -1;
+    }
+  }
+
+  switch (reply) {
+  case NBD_REP_ERR_UNSUP:
+    set_error (ENOTSUP, "the operation is not supported by the server%s",
+               msg ? : "");
+      break;
+    case NBD_REP_ERR_POLICY:
+      set_error (0, "server policy prevents the operation%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_PLATFORM:
+      set_error (0, "the operation is not supported by the server platform%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_INVALID:
+      set_error (EINVAL, "the server rejected this operation as invalid%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_TOO_BIG:
+      set_error (EINVAL, "the operation is too large to process%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_TLS_REQD:
+      set_error (ENOTSUP, "the server requires TLS encryption first%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_UNKNOWN:
+      set_error (ENOENT, "the server has no export named '%s'%s",
+                 h->export_name, msg ? : "");
+      break;
+    case NBD_REP_ERR_SHUTDOWN:
+      set_error (ESHUTDOWN, "the server is shutting down%s",
+                 msg ? : "");
+      break;
+    case NBD_REP_ERR_BLOCK_SIZE_REQD:
+      set_error (EINVAL, "the server requires specific block sizes%s",
+                 msg ? : "");
+      break;
+    default:
+      set_error (0, "handshake: unknown reply from the server: 0x%" PRIx32 "%s",
+                 reply, msg ? : "");
+    }
+  free (msg);
 
   return 0;
 }

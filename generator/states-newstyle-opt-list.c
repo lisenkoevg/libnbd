@@ -127,9 +127,8 @@ STATE_MACHINE {
       SET_NEXT_STATE (%.DEAD);
       return 0;
     }
-    err = ENOTSUP;
-    set_error (err, "unexpected response, possibly the server does not "
-               "support listing exports");
+    debug (h, "unexpected response, possibly the server does not "
+           "support listing exports");
     break;
   }
 

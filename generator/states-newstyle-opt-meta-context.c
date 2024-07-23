@@ -270,12 +270,8 @@ STATE_MACHINE {
     }
 
     if (opt == h->opt_current) {
-      /* XXX Should we decode specific expected errors, like
-       * REP_ERR_UNKNOWN to ENOENT or REP_ERR_TOO_BIG to ERANGE?
-       */
-      err = ENOTSUP;
-      set_error (err, "unexpected response, possibly the server does not "
-                 "support meta contexts");
+      debug (h, "unexpected response, possibly the server does not "
+             "support meta contexts");
       CALL_CALLBACK (h->opt_cb.completion, &err);
       nbd_internal_free_option (h);
       SET_NEXT_STATE (%.NEGOTIATING);
