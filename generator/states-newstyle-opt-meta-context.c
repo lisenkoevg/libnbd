@@ -272,6 +272,7 @@ STATE_MACHINE {
     if (opt == h->opt_current) {
       debug (h, "unexpected response, possibly the server does not "
              "support meta contexts");
+      err = ENOTSUP;
       CALL_CALLBACK (h->opt_cb.completion, &err);
       nbd_internal_free_option (h);
       SET_NEXT_STATE (%.NEGOTIATING);

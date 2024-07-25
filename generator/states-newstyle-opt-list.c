@@ -129,6 +129,7 @@ STATE_MACHINE {
     }
     debug (h, "unexpected response, possibly the server does not "
            "support listing exports");
+    err = ENOTSUP;
     break;
   }
 
