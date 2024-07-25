@@ -159,7 +159,7 @@ handle_reply_error (struct nbd_handle *h)
   if (replylen > 0) {
     /* Since this message comes from the server, take steps to quote it. */
     uint32_t i;
-    const char *msg = h->sbuf.or.payload.err_msg;
+    const unsigned char *msg = (unsigned char *) h->sbuf.or.payload.err_msg;
 
     fprintf (fp, ": ");
     for (i = 0; i < replylen; ++i) {
