@@ -48,7 +48,9 @@ unlink_unix_socket (void)
 static char str[] = "12345";
 #endif
 
+#ifndef SKIP_GET_URI
 static int compare_uris (const char *uri1, const char *uri2);
+#endif
 
 int
 main (int argc, char *argv[])
@@ -58,7 +60,9 @@ main (int argc, char *argv[])
   char *pidfile;
   pid_t pid;
   size_t i;
+#ifndef SKIP_GET_URI
   char *get_uri;
+#endif
   char *uri;
 
   /* Check requirements or skip the test. */
@@ -155,6 +159,7 @@ main (int argc, char *argv[])
     }
   }
 
+#ifndef SKIP_GET_URI
   /* Usually the URI returned by nbd_get_uri should be the same as the
    * one passed to nbd_connect_uri, or at least it will be in our test
    * cases.
@@ -170,6 +175,7 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
   free (get_uri);
+#endif
 
   if (nbd_shutdown (nbd, 0) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
@@ -214,6 +220,7 @@ case_insensitive_substring (const char *haystack, const char *needle)
 }
 #endif
 
+#ifndef SKIP_GET_URI
 /* Naive comparison of two URIs, enough to get the tests to pass but
  * it does not take into account things like quoting.  The difference
  * between the URI we set and the one we read back is the order of
@@ -262,3 +269,4 @@ compare_uris (const char *uri1, const char *uri2)
 
   return 0;
 }
+#endif /* SKIP_GET_URI */

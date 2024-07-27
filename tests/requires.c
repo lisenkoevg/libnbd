@@ -132,3 +132,14 @@ requires_nbdkit_tls_verify_peer (void)
 {
   requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
 }
+
+/* Check that ssh to localhost will work without any passwords or phrases.
+ * See nbdkit:tests/test-ssh.sh
+ */
+void
+requires_ssh_localhost (void)
+{
+  requires ("ssh -V");
+  requires ("ssh -o PreferredAuthentications=none,publickey "
+            "-o StrictHostKeyChecking=no localhost echo </dev/null");
+}

@@ -252,6 +252,7 @@ let allow_transport_flags = {
     "TCP",   1 lsl 0;
     "UNIX",  1 lsl 1;
     "VSOCK", 1 lsl 2;
+    "SSH",   1 lsl 3;
   ]
 }
 let shutdown_flags = {
@@ -1865,6 +1866,8 @@ ORed together:
 
 =item C<LIBNBD_ALLOW_TRANSPORT_VSOCK> = 0x4
 
+=item C<LIBNBD_ALLOW_TRANSPORT_SSH> = 0x8
+
 =back
 
 For convenience, the constant C<LIBNBD_ALLOW_TRANSPORT_MASK> is
@@ -1966,6 +1969,11 @@ path to a directory containing certificates and keys.
 In this scenario libnbd is running in a virtual machine.  Connect
 over C<AF_VSOCK> to an NBD server running on the hypervisor.
 
+=item C<nbd+ssh://server/>
+
+Connect to remote C<server> using Secure Shell, and tunnel NBD
+to an NBD server listening on port 10809.
+
 =back
 
 =head2 Supported URI formats
@@ -1999,6 +2007,16 @@ Connect over the C<AF_VSOCK> transport, without or with
 TLS respectively. You can use L<nbd_supports_vsock(3)> to
 see if this build of libnbd supports C<AF_VSOCK>.
 
+=item C<nbd+ssh:>
+
+=item C<nbds+ssh:>
+
+I<Experimental>
+
+Tunnel NBD over a Secure Shell connection.  This requires
+that L<ssh(1)> is installed locally, and that L<nc(1)> (from the
+nmap project) is installed on the remote server.
+
 =back
 
 The authority part of the URI (C<[username@][servername][:port]>)
@@ -2006,7 +2024,8 @@ is parsed depending on the transport.  For TCP it specifies the
 server to connect to and optional port number.  For C<+unix>
 it should not be present.  For C<+vsock> the server name is the
 numeric CID (eg. C<2> to connect to the host), and the optional
-port number may be present.  If the C<username> is present it
+port number may be present.  For C<+ssh> the Secure Shell server
+and optional port.  If the C<username> is present it
 is used for TLS authentication.
 
 For all transports, an export name may be present, parsed in
@@ -2019,8 +2038,8 @@ Finally the query part of the URI can contain:
 =item B<socket=>F<SOCKET>
 
 Specifies the Unix domain socket to connect on.
-Must be present for the C<+unix> transport and must not
-be present for the other transports.
+Must be present for the C<+unix> transport, optional
+for C<+ssh>, and must not be present for the other transports.
 
 =item B<tls-certificates=>F<DIR>
 
@@ -2054,7 +2073,7 @@ L<nbd_aio_connect_uri(3)>.
 
 =over 4
 
-=item TCP, Unix domain socket or C<AF_VSOCK> transports
+=item TCP, Unix domain socket, C<AF_VSOCK> or SSH transports
 
 Default: all allowed
 

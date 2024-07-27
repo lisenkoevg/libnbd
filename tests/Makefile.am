@@ -759,11 +759,13 @@ check_PROGRAMS += \
 	connect-uri-nbd \
 	connect-uri-nbd-unix \
 	connect-uri-nbd-unix-uppercase \
+	connect-uri-nbd-ssh \
 	$(NULL)
 TESTS += \
 	connect-uri-nbd \
 	connect-uri-nbd-unix \
 	connect-uri-nbd-unix-uppercase \
+	connect-uri-nbd-ssh \
 	connect-uri-nbd-vsock.sh \
 	$(NULL)
 
@@ -803,6 +805,20 @@ connect_uri_nbd_unix_uppercase_CPPFLAGS = \
 	-DURI='"NBD+UNIX:///?SOCKET=%s", str' \
 	$(NULL)
 connect_uri_nbd_unix_uppercase_LDADD = $(top_builddir)/lib/libnbd.la
+
+connect_uri_nbd_ssh_SOURCES = \
+	connect-uri.c \
+	requires.c requires.h pick-a-port.c pick-a-port.h \
+	$(NULL)
+connect_uri_nbd_ssh_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DREQUIRES="requires_ssh_localhost ();" \
+	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
+	-DSERVER_PARAMS='"-U", str' \
+	-DURI='"nbd+ssh://localhost/?socket=%s", str' \
+	-DSKIP_GET_URI=1 \
+	$(NULL)
+connect_uri_nbd_ssh_LDADD = $(top_builddir)/lib/libnbd.la
 
 if HAVE_GNUTLS
 if HAVE_CERTTOOL

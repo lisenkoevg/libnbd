@@ -180,9 +180,9 @@ int
 nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 {
   xmlURIPtr uri = NULL;
-  enum { tcp, unix_sock, vsock } transport;
+  enum { tcp, unix_sock, vsock, ssh } transport;
   bool tls;
-  enum { none, required } socket_param;
+  enum { none, optional, required } socket_param;
   uri_query_list queries = empty_vector;
   int i, r;
   int ret = -1;
@@ -230,6 +230,16 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       tls = true;
       socket_param = none;
     }
+    else if (strcasecmp (uri->scheme, "nbd+ssh") == 0) {
+      transport = ssh;
+      tls = false;
+      socket_param = optional;
+    }
+    else if (strcasecmp (uri->scheme, "nbds+ssh") == 0) {
+      transport = ssh;
+      tls = true;
+      socket_param = optional;
+    }
     else {
       set_error (EINVAL, "unknown NBD URI scheme: %s", uri->scheme);
       goto cleanup;
@@ -268,7 +278,9 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       (transport == unix_sock &&
        (h->uri_allow_transports & LIBNBD_ALLOW_TRANSPORT_UNIX) == 0) ||
       (transport == vsock &&
-       (h->uri_allow_transports & LIBNBD_ALLOW_TRANSPORT_VSOCK) == 0)) {
+       (h->uri_allow_transports & LIBNBD_ALLOW_TRANSPORT_VSOCK) == 0) ||
+      (transport == ssh &&
+       (h->uri_allow_transports & LIBNBD_ALLOW_TRANSPORT_SSH) == 0)) {
     set_error (EPERM, "URI transport %s is not permitted", uri->scheme);
     goto cleanup;
   }
@@ -303,6 +315,8 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       goto cleanup;
     }
     break;
+  case optional:
+    /* no check needed */ ;
   }
 
   /* TLS */
@@ -425,6 +439,36 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       goto cleanup;
 
     break;
+  }
+
+  case ssh: {                   /* SSH */
+    char port_str[32];
+    const char *ssh_command[] = {
+      "ssh", "-p", port_str, uri->server,
+      "nc",
+      NULL,                     /* [5] "-U" or "localhost" */
+      NULL,                     /* [6] socket or "10809" */
+      NULL,
+    };
+
+    if (!uri->server || strcmp (uri->server, "") == 0) {
+      set_error (EINVAL, "SSH transport requires a server name");
+      goto cleanup;
+    }
+    snprintf (port_str, sizeof port_str,
+              "%d", uri->port > 0 ? uri->port : 22);
+
+    if (unixsocket) {
+      ssh_command[5] = "-U";
+      ssh_command[6] = unixsocket;
+    }
+    else {
+      ssh_command[5] = "localhost";
+      ssh_command[6] = "10809"; /* XXX provide a way to configure this */
+    }
+
+    if (nbd_unlocked_aio_connect_command (h, (char **) ssh_command) == -1)
+      goto cleanup;
   }
   }
 
