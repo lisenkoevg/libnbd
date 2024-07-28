@@ -494,13 +494,17 @@ main (int argc, char *argv[])
 static bool
 is_nbd_uri (const char *s)
 {
-  return
-    strncmp (s, "nbd:", 4) == 0 ||
-    strncmp (s, "nbds:", 5) == 0 ||
-    strncmp (s, "nbd+unix:", 9) == 0 ||
-    strncmp (s, "nbds+unix:", 10) == 0 ||
-    strncmp (s, "nbd+vsock:", 10) == 0 ||
-    strncmp (s, "nbds+vsock:", 11) == 0;
+  struct nbd_handle *nbd;
+  int r;
+
+  nbd = nbd_create ();
+  if (nbd == NULL) {
+    fprintf (stderr, "%s: %s\n", prog, nbd_get_error ());
+    exit (EXIT_FAILURE);
+  }
+  r = nbd_is_uri (nbd, s);
+  nbd_close (nbd);
+  return r > 0;
 }
 
 /* Open a local (non-NBD) file, ie. a file, device, or "-" for stdio.
