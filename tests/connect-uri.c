@@ -61,11 +61,9 @@ main (int argc, char *argv[])
   char *get_uri;
   char *uri;
 
-  /* If SERVER_PARAMS contains --tls-verify-peer we must make sure
-   * that nbdkit supports that option.
-   */
-#ifdef REQUIRES_NBDKIT_TLS_VERIFY_PEER
-  requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
+  /* Check requirements or skip the test. */
+#ifdef REQUIRES
+  REQUIRES
 #endif
 
 #ifdef DEFINE_STR_AS_UNIX_SOCKET

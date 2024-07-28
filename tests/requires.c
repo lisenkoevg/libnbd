@@ -123,3 +123,12 @@ requires_nbd_server_supports_inetd (void)
   exit (77);
 }
 #endif
+
+/* If SERVER_PARAMS contains --tls-verify-peer we must make sure
+ * that nbdkit supports that option.
+ */
+void
+requires_nbdkit_tls_verify_peer (void)
+{
+  requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
+}

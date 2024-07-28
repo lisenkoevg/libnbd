@@ -828,7 +828,7 @@ connect_uri_nbds_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_PORT=1 \
 	-DSERVER_PARAMS='"-p", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds://localhost:%s/?tls-certificates=pki", str' \
 	$(NULL)
 connect_uri_nbds_certs_LDADD = $(top_builddir)/lib/libnbd.la
@@ -841,7 +841,7 @@ connect_uri_nbds_unix_certs_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_certs_LDADD = $(top_builddir)/lib/libnbd.la
@@ -854,7 +854,7 @@ connect_uri_nbds_unix_tls_hostname_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s&tls-hostname=localhost", str' \
 	$(NULL)
 connect_uri_nbds_unix_tls_hostname_LDADD = \
@@ -869,7 +869,7 @@ connect_uri_nbds_unix_tls_verify_peer_false_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-certificates=pki"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds+unix://alice@/?tls-certificates=pki&socket=%s&tls-verify-peer=false", str' \
 	$(NULL)
 connect_uri_nbds_unix_tls_verify_peer_false_LDADD = \
@@ -897,7 +897,7 @@ connect_uri_nbds_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_PORT=1 \
 	-DSERVER_PARAMS='"-p", str, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds://alice@localhost:%s/?tls-psk-file=keys.psk", str' \
 	$(NULL)
 connect_uri_nbds_psk_LDADD = $(top_builddir)/lib/libnbd.la
@@ -910,7 +910,7 @@ connect_uri_nbds_unix_psk_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-DDEFINE_STR_AS_UNIX_SOCKET=1 \
 	-DSERVER_PARAMS='"-U", str, "--tls=require", "--tls-verify-peer", "--tls-psk=keys.psk"' \
-	-DREQUIRES_NBDKIT_TLS_VERIFY_PEER=1 \
+	-DREQUIRES="requires_nbdkit_tls_verify_peer ();" \
 	-DURI='"nbds+unix://alice@/?tls-psk-file=keys.psk&socket=%s", str' \
 	$(NULL)
 connect_uri_nbds_unix_psk_LDADD = $(top_builddir)/lib/libnbd.la
