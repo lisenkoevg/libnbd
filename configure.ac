@@ -430,7 +430,7 @@ AC_SUBST([PODWRAPPER])
 dnl Build the libFuzzer test.  See fuzzing/README.
 AC_ARG_ENABLE([libfuzzer],
     [AS_HELP_STRING([--enable-libfuzzer],
-                    [build the libFuzzer test (developers only)])],
+                    [build the libFuzzer test (for developers)])],
     [],
     [enable_libfuzzer=no])
 AM_CONDITIONAL([ENABLE_LIBFUZZER],[test "x$enable_libfuzzer" = "xyes"])
@@ -655,7 +655,7 @@ AM_CONDITIONAL([HAVE_PYTHON],
 dnl Use --enable-python-code-style to enable flake8 tests.
 AC_ARG_ENABLE([python-code-style],
     [AS_HELP_STRING([--enable-python-code-style],
-                    [enable Python code style (flake8) checks (developers only)])],
+                    [enable Python code style (flake8) checks (for developers)])],
     [enable_pycodestyle=$enableval],
     [enable_pycodestyle=no])
 AM_CONDITIONAL([ENABLE_PYCODESTYLE],[test "x$enable_pycodestyle" = "xyes"])
