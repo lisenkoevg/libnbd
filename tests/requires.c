@@ -130,7 +130,12 @@ requires_nbd_server_supports_inetd (void)
 void
 requires_nbdkit_tls_verify_peer (void)
 {
+#ifdef NBDKIT
   requires (NBDKIT " --tls-verify-peer -U - null --run 'exit 0'");
+#else
+  fprintf (stderr, "nbdkit not available at compile time\n");
+  exit (77);
+#endif
 }
 
 /* Check that ssh to localhost will work without any passwords or phrases.
