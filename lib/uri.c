@@ -181,7 +181,8 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
 {
   xmlURIPtr uri = NULL;
   enum { tcp, unix_sock, vsock } transport;
-  bool tls, socket_required;
+  bool tls;
+  enum { none, required } socket_param;
   uri_query_list queries = empty_vector;
   int i, r;
   int ret = -1;
@@ -202,32 +203,32 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
     if (strcasecmp (uri->scheme, "nbd") == 0) {
       transport = tcp;
       tls = false;
-      socket_required = false;
+      socket_param = none;
     }
     else if (strcasecmp (uri->scheme, "nbds") == 0) {
       transport = tcp;
       tls = true;
-      socket_required = false;
+      socket_param = none;
     }
     else if (strcasecmp (uri->scheme, "nbd+unix") == 0) {
       transport = unix_sock;
       tls = false;
-      socket_required = true;
+      socket_param = required;
     }
     else if (strcasecmp (uri->scheme, "nbds+unix") == 0) {
       transport = unix_sock;
       tls = true;
-      socket_required = true;
+      socket_param = required;
     }
     else if (strcasecmp (uri->scheme, "nbd+vsock") == 0) {
       transport = vsock;
       tls = false;
-      socket_required = false;
+      socket_param = none;
     }
     else if (strcasecmp (uri->scheme, "nbds+vsock") == 0) {
       transport = vsock;
       tls = true;
-      socket_required = false;
+      socket_param = none;
     }
     else {
       set_error (EINVAL, "unknown NBD URI scheme: %s", uri->scheme);
@@ -285,17 +286,23 @@ nbd_unlocked_aio_connect_uri (struct nbd_handle *h, const char *raw_uri)
       unixsocket = queries.ptr[i].value;
   }
 
-  if (socket_required && !unixsocket) {
-    set_error (EINVAL, "cannot parse socket parameter from NBD URI "
-               "(did you mean to use \"%s:///?socket=...\"?)",
-               uri->scheme);
-    goto cleanup;
-  }
-  else if (!socket_required && unixsocket) {
-    set_error (EINVAL, "socket parameter is incompatible with \"%s:\" "
-               "(did you mean to use \"%s+unix:///?socket=...\"?)",
-               uri->scheme, !tls ? "nbd" : "nbds");
-    goto cleanup;
+  switch (socket_param) {
+  case required:
+    if (!unixsocket) {
+      set_error (EINVAL, "cannot parse socket parameter from NBD URI "
+                 "(did you mean to use \"%s:///?socket=...\"?)",
+                 uri->scheme);
+      goto cleanup;
+    }
+    break;
+  case none:
+    if (unixsocket) {
+      set_error (EINVAL, "socket parameter is incompatible with \"%s:\" "
+                 "(did you mean to use \"%s+unix:///?socket=...\"?)",
+                 uri->scheme, !tls ? "nbd" : "nbds");
+      goto cleanup;
+    }
+    break;
   }
 
   /* TLS */
