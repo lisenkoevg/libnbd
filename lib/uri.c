@@ -37,8 +37,10 @@
 #include <sys/vsock.h>
 #endif
 
-#include "internal.h"
+#include "array-size.h"
 #include "vector.h"
+
+#include "internal.h"
 
 #ifdef HAVE_LIBXML2
 
@@ -698,3 +700,28 @@ nbd_unlocked_get_uri (struct nbd_handle *h)
 }
 
 #endif /* !HAVE_LIBXML2 */
+
+/* nbd_is_uri is simple enough that it works even if we don't have URI
+ * support.
+ */
+int
+nbd_unlocked_is_uri (struct nbd_handle *h, const char *uri)
+{
+  static const char *prefixes[] = {
+    "nbd://",
+    "nbds://",
+    "nbd+unix://",
+    "nbds+unix://",
+    "nbd+vsock://",
+    "nbds+vsock://",
+    "nbd+ssh://",
+    "nbds+ssh://",
+  };
+  size_t i;
+
+  for (i = 0; i < ARRAY_SIZE (prefixes); ++i) {
+    if (strncasecmp (uri, prefixes[i], strlen (prefixes[i])) == 0)
+      return 1;
+  }
+  return 0;
+}

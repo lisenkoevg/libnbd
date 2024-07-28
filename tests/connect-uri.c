@@ -142,9 +142,13 @@ main (int argc, char *argv[])
     fprintf (stderr, "skip: compiled without URI support\n");
     exit (77);
   }
+  if (! nbd_is_uri (nbd, uri)) {
+    fprintf (stderr, "%s: nbd_is_uri returned false for this URI: %s\n",
+             argv[0], uri);
+    exit (EXIT_FAILURE);
+  }
 
   nbd_set_uri_allow_local_file (nbd, true);
-
   if (nbd_connect_uri (nbd, uri) == -1) {
     fprintf (stderr, "%s\n", nbd_get_error ());
     exit (EXIT_FAILURE);

@@ -2122,12 +2122,16 @@ with L<nbd_supports_tls(3)>.
 
 =head2 Constructing a URI from an existing connection
 
-See L<nbd_get_uri(3)>.";
+See L<nbd_get_uri(3)>.
+
+=head2 See if a string is an NBD URI
+
+See L<nbd_is_uri(3)>.";
     example = Some "examples/connect-uri.c";
     see_also = [URLLink "https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md";
                 Link "aio_connect_uri";
                 Link "set_export_name"; Link "set_tls";
-                Link "set_opt_mode"; Link "get_uri";
+                Link "set_opt_mode"; Link "get_uri"; Link "is_uri";
                 Link "supports_vsock"; Link "supports_uri"];
   };
 
@@ -4242,7 +4246,7 @@ I<vsock_loopback> kernel module is loaded.";
 Returns true if libnbd was compiled with libxml2 which is required
 to support NBD URIs, or false if not.";
     see_also = [Link "connect_uri"; Link "aio_connect_uri";
-                Link "get_uri"];
+                Link "get_uri"; Link "is_uri"];
   };
 
   "get_uri", {
@@ -4267,7 +4271,26 @@ it may not be optimal.
 L<nbdinfo(1)> I<--uri> option is a way to access this API
 from shell scripts.";
     see_also = [Link "connect_uri"; Link "aio_connect_uri";
-                Link "supports_uri"];
+                Link "supports_uri"; Link "is_uri"];
+  };
+
+  "is_uri", {
+    default_call with
+    args = [ String "uri" ]; ret = RBool;
+    shortdesc = "detect if a string could be an NBD URI";
+    longdesc = "\
+Detect if the parameter C<uri> could be an NBD URI or not.
+The function returns true if C<uri> is likely to be an NBD URI,
+or false if not.
+
+This can be used to write programs that take either a URI or
+something else like a filename as a parameter.  L<nbdcopy(1)>
+is one such program.
+
+The current test is heuristic.  In particular it I<does not>
+guarantee that L<nbd_connect_uri(3)> will work.";
+    see_also = [Link "connect_uri"; Link "aio_connect_uri";
+                Link "supports_uri"; Link "get_uri"];
   };
 ]
 
@@ -4446,6 +4469,7 @@ let first_version = [
   (* Added in 1.21.x development cycle, will be stable and supported in 1.22 *)
   "set_tls_hostname", (1, 22);
   "get_tls_hostname", (1, 22);
+  "is_uri", (1, 22);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.
