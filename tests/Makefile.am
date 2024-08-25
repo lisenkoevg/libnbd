@@ -187,6 +187,7 @@ check_PROGRAMS += \
 	errors-server-unknown-flags \
 	errors-client-zerosize \
 	errors-server-zerosize \
+	get-subprocess-pid \
 	server-death \
 	shutdown-flags \
 	shutdown-opt-mode \
@@ -262,6 +263,7 @@ TESTS += \
 	errors-server-unknown-flags \
 	errors-client-zerosize \
 	errors-server-zerosize \
+	get-subprocess-pid \
 	server-death \
 	shutdown-flags \
 	shutdown-opt-mode \
@@ -396,6 +398,9 @@ errors_client_zerosize_LDADD = $(top_builddir)/lib/libnbd.la
 
 errors_server_zerosize_SOURCES = errors-server-zerosize.c
 errors_server_zerosize_LDADD = $(top_builddir)/lib/libnbd.la
+
+get_subprocess_pid_SOURCES = get-subprocess-pid.c
+get_subprocess_pid_LDADD = $(top_builddir)/lib/libnbd.la
 
 server_death_SOURCES = server-death.c
 server_death_LDADD = $(top_builddir)/lib/libnbd.la

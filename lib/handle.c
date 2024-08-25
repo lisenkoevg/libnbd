@@ -590,6 +590,20 @@ nbd_unlocked_kill_subprocess (struct nbd_handle *h, int signum)
   return 0;
 }
 
+int64_t
+nbd_unlocked_get_subprocess_pid (struct nbd_handle *h)
+{
+  if (h->pid == -1) {
+    set_error (ESRCH, "no subprocess exists");
+    return -1;
+  }
+
+  /* Probably this is always > 0, but we make no guarantees as this
+   * function is only useful for debugging.
+   */
+  return h->pid;
+}
+
 /* NB: is_locked = false, may_set_error = false. */
 int
 nbd_unlocked_supports_tls (struct nbd_handle *h)

@@ -2239,7 +2239,9 @@ is killed.
 " ^ blocking_connect_call_description;
     see_also = [Link "aio_connect_command";
                 Link "connect_systemd_socket_activation";
-                Link "kill_subprocess"; Link "set_opt_mode"];
+                Link "kill_subprocess";
+                Link "get_subprocess_pid";
+                Link "set_opt_mode"];
     example = Some "examples/connect-command.c";
   };
 
@@ -2290,6 +2292,7 @@ the connect function.
 " ^ blocking_connect_call_description;
     see_also = [Link "aio_connect_systemd_socket_activation";
                 Link "connect_command"; Link "kill_subprocess";
+                Link "get_subprocess_pid";
                 Link "set_opt_mode";
                 Link "set_socket_activation_name";
                 Link "get_socket_activation_name";
@@ -4209,7 +4212,24 @@ does not exit when the socket is closed.
 
 The C<signum> parameter is the optional signal number to send
 (see L<signal(7)>).  If C<signum> is C<0> then C<SIGTERM> is sent.";
-    see_also = [ExternalLink ("signal", 7); Link "connect_command"];
+    see_also = [ExternalLink ("signal", 7); Link "connect_command";
+                Link "get_subprocess_pid"];
+  };
+
+  "get_subprocess_pid", {
+    default_call with
+    args = []; ret = RInt64;
+    shortdesc = "get the process ID of the subprocess";
+    longdesc = "\
+For connections which create a subprocess such as
+L<nbd_connect_command(3)>, this returns the process ID (PID)
+of the subprocess.  This is only supported on some platforms.
+
+This is mainly useful in debugging cases.  For example, this
+could be used to learn where to attach L<gdb(1)> to diagnose
+a crash in the NBD server subprocess.";
+    see_also = [ExternalLink ("fork", 2); Link "connect_command";
+                Link "kill_subprocess"];
   };
 
   "supports_tls", {
@@ -4470,6 +4490,7 @@ let first_version = [
   "set_tls_hostname", (1, 22);
   "get_tls_hostname", (1, 22);
   "is_uri", (1, 22);
+  "get_subprocess_pid", (1, 22);
 
   (* These calls are proposed for a future version of libnbd, but
    * have not been added to any released version so far.
