@@ -51,7 +51,7 @@ make
 make check
 ```
 
-It is B<not> normally recommended to use `make install` since it may
+It is **not** normally recommended to use `make install` since it may
 partially overwrite any system-installed libnbd.  It is better to run
 from the build directory using the [`./run` script](run.in), eg:
 
