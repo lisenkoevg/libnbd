@@ -59,6 +59,13 @@ from the build directory using the [`./run` script](run.in), eg:
 ./run nbdsh
 ```
 
+You can install into a destdir (for packaging or moving to another
+machine) by doing:
+
+```
+make install DESTDIR=/var/tmp/some-directory
+```
+
 To run the tests under valgrind:
 
 ```
