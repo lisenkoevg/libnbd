@@ -605,6 +605,13 @@ L<nbdkit-plugin(3)/.block_size>.
 For definitive information about block size constraints, read
 L<the NBD protocol specification|https://github.com/NetworkBlockDevice/nbd/blob/master/doc/proto.md>.
 
+=head2 Newstyle and oldstyle servers
+
+Libnbd can connect to both the simpler, old NBD protocol (before 2011)
+referred to now as C<"oldstyle">, or modern C<"newstyle-fixed">
+servers.  ("newstyle" was only briefly available.)  To find out the
+protocol used by the server, call L<nbd_get_protocol(3)>.
+
 =head1 DATA COMMANDS
 
 You can read and write data from the NBD server using L<nbd_pread(3)>
