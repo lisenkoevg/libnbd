@@ -531,7 +531,7 @@ use.  This is done by calling L<nbd_set_opt_mode(3)> before
 connecting; then after requesting a connection, the state machine will
 pause at L<nbd_aio_is_negotiating(3)> at any point that the user can
 decide which handshake command to send next.  Note that the
-negotiation state is only reachable from newstyle servers; older
+negotiation state is only reachable from newstyle servers; oldstyle
 servers cannot negotiate and will progress all the way to the ready
 state.
 
