@@ -473,6 +473,10 @@ L<nbd_get_errno(3)> returning C<ENOTSUP>) if it was not built with
 this feature, and you can also test for it explicitly using
 L<nbd_supports_uri(3)>.
 
+L<nbd_is_uri(3)> uses a heuristic to detect if the parameter could be
+an NBD URI or something else (like a filename).  It can be useful for
+program parameters that can be a URI or a file.
+
 =head2 Connecting to a subprocess
 
 Some NBD servers — notably L<nbdkit(1)> with the I<-s> parameter, and
