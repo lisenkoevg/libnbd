@@ -79,8 +79,8 @@ multithreaded mode.
 
 =head2 Documentation
 
-L<nbd_connect(3)> and L<nbd_aio_connect(3)> documentation has been
-revised and improved.
+C<nbd_connect*> and C<nbd_aio_connect*> documentation has been revised
+and improved.
 
 More consistent option styling is used throughout the documentation.
 
