@@ -2126,7 +2126,18 @@ See L<nbd_get_uri(3)>.
 
 =head2 See if a string is an NBD URI
 
-See L<nbd_is_uri(3)>.";
+See L<nbd_is_uri(3)>.
+
+=head2 Differences from qemu and glib parsing of NBD URIs
+
+L<qemu(1)> also supports NBD URIs and has a separate URI parser.  In
+qemu E<le> 9.0 this was done using their own parser.
+In qemu E<ge> 9.1 this is done using glib C<g_uri> functions.
+The current (glib-based) parser does not parse the export name part
+of the URI in exactly the same way as libnbd, which may cause URIs
+to work in libnbd but not in qemu or I<vice versa>.  Only URIs using
+exportnames should be affected.  For details see
+L<https://gitlab.com/qemu-project/qemu/-/issues/2584>.";
     example = Some "examples/connect-uri.c";
     see_also = [URLLink "https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md";
                 Link "aio_connect_uri";
