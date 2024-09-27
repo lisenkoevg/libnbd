@@ -512,6 +512,9 @@ and longdesc_to_markdown name longdesc =
              else
                sprintf "`%s`" n
            )
+           else if string_starts_with ~prefix:"http://" content ||
+                     string_starts_with ~prefix:"https://" content then
+             sprintf "[%s](%s)" content content
            else (* external manual page - how to link XXX *)
              sprintf "<i>%s</i>" content
         | _ ->
