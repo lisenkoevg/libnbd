@@ -2137,13 +2137,24 @@ The current (glib-based) parser does not parse the export name part
 of the URI in exactly the same way as libnbd, which may cause URIs
 to work in libnbd but not in qemu or I<vice versa>.  Only URIs using
 exportnames should be affected.  For details see
-L<https://gitlab.com/qemu-project/qemu/-/issues/2584>.";
+L<https://gitlab.com/qemu-project/qemu/-/issues/2584>.
+
+=head2 Limitations on vsock port numbers
+
+The L<vsock(7)> protocol allows 32 bit unsigned ports, reserving
+ports 0, 1 and 2 for special purposes.  In Linux, ports E<lt> 1024 are
+reserved for privileged processes.
+
+libxml2 (used to parse the URI) imposes additional restrictions.
+libxml2 E<lt> 2.9 limited port numbers to 99,999,999.
+libxml2 E<ge> 2.9 limits port numbers to E<le> 0x7fff_ffff (31 bits).";
     example = Some "examples/connect-uri.c";
     see_also = [URLLink "https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md";
                 Link "aio_connect_uri";
                 Link "set_export_name"; Link "set_tls";
                 Link "set_opt_mode"; Link "get_uri"; Link "is_uri";
-                Link "supports_vsock"; Link "supports_uri"];
+                Link "supports_vsock"; Link "supports_uri";
+                ExternalLink ("vsock", 7)];
   };
 
   "connect_unix", {
@@ -2178,7 +2189,7 @@ Not all systems support C<AF_VSOCK>; to determine if libnbd was
 built on a system with vsock support, see L<nbd_supports_vsock(3)>.
 " ^ blocking_connect_call_description;
     see_also = [Link "aio_connect_vsock"; Link "set_opt_mode";
-                Link "supports_vsock"];
+                Link "supports_vsock"; ExternalLink ("vsock", 7)];
   };
 
   "connect_tcp", {
@@ -3282,7 +3293,8 @@ Begin connecting to the NBD server over the C<AF_VSOCK>
 protocol to the server C<cid:port>.  Parameters behave as documented in
 L<nbd_connect_vsock(3)>.
 " ^ async_connect_call_description;
-    see_also = [ Link "connect_vsock"; Link "set_opt_mode" ];
+    see_also = [ Link "connect_vsock"; Link "set_opt_mode";
+                 ExternalLink ("vsock", 7) ];
   };
 
   "aio_connect_tcp", {

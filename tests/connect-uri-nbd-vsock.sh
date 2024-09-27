@@ -40,12 +40,11 @@ requires nbdinfo --version
 # Because vsock ports are 32 bits, we can basically pick one at random
 # and be sure that it's not used.  However we must pick one >= 1024
 # because the ports below this are privileged.
-#port=$(( 1024 + $RANDOM + ($RANDOM << 16) ))
 #
-# We would do that, but libxml2 is broken, see:
-# https://mail.gnome.org/archives/xml/2020-October/msg00001.html
-# https://mail.gnome.org/archives/xml/2020-October/msg00002.html
-port=$(( 1024 + $RANDOM + ($RANDOM << 11) ))
+# libxml2 < 2.9 limited ports to 99,999,999, but that version is very
+# old.  libxml2 only supports signed (ie. 31 bit) ports, so we only
+# use 30 bits here for safety.
+port=$(( 1024 + $RANDOM + ($RANDOM << 14) ))
 
 # Form the NBD URI.  Don't rely on nbdkit $uri support since it didn't
 # always support vsock, and anyway we want to test libnbd here.
