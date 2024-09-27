@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include "requires.h"
 
@@ -43,6 +45,17 @@ requires_not (const char *cmd)
   fflush (stdout);
   if (system (cmd) == 0) {
     printf ("Test skipped because prerequisite is missing or not working.\n");
+    exit (77);
+  }
+}
+
+void
+requires_not_exists (const char *filename)
+{
+  printf ("requires_not_exists %s\n", filename);
+  fflush (stdout);
+  if (access (filename, F_OK) == 0) {
+    printf ("Test skipped because file '%s' exists.\n", filename);
     exit (77);
   }
 }
