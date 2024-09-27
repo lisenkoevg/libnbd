@@ -78,9 +78,12 @@ interop_nbd_server_SOURCES = \
 	requires.c \
 	../tests/requires.h \
 	$(NULL)
+# nbd-server on Alpine 3.20, 3.21 is broken.
+# It hangs after printing:
+# (process:26936): GLib-CRITICAL **: 12:35:37.011: g_thread_pool_push: assertion 'real' failed
 interop_nbd_server_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-DREQUIRES=' requires_nbd_server_supports_inetd (); ' \
+	-DREQUIRES=' requires_nbd_server_supports_inetd (); requires_not_exists ("/etc/alpine-release"); ' \
 	-DSERVER=\"$(NBD_SERVER)\" \
 	-DSERVER_PARAMS='"-d", "-C", "nbd-server.conf", "0", TMPFILE' \
 	-DEXPORT_NAME='""' \
