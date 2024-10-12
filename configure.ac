@@ -241,7 +241,9 @@ AS_IF([test "$GNUTLS_LIBS" != ""],[
 ])
 
 dnl certtool (part of GnuTLS) for testing TLS with certificates.
-AC_CHECK_PROG([CERTTOOL], [certtool], [certtool])
+dnl macOS has its own program called certtool and packages the
+dnl GnuTLS tool as "gnutls-certtool".
+AC_CHECK_PROGS([CERTTOOL],[gnutls-certtool certtool],[certtool])
 AM_CONDITIONAL([HAVE_CERTTOOL], [test "x$CERTTOOL" != "x"])
 
 dnl psktool (part of GnuTLS) for testing Pre-Shared Keys (PSK).
