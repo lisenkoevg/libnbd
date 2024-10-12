@@ -34,6 +34,17 @@ open Printf
 let () =
   let argv0 = Sys.argv.(0) in
 
+  (* This test cannot be run on macOS because of the macOS SIP misfeature
+   * which causes the error below (note it is ignoring the environment
+   * variable we set to find the right library):
+   *
+   * dyld[90386]: Library not loaded: /usr/local/lib/libnbd.0.dylib
+   * Referenced from: <57D6493F-295D-3276-BCA0-0A7FD24E85D9> /Users/rjones/d/libnbd/ocaml/tests/test_580_aio_connect.opt
+   * Reason: tried: '/usr/local/lib/libnbd.0.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/usr/local/lib/libnbd.0.dylib' (no such file), '/usr/local/lib/libnbd.0.dylib' (no such file)
+   *)
+  if Sys.command "test `uname` = \"Darwin\"" == 0 then
+    exit 77;
+
   match Array.length Sys.argv with
   | 1 ->                        (* exec nbdkit *)
      let runcmd = sprintf "%s $unixsocket" (Filename.quote argv0) in
