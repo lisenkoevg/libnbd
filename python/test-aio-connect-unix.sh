@@ -24,6 +24,9 @@ set -x
 requires $NBDKIT --version
 requires $PYTHON --version
 
+# Python tests all fail on macOS because of SIP misfeature.
+requires_not test "$(uname)" = "Darwin"
+
 $NBDKIT -U - null --run '$PYTHON -c "
 import nbd
 import sys

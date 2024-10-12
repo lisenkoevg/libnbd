@@ -20,6 +20,9 @@ source ../tests/functions.sh
 set -e
 set -x
 
+# Python tests all fail on macOS because of SIP misfeature.
+requires_not test "$(uname)" = "Darwin"
+
 # This is used as an environment variable by some of the tests so they
 # can locate static files in the source dir.
 export srcdir="@srcdir@"
