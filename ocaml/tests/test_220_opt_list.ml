@@ -44,10 +44,9 @@ let conn mode body expect =
 
 let () =
   (* Require new-enough nbdkit *)
-  let cmd = "nbdkit sh --dump-plugin | grep -q has_list_exports=1" in
-  if Sys.command cmd <> 0 then (
-    exit 77
-  );
+  let cmd = sprintf "%s sh --dump-plugin | grep -q has_list_exports=1" nbdkit in
+  if Sys.command cmd <> 0 then
+    exit 77;
 
   (* First pass: server fails NBD_OPT_LIST *)
   conn 0 (
