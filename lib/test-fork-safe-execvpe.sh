@@ -24,6 +24,11 @@ set -e
 # OpenBSD all have it.
 requires "$REALPATH" /
 
+# Fails on macOS with:
+# ./test-fork-safe-execvpe.sh: line 58: 84314 Killed: 9 PATH=$pathctl "$execvpe" "$@" > out 2> err
+# 'PATH= /Users/rjones/d/libnbd/lib/test-fork-safe-execvpe bin/f expr 1 + 1' should have succeeded
+requires_not test "$(uname)" = "Darwin"
+
 # Determine the absolute pathname of the execvpe helper binary.
 bname=$(basename -- "$0" .sh)
 dname=$(dirname -- "$0")
