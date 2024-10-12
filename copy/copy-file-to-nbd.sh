@@ -28,7 +28,6 @@ requires dd oflag=seek_bytes </dev/null
 requires stat --version
 requires test -r /dev/urandom
 requires test -r /dev/zero
-requires truncate --version
 
 file=copy-file-to-nbd.file
 file2=copy-file-to-nbd.file2
