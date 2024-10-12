@@ -23,7 +23,7 @@ set -x
 
 requires $NBDKIT --version
 requires $NBDKIT -U - null --run 'test "$uri" != ""'
-requires tr --version
+requires $TR --version
 
 out=info-map-totals.out
 cleanup_fn rm -f $out
@@ -36,7 +36,7 @@ $NBDKIT -U - data data='1 @131072 2' size=1M \
 
 cat $out
 
-if [ "$(tr -s ' ' < $out)" != " 65536 6.2% 0 data
+if [ "$($TR -s ' ' < $out)" != " 65536 6.2% 0 data
  983040 93.8% 3 hole,zero" ]; then
     echo "$0: unexpected output from nbdinfo --map"
     exit 1

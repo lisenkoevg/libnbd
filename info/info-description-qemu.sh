@@ -22,7 +22,7 @@ set -e
 set -x
 
 requires $QEMU_NBD --pid-file=test.pid --version
-requires truncate --version
+requires $TRUNCATE --version
 
 img=info-description-qemu.img
 out=info-description-qemu.out
@@ -31,7 +31,7 @@ sock=$(mktemp -u /tmp/libnbd-test-info.XXXXXX)
 cleanup_fn rm -f $img $out $pid $sock
 rm -f $img $out $pid $sock
 
-truncate -s 1M $img
+$TRUNCATE -s 1M $img
 $QEMU_NBD -f raw -t --socket=$sock --pid-file=$pid -x "hello" -D "world" $img &
 cleanup_fn kill $!
 

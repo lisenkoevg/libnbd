@@ -34,7 +34,13 @@ AC_PROG_SED
 
 dnl Check for some commands used by the tests which should be the GNU
 dnl coreutils variants.  On macOS these are prefixed with 'g' or 'gnu'.
+AC_CHECK_PROGS([CMP],[gcmp cmp],[cmp])
+AC_CHECK_PROGS([CUT],[gnucut cut],[cut])
+AC_CHECK_PROGS([DD],[gdd dd],[dd])
 AC_CHECK_PROGS([REALPATH],[grealpath realpath],[realpath])
+AC_CHECK_PROGS([STAT],[gstat stat],[stat])
+AC_CHECK_PROGS([TR],[gtr tr],[tr])
+AC_CHECK_PROGS([TRUNCATE],[gtruncate truncate],[truncate])
 
 dnl Check for basic C environment.
 AC_PROG_CC
@@ -500,7 +506,7 @@ AS_IF([test "x$OCAMLC" != "xno" && test "x$OCAMLFIND" != "xno" && \
     ocaml_min_minor=5
     AC_MSG_CHECKING([if OCaml version >= $ocaml_ver_str])
     ocaml_major="`echo $OCAMLVERSION | $AWK -F. '{print $1}'`"
-    ocaml_minor="`echo $OCAMLVERSION | $AWK -F. '{print $2}' | sed 's/^0//'`"
+    ocaml_minor="`echo $OCAMLVERSION | $AWK -F. '{print $2}' | $SED 's/^0//'`"
     AS_IF([test "$ocaml_major" -ge $((ocaml_min_major+1)) || ( test "$ocaml_major" -eq $ocaml_min_major && test "$ocaml_minor" -ge $ocaml_min_minor )],[
         AC_MSG_RESULT([yes ($ocaml_major, $ocaml_minor)])
     ],[

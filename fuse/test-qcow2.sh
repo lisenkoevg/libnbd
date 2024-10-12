@@ -27,8 +27,8 @@ set -x
 requires_fuse
 requires $QEMU_NBD --version
 requires qemu-img --version
-requires cmp --version
-requires dd --version
+requires $CMP --version
+requires $DD --version
 
 if ! test -r /dev/urandom; then
     echo "$0: test skipped: /dev/urandom not readable"
@@ -43,7 +43,7 @@ cleanup_fn fusermount3 -u $mp
 cleanup_fn rm -rf $mp
 cleanup_fn rm -f $pidfile $data $qcow2
 
-dd if=/dev/urandom of=$data bs=1M count=1
+$DD if=/dev/urandom of=$data bs=1M count=1
 qemu-img convert -f raw $data -O qcow2 $qcow2
 
 rm -rf $mp
@@ -53,4 +53,4 @@ wait_for_pidfile nbdfuse $pidfile
 
 ls -al $mp
 
-cmp $data $mp/nbd
+$CMP $data $mp/nbd

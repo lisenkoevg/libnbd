@@ -38,7 +38,14 @@ NBDKIT="@NBDKIT@"
 PYTHON="@PYTHON@"
 QEMU_NBD="@QEMU_NBD@"
 QEMU_STORAGE_DAEMON="@QEMU_STORAGE_DAEMON@"
+CMP="@CMP@"
+CUT="@CUT@"
+DD="@DD@"
 REALPATH="@REALPATH@"
+SED="@SED@"
+STAT="@STAT@"
+TR="@TR@"
+TRUNCATE="@TRUNCATE@"
 
 # cleanup_fn cmd [args]
 #
@@ -113,9 +120,9 @@ requires_linux_kernel_version ()
 
     # Test that it's the minimum version.
     # https://stackoverflow.com/a/24067243
-    requires cut --version
+    requires $CUT --version
     requires sort -V /dev/null
-    kver=$(uname -r | cut -d. -f1-2)
+    kver=$(uname -r | $CUT -d. -f1-2)
     requires test "$(printf "$kver\n$min" | sort -V | head -n 1)" = "$min"
 }
 
@@ -145,7 +152,7 @@ requires_caps ()
     local cap_eff
     local cap_str
 
-    cap_eff="$(sed -n 's/CapEff:\s*\([^0-9a-fA-F]*\)/\1/p' /proc/$$/status)"
+    cap_eff="$($SED -n 's/CapEff:\s*\([^0-9a-fA-F]*\)/\1/p' /proc/$$/status)"
     test -z "$cap_eff" && return 0
 
     cap_str=$(capsh --decode="$cap_eff")

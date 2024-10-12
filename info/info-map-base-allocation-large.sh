@@ -23,7 +23,7 @@ set -x
 
 requires $NBDKIT --version
 requires $NBDKIT -U - null --run 'test "$uri" != ""'
-requires tr --version
+requires $TR --version
 
 out=info-base-allocation-large.out
 cleanup_fn rm -f $out
@@ -36,7 +36,7 @@ $NBDKIT -U - data data='1 @131072 2 @6442450944 3' size=8G \
 
 cat $out
 
-if [ "$(tr -s ' ' < $out)" != " 0 32768 0 data
+if [ "$($TR -s ' ' < $out)" != " 0 32768 0 data
  32768 98304 3 hole,zero
  131072 32768 0 data
  163840 6442287104 3 hole,zero

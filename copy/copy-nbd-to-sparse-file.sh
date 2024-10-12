@@ -21,9 +21,9 @@
 set -e
 set -x
 
-requires cmp --version
-requires dd --version
-requires dd oflag=seek_bytes </dev/null
+requires $CMP --version
+requires $DD --version
+requires $DD oflag=seek_bytes </dev/null
 requires $NBDKIT --version
 requires test -r /dev/urandom
 requires test -r /dev/zero
@@ -35,10 +35,10 @@ cleanup_fn rm -f $file $file2
 # Create a random partially sparse file.
 touch $file
 for i in `seq 1 100`; do
-    dd if=/dev/urandom of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
-    dd if=/dev/zero of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/urandom of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/zero of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
 done
 
 # Apply nbdkit on top of the file, copy it and make sure that it
@@ -46,4 +46,4 @@ done
 $VG nbdcopy -S 512 -- [ $NBDKIT --exit-with-parent file $file ] $file2
 
 ls -ls $file $file2
-cmp $file $file2
+$CMP $file $file2

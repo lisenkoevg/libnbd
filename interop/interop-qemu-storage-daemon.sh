@@ -23,9 +23,9 @@ set -e
 set -x
 
 requires test "x$QEMU_STORAGE_DAEMON" != "x"
-requires sed --version
+requires $SED --version
 qsd_version="$($QEMU_STORAGE_DAEMON --version | \
-               sed -n '1s/qemu-storage-daemon version \([0-9.]*\).*/\1/p')"
+               $SED -n '1s/qemu-storage-daemon version \([0-9.]*\).*/\1/p')"
 requires_not test "$qsd_version" = "5.1.0"
 requires_not test "$qsd_version" = "5.2.0"
 requires_not test "$qsd_version" = "6.0.0"

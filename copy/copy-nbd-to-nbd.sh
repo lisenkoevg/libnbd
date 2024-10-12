@@ -22,7 +22,7 @@ set -e
 set -x
 
 requires $NBDKIT --exit-with-parent --version
-requires cmp /dev/null /dev/null
+requires $CMP /dev/null /dev/null
 requires hexdump -C /dev/null
 
 pidfile1=copy-nbd-to-nbd.pid1
@@ -46,7 +46,7 @@ $VG nbdcopy "nbd+unix:///?socket=$sock1" $file1
 $VG nbdcopy "nbd+unix:///?socket=$sock2" $file2
 
 ls -l $file1 $file2
-cmp $file1 $file2
+$CMP $file1 $file2
 
 # Test the data is at least non-zero.
 test "$(hexdump -C $file1 | head -1)" = "00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 08  |................|"

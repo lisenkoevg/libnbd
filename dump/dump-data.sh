@@ -25,9 +25,10 @@ requires $NBDKIT --version
 requires $NBDKIT data --dump-plugin
 requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires nbdsh -c 'exit(not h.supports_uri())'
+requires $CUT --version
 
 # This test requires nbdkit >= 1.22.
-minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | $CUT -d= -f2 )
 requires test $minor -ge 22
 
 output=dump-data.out

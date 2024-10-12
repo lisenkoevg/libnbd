@@ -22,7 +22,7 @@ set -e
 set -x
 
 requires $NBDKIT --exit-with-parent --version
-requires dd if=/dev/null of=/dev/null
+requires $DD if=/dev/null of=/dev/null
 
-dd if=/dev/zero bs=1M count=10 |
+$DD if=/dev/zero bs=1M count=10 |
     $VG nbdcopy -- - [ $NBDKIT --exit-with-parent -v memory size=10M ]

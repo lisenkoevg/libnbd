@@ -27,7 +27,7 @@ set -x
 requires qemu-img bitmap --help
 requires qemu-io --version
 requires $QEMU_NBD -B test --pid-file=test.pid --version
-requires tr --version
+requires $TR --version
 
 f=info-map-qemu-dirty-bitmap.qcow2
 out=info-map-qemu-dirty-bitmap.out
@@ -54,7 +54,7 @@ wait_for_pidfile $QEMU_NBD $pid
 $VG nbdinfo --map=qemu:dirty-bitmap:bitmap0 "nbd+unix://?socket=$sock" > $out
 cat $out
 
-if [ "$(tr -s ' ' < $out)" != " 0 65536 0 clean
+if [ "$($TR -s ' ' < $out)" != " 0 65536 0 clean
  65536 65536 1 dirty
  131072 393216 0 clean
  524288 65536 1 dirty

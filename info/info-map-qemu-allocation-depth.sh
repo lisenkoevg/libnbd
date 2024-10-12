@@ -27,7 +27,7 @@ set -x
 requires qemu-img --version
 requires qemu-io --version
 requires $QEMU_NBD -A --pid-file=test.pid --version
-requires tr --version
+requires $TR --version
 
 base=info-map-qemu-allocation-depth
 f1=$base.1.qcow2
@@ -67,7 +67,7 @@ wait_for_pidfile $QEMU_NBD $pid
 $VG nbdinfo --map=qemu:allocation-depth "nbd+unix://?socket=$sock" > $out
 cat $out
 
-if [ "$(tr -s ' ' < $out)" != "\
+if [ "$($TR -s ' ' < $out)" != "\
  0 1048576 4 backing depth 4
  1048576 1048576 1 local
  2097152 1048576 2 backing depth 2

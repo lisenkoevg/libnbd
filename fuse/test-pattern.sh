@@ -25,8 +25,8 @@ set -e
 set -x
 
 requires_fuse
-requires dd --version
-requires dd iflag=count_bytes,skip_bytes </dev/null
+requires $DD --version
+requires $DD iflag=count_bytes,skip_bytes </dev/null
 requires hexdump -C /dev/null
 requires $NBDKIT --version
 requires $NBDKIT pattern --version
@@ -52,7 +52,7 @@ ls -al $mp
 
 # Read from various places in the file and ensure what we read is
 # correct.
-dd if=$mp/nbd skip=4096 count=128 iflag=count_bytes,skip_bytes |
+$DD if=$mp/nbd skip=4096 count=128 iflag=count_bytes,skip_bytes |
     hexdump -C > $out
 cat $out
 if [ "$(cat $out)" != '00000000  00 00 00 00 00 00 10 00  00 00 00 00 00 00 10 08  |................|
@@ -68,7 +68,7 @@ if [ "$(cat $out)" != '00000000  00 00 00 00 00 00 10 00  00 00 00 00 00 00 10 0
     exit 1
 fi
 
-dd if=$mp/nbd skip=1000000 count=128 iflag=count_bytes,skip_bytes |
+$DD if=$mp/nbd skip=1000000 count=128 iflag=count_bytes,skip_bytes |
     hexdump -C > $out
 cat $out
 if [ "$(cat $out)" != '00000000  00 00 00 00 00 0f 42 40  00 00 00 00 00 0f 42 48  |......B@......BH|
@@ -84,7 +84,7 @@ if [ "$(cat $out)" != '00000000  00 00 00 00 00 0f 42 40  00 00 00 00 00 0f 42 4
     exit 1
 fi
 
-dd if=$mp/nbd skip=0 count=128 iflag=count_bytes,skip_bytes |
+$DD if=$mp/nbd skip=0 count=128 iflag=count_bytes,skip_bytes |
     hexdump -C > $out
 cat $out
 if [ "$(cat $out)" != '00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 08  |................|

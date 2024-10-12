@@ -22,7 +22,7 @@ source ../tests/functions.sh
 set -e
 set -x
 
-requires truncate --version
+requires $TRUNCATE --version
 requires $QEMU_NBD --version
 requires nbdsh --version
 
@@ -30,7 +30,7 @@ file="strict-mode-auto-flag.file"
 rm -f $file
 cleanup_fn rm -f $file
 
-truncate -s 1M $file
+$TRUNCATE -s 1M $file
 
 # Unconditional part of test: behavior when extended headers are not in use
 export QEMU_NBD

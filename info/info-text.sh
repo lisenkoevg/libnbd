@@ -23,9 +23,10 @@ set -x
 
 requires $NBDKIT --version
 requires $NBDKIT memory --version
+requires $CUT --version
 
 # This test requires nbdkit >= 1.12.
-minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | $CUT -d= -f2 )
 requires test $minor -ge 12
 
 out=info-text.out
@@ -36,4 +37,4 @@ $NBDKIT -U - memory size=1M \
 cat $out
 grep "export-size: $((1024*1024))" $out
 grep "uri: nbd+unix:///?socket=" $out
-sed -n '/contexts:/ { N; p; q; }' $out | grep .
+$SED -n '/contexts:/ { N; p; q; }' $out | grep .

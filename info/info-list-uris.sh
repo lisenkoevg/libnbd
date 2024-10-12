@@ -28,9 +28,10 @@ case $($NBDKIT file --version 2>&1) in
         echo "$0: skipping known double-free bug in $NBDKIT file dir="
         exit 77
 esac
+requires $CUT --version
 
 # This test requires nbdkit >= 1.22.
-minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | $CUT -d= -f2 )
 requires test $minor -ge 22
 
 out=info-list-uris.out

@@ -27,7 +27,7 @@ set -x
 requires $QEMU_NBD --list --version
 requires nbdsh --version
 requires qemu-img --version
-requires truncate --version
+requires $TRUNCATE --version
 requires timeout --version
 
 f="qemu-block-size.raw"
@@ -35,7 +35,7 @@ sock=$(mktemp -u /tmp/interop-qemu.XXXXXX)
 rm -f $f $sock
 cleanup_fn rm -f $f $sock
 
-truncate --size=10M $f
+$TRUNCATE --size=10M $f
 export sock
 fail=0
 

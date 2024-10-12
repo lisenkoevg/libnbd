@@ -25,8 +25,8 @@ set -x
 
 requires_fuse
 requires $NBDKIT --exit-with-parent --version
-requires cmp --version
-requires dd --version
+requires $CMP --version
+requires $DD --version
 
 if ! test -r /dev/urandom; then
     echo "$0: test skipped: /dev/urandom not readable"
@@ -47,9 +47,9 @@ wait_for_pidfile nbdfuse $pidfile
 
 ls -al $mp
 
-dd if=/dev/urandom of=$data bs=1M count=10
+$DD if=/dev/urandom of=$data bs=1M count=10
 # Use a weird block size when writing.  It's a bit pointless because
 # something in the Linux/FUSE stack turns these into exact 4096 byte
 # writes.
-dd if=$data of=$mp/nbd bs=65519 conv=nocreat,notrunc
-cmp $data $mp/nbd
+$DD if=$data of=$mp/nbd bs=65519 conv=nocreat,notrunc
+$CMP $data $mp/nbd

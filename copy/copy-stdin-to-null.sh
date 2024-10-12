@@ -21,6 +21,6 @@
 set -e
 set -x
 
-requires dd if=/dev/null of=/dev/null
+requires $DD if=/dev/null of=/dev/null
 
-dd if=/dev/zero bs=1M count=10 | $VG nbdcopy - null:
+$DD if=/dev/zero bs=1M count=10 | $VG nbdcopy - null:

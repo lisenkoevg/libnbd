@@ -24,8 +24,8 @@ set -e
 set -x
 
 requires_fuse
-requires dd --version
-requires dd iflag=count_bytes,skip_bytes </dev/null
+requires $DD --version
+requires $DD iflag=count_bytes,skip_bytes </dev/null
 requires $NBDKIT --version
 requires $NBDKIT sh --version
 
@@ -43,7 +43,7 @@ cleanup_fn rm -rf $mp $pidfile
 
 mkdir $mp
 
-export mp pidfile prog="$0"
+export DD mp pidfile prog="$0"
 $NBDKIT -U - \
         sh - \
         --run '
@@ -71,15 +71,15 @@ ls -al $mp
 
 # Commands which do not touch byte 100,000 should succeed, but
 # watch out for readahead.
-dd if=$mp/nbd of=/dev/null skip=500000 count=1000 iflag=count_bytes,skip_bytes
-dd if=$mp/nbd of=/dev/null skip=700000 count=200 iflag=count_bytes,skip_bytes
+$DD if=$mp/nbd of=/dev/null skip=500000 count=1000 iflag=count_bytes,skip_bytes
+$DD if=$mp/nbd of=/dev/null skip=700000 count=200 iflag=count_bytes,skip_bytes
 
 # Commands which touch byte 100,000 must fail.
-if dd if=$mp/nbd of=/dev/null skip=99000 count=2000 iflag=count_bytes,skip_bytes; then
+if $DD if=$mp/nbd of=/dev/null skip=99000 count=2000 iflag=count_bytes,skip_bytes; then
     echo "$prog: error: expected dd to fail"
     error=1
 fi
-if dd if=$mp/nbd of=/dev/null skip=90000 count=12000 iflag=count_bytes,skip_bytes; then
+if $DD if=$mp/nbd of=/dev/null skip=90000 count=12000 iflag=count_bytes,skip_bytes; then
     echo "$prog: error: expected dd to fail"
     error=1
 fi
@@ -99,7 +99,7 @@ case "$1" in
         echo EIO Bad block >&2
         exit 1
     else
-        dd if=/dev/zero count=$3 iflag=count_bytes
+        $DD if=/dev/zero count=$3 iflag=count_bytes
     fi ;;
   *) exit 2 ;;
 esac

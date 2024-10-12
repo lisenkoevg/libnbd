@@ -25,6 +25,7 @@ set -x
 
 requires_fuse
 requires $NBDKIT --exit-with-parent --version
+requires $TRUNCATE --version
 
 pidfile=test-nbdkit-file-null.pid
 mp=test-nbdkit-file-null
@@ -33,7 +34,7 @@ cleanup_fn fusermount3 -u $mp
 cleanup_fn rm -f $pidfile $mp
 
 # Create the underlying file/mountpoint as non-zero sized.
-truncate -s 1024 $mp
+$TRUNCATE -s 1024 $mp
 
 $VG nbdfuse -P $pidfile $mp [ $NBDKIT -r --exit-with-parent null ] &
 wait_for_pidfile nbdfuse $pidfile

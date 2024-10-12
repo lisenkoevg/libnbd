@@ -28,7 +28,7 @@ set -x
 requires test "x$PSKTOOL" != "x"
 requires $NBDKIT --exit-with-parent --version
 requires bash -c "$NBDKIT --dump-config | grep tls=yes"
-requires cmp /dev/null /dev/null
+requires $CMP /dev/null /dev/null
 requires hexdump -C /dev/null
 
 pskfile=copy-tls.psk
@@ -61,7 +61,7 @@ $VG nbdcopy "$uri1" $file1
 $VG nbdcopy "$uri2" $file2
 
 ls -l $file1 $file2
-cmp $file1 $file2
+$CMP $file1 $file2
 
 # Test the data is at least non-zero.
 test "$(hexdump -C $file1 | head -1)" = "00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 08  |................|"

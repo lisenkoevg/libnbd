@@ -26,7 +26,7 @@ requires $NBDKIT --exit-with-parent --version
 requires $NBDKIT sparse-random --dump-plugin
 requires qemu-img --version
 requires nbdinfo --version
-#requires stat --version
+#requires $STAT --version
 
 # Check the compress driver is supported by this qemu-nbd.
 # Note that qemu-nbd opens the socket before checking --image-opts!
@@ -86,8 +86,8 @@ ls -l $file2
 # of sparse-random?
 #
 # file1 < file2 (shows the compression is having some effect).
-#size1="$( stat -c %s $file1 )"
-#size2="$( stat -c %s $file2 )"
+#size1="$( $STAT -c %s $file1 )"
+#size2="$( $STAT -c %s $file2 )"
 #if [ $size1 -ge $size2 ]; then
 #    echo "$0: qcow2 compression did not make the file smaller"
 #    exit 1

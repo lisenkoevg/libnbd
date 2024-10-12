@@ -138,7 +138,8 @@ Optional, only needed to run the test suite:
   do interoperability testing against these servers.
 * A C++ compiler is needed if you want to test that the library works
   from C++.
-* coreutils or standard Unix tools such as cmp, dd, stat, truncate.
+* coreutils, diffutils or standard Unix tools such as cmp, dd, stat,
+  truncate.
 * libdl (dlopen, dlclose etc) to test this functionality.
 * qemu, qemu-io, qemu-img for interoperability testing.
 * certtool and psktool (part of GnuTLS) for testing TLS support.

@@ -21,8 +21,8 @@
 set -e
 set -x
 
-requires dd --version
-requires dd oflag=seek_bytes </dev/null
+requires $DD --version
+requires $DD oflag=seek_bytes </dev/null
 requires test -r /dev/urandom
 requires test -r /dev/zero
 
@@ -32,10 +32,10 @@ cleanup_fn rm -f $file
 # Create a random partially sparse file.
 touch $file
 for i in `seq 1 100`; do
-    dd if=/dev/urandom of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
-    dd if=/dev/zero of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/urandom of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/zero of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
 done
 
 $VG nbdcopy $file null:

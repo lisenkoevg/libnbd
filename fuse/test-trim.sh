@@ -25,7 +25,7 @@ set -x
 
 requires_fuse
 requires fallocate --version
-requires dd --version
+requires $DD --version
 requires $NBDKIT --version
 requires $NBDKIT sh --version
 
@@ -44,7 +44,7 @@ cleanup_fn rm -rf $mp $pidfile $out
 
 mkdir $mp
 
-export mp pidfile out prog="$0"
+export DD mp pidfile out prog="$0"
 $NBDKIT -U - \
         sh - \
         --run '
@@ -68,7 +68,7 @@ fi
 ls -al $mp
 
 # Fully allocate the disk.
-dd if=/dev/zero of=$mp/nbd bs=512 count=2
+$DD if=/dev/zero of=$mp/nbd bs=512 count=2
 
 # Punch a hole in the second sector.
 fallocate -p -l 512 -o 512 $mp/nbd

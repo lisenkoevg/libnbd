@@ -24,18 +24,21 @@ set -x
 requires $NBDKIT --version
 requires $NBDKIT -U - null --run 'test "$uri" != ""'
 requires $NBDKIT sh --version
-requires tr --version
+requires $DD --version
+requires $DD iflag=count_bytes </dev/null
+requires $TR --version
 
 out=info-base-allocation-weird.out
 cleanup_fn rm -f $out
 rm -f $out
 
 # This is a "weird" server that returns extents that are all 1 byte.
+export DD
 $NBDKIT -U - sh - \
         --run '$VG nbdinfo --map "$uri"' > $out <<'EOF'
 case "$1" in
   get_size) echo 32 ;;
-  pread) dd if=/dev/zero count=$3 iflag=count_bytes ;;
+  pread) $DD if=/dev/zero count=$3 iflag=count_bytes ;;
   can_extents) exit 0 ;;
   extents) echo $4 1 `[ $4 -ge 16 ] && [ $4 -le 19 ]; echo $?`;;
   *) exit 2 ;;
@@ -44,7 +47,7 @@ EOF
 
 cat $out
 
-if [ "$(tr -s ' ' < $out)" != " 0 16 1 hole
+if [ "$($TR -s ' ' < $out)" != " 0 16 1 hole
  16 4 0 data
  20 12 1 hole" ]; then
     echo "$0: unexpected output from nbdinfo --map"

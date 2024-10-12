@@ -21,7 +21,7 @@
 set -e
 set -x
 
-requires dd if=/dev/null of=/dev/null
+requires $DD if=/dev/null of=/dev/null
 requires test -r /dev/urandom
 
 file=copy-progress-bar.file
@@ -29,7 +29,7 @@ file2=copy-progress-bar.file2
 file3=copy-progress-bar.file3
 cleanup_fn rm -f $file $file2 $file3
 
-dd if=/dev/urandom of=$file bs=512 count=1
+$DD if=/dev/urandom of=$file bs=512 count=1
 
 # Check that a regular progress bar works.
 # This writes to stderr

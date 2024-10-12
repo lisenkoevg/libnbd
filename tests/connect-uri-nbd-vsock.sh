@@ -26,10 +26,11 @@ set -x
 # requires a particular kernel module to be loaded.
 requires_linux_kernel_version 5.6
 requires_vsock_support
+requires $CUT --version
 
 # This test requires nbdkit >= 1.16 which added the --vsock option.
 requires $NBDKIT --version
-minor=$( $NBDKIT --dump-config | grep ^version_minor | cut -d= -f2 )
+minor=$( $NBDKIT --dump-config | grep ^version_minor | $CUT -d= -f2 )
 requires test $minor -ge 16
 
 requires $NBDKIT pattern --version

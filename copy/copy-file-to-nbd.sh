@@ -22,10 +22,10 @@ set -e
 set -x
 
 requires $NBDKIT --exit-with-parent --version
-requires cmp --version
-requires dd --version
-requires dd oflag=seek_bytes </dev/null
-requires stat --version
+requires $CMP --version
+requires $DD --version
+requires $DD oflag=seek_bytes </dev/null
+requires $STAT --version
 requires test -r /dev/urandom
 requires test -r /dev/zero
 
@@ -38,12 +38,12 @@ cleanup_fn rm -f $file $file2 $pidfile $sock
 # Create a random partially sparse file.
 touch $file
 for i in `seq 1 100`; do
-    dd if=/dev/urandom of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
-    dd if=/dev/zero of=$file ibs=512 count=1 \
-       oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/urandom of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
+    $DD if=/dev/zero of=$file ibs=512 count=1 \
+        oflag=seek_bytes seek=$((RANDOM * 9973)) conv=notrunc
 done
-size="$( stat -c %s $file )"
+size="$( $STAT -c %s $file )"
 
 $NBDKIT --exit-with-parent -f -v -P $pidfile -U $sock memory size=$size &
 wait_for_pidfile $NBDKIT $pidfile
@@ -52,4 +52,4 @@ $VG nbdcopy $file "nbd+unix:///?socket=$sock"
 $VG nbdcopy "nbd+unix:///?socket=$sock" $file2
 
 ls -l $file $file2
-cmp $file $file2
+$CMP $file $file2

@@ -24,7 +24,7 @@ set -e
 set -x
 
 requires_fuse
-requires dd --version
+requires $DD --version
 requires $NBDKIT --version
 requires $NBDKIT memory --version
 
@@ -47,6 +47,6 @@ wait_for_pidfile nbdfuse $pidfile
 ls -al $mp
 
 declare -a pids
-for f in 1 2 3 4; do dd if=$mp/nbd of=/dev/null & pids+=($!) ; done
-for f in 1 2 3 4; do dd if=/dev/zero of=$mp/nbd bs=1M count=10 & pids+=($!) ; done
+for f in 1 2 3 4; do $DD if=$mp/nbd of=/dev/null & pids+=($!) ; done
+for f in 1 2 3 4; do $DD if=/dev/zero of=$mp/nbd bs=1M count=10 & pids+=($!) ; done
 wait ${pids[@]}
