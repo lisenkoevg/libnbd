@@ -123,6 +123,11 @@ main (int argc, char *argv[])
   /* Quick check that nbdkit is new enough */
   requires (NBDKIT " eval --dump-plugin | grep -q has_list_exports=1");
 
+  /* Check 'truncate' program is GNU truncate.  Note @TRUNCATE@ is not
+   * available to us here.
+   */
+  requires ("truncate --version");
+
   /* Initial sanity check that we can't require TLS */
   nbd = nbd_create ();
   if (nbd == NULL) {
