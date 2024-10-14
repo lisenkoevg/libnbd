@@ -275,6 +275,7 @@ aarch64-macos-13:
     CIRRUS_VM_IMAGE_NAME: ghcr.io/cirruslabs/macos-ventura-base:latest
     CIRRUS_VM_IMAGE_SELECTOR: image
     CIRRUS_VM_INSTANCE_TYPE: macos_instance
+    DIST: skip
     INSTALL_COMMAND: brew install
     NAME: macos-13
     PATH_EXTRA: /usr/local/opt/ccache/libexec:/usr/local/opt/gettext/bin:/usr/local/opt/libpcap/bin:/usr/local/opt/libxslt/bin:/usr/local/opt/rpcgen/bin
