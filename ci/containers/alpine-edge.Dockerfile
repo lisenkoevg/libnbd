@@ -11,6 +11,7 @@ RUN apk update && \
     apk add \
         autoconf \
         automake \
+        bash \
         bash-completion \
         busybox \
         ca-certificates \

@@ -3,6 +3,7 @@ packages:
   - autoconf
   - automake
   - awk
+  - bash
   - bash-completion
   - cargo
   - ccache

@@ -10,6 +10,7 @@ function install_buildenv() {
            autoconf \
            automake \
            awk \
+           bash \
            bash-completion-devel \
            ca-certificates \
            cargo \

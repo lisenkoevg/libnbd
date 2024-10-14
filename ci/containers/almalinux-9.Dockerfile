@@ -13,6 +13,7 @@ RUN dnf update -y && \
     dnf install -y \
         autoconf \
         automake \
+        bash \
         bash-completion \
         ca-certificates \
         cargo \

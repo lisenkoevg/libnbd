@@ -13,6 +13,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     eatmydata apt-get install --no-install-recommends -y \
                       autoconf \
                       automake \
+                      bash \
                       bash-completion \
                       bsdextrautils \
                       ca-certificates \

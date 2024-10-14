@@ -21,6 +21,7 @@ exec "$@"\n' > /usr/bin/nosync && \
     nosync dnf install -y \
                autoconf \
                automake \
+               bash \
                bash-completion-devel \
                ca-certificates \
                cargo \

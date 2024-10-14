@@ -11,6 +11,7 @@ function install_buildenv() {
     apt-get install --no-install-recommends -y \
             autoconf \
             automake \
+            bash \
             bash-completion \
             bsdextrautils \
             ca-certificates \

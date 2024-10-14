@@ -10,6 +10,7 @@ function install_buildenv() {
     apk add \
         autoconf \
         automake \
+        bash \
         bash-completion \
         busybox \
         ca-certificates \
