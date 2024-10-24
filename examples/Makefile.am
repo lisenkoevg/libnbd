@@ -22,6 +22,7 @@ EXTRA_DIST = LICENSE-FOR-EXAMPLES
 noinst_PROGRAMS = \
 	aio-connect-read \
 	batched-read-write \
+	connect-benchmark \
 	connect-command \
 	connect-uri \
 	encryption \
@@ -60,6 +61,21 @@ batched_read_write_CFLAGS = \
 	$(NULL)
 batched_read_write_LDADD = \
 	$(top_builddir)/lib/libnbd.la \
+	$(NULL)
+
+connect_benchmark_SOURCES = \
+	connect-benchmark.c \
+	$(NULL)
+connect_benchmark_CPPFLAGS = \
+	-I$(top_srcdir)/include \
+	$(NULL)
+connect_benchmark_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(PTHREAD_CFLAGS) \
+	$(NULL)
+connect_benchmark_LDADD = \
+	$(top_builddir)/lib/libnbd.la \
+	$(PTHREAD_LIBS) \
 	$(NULL)
 
 connect_command_SOURCES = \

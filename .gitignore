@@ -70,6 +70,7 @@ Makefile.in
 /dump/nbddump.1
 /examples/aio-connect-read
 /examples/batched-read-write
+/examples/connect-benchmark
 /examples/connect-command
 /examples/connect-uri
 /examples/copy-libev
