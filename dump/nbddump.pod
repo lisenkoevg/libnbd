@@ -4,7 +4,7 @@ nbddump - hexdump the content of a disk over NBD
 
 =head1 SYNOPSIS
 
- nbddump NBD
+ nbddump [-n N|--length N] NBD
 
 C<NBD> is an NBD URI or subprocess:
 
