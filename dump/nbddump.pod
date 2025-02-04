@@ -4,7 +4,7 @@ nbddump - hexdump the content of a disk over NBD
 
 =head1 SYNOPSIS
 
- nbddump [-n N|--length N] NBD
+ nbddump [-n N|--length N] [-o N|--offset N] NBD
 
 C<NBD> is an NBD URI or subprocess:
 
@@ -99,9 +99,19 @@ if the output seems to be a terminal, and disable them if not.
 
 =item B<--length=>N
 
+=item B<--limit=>N
+
 =item B<-n> N
 
 Dump up to I<N> bytes and then stop.
+
+=item B<--offset=>N
+
+=item B<--skip=>N
+
+=item B<-o> N
+
+Start the dump at offset I<N> bytes.
 
 =item B<-V>
 

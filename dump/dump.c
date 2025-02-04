@@ -44,6 +44,7 @@ static const char *progname;
 static struct nbd_handle *nbd;
 bool colour;
 static uint64_t limit = UINT64_MAX; /* --length (unlimited by default) */
+static uint64_t skip;               /* --offset (0 by default) */
 static int64_t size;                /* actual size */
 static bool can_meta_context;       /* did we get extent data? */
 
@@ -72,6 +73,7 @@ usage (FILE *fp, int exitcode)
 "    --no-color, --no-colour\n"
 "                          Suppress ANSI color even on output to terminal\n"
 "    -n LEN, --length=LEN  Truncate output after LEN bytes dumped\n"
+"    -o OFF, --offset=OFF  Skip to offset OFF bytes before dumping\n"
 "\n"
 "Other options:\n"
 "\n"
@@ -99,7 +101,7 @@ main (int argc, char *argv[])
     COLOUR_OPTION,
     NO_COLOUR_OPTION,
   };
-  const char *short_options = "n:V";
+  const char *short_options = "n:o:V";
   const struct option long_options[] = {
     { "help",               no_argument,       NULL, HELP_OPTION },
     { "long-options",       no_argument,       NULL, LONG_OPTIONS },
@@ -116,6 +118,8 @@ main (int argc, char *argv[])
     { "no-colours",         no_argument,       NULL, NO_COLOUR_OPTION },
     { "length",             required_argument, NULL, 'n' },
     { "limit",              required_argument, NULL, 'n' },
+    { "offset",             required_argument, NULL, 'o' },
+    { "skip",               required_argument, NULL, 'o' },
     { NULL }
   };
   int c;
@@ -160,6 +164,15 @@ main (int argc, char *argv[])
       /* XXX Allow human sizes here. */
       if (sscanf (optarg, "%" SCNu64, &limit) != 1) {
         fprintf (stderr, "%s: could not parse --length option: %s\n",
+                 progname, optarg);
+        exit (EXIT_FAILURE);
+      }
+      break;
+
+    case 'o':
+      /* XXX Allow human sizes here. */
+      if (sscanf (optarg, "%" SCNu64, &skip) != 1) {
+        fprintf (stderr, "%s: could not parse --offset option: %s\n",
                  progname, optarg);
         exit (EXIT_FAILURE);
       }
@@ -342,8 +355,8 @@ do_dump (void)
   const char *splat = colour ? "☆" : "*";
   const char *pipe = colour ? "│" : "|";
   const char *dot = colour ? "·" : ".";
-  uint64_t offset = 0;
-  uint64_t count = size > limit ? limit : size;
+  uint64_t offset = skip;
+  uint64_t count = size - offset > limit ? limit : size - offset;
   size_t i, j;
   char last[16];
   bool printed_splat = false, same;
