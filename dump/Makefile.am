@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	dump-data.sh \
 	dump-empty-qcow2.sh \
 	dump-pattern.sh \
+	dump-subset.sh \
 	nbddump.pod \
 	test-long-options.sh \
 	test-short-options.sh \
@@ -70,6 +71,7 @@ TESTS = \
 	dump-data.sh \
 	dump-empty-qcow2.sh \
 	dump-pattern.sh \
+	dump-subset.sh \
 	test-long-options.sh \
 	test-short-options.sh \
 	test-version.sh \
