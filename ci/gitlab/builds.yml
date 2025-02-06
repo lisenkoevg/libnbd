@@ -7,17 +7,6 @@
 
 # Native build jobs
 
-x86_64-alpine-319:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-alpine-319-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: alpine-319
-    TARGET_BASE_IMAGE: docker.io/library/alpine:3.19
-
-
 x86_64-alpine-320:
   extends: .native_build_job
   needs:
@@ -27,6 +16,17 @@ x86_64-alpine-320:
   variables:
     NAME: alpine-320
     TARGET_BASE_IMAGE: docker.io/library/alpine:3.20
+
+
+x86_64-alpine-321:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-alpine-321-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: alpine-321
+    TARGET_BASE_IMAGE: docker.io/library/alpine:3.21
 
 
 x86_64-alpine-edge:
@@ -62,17 +62,6 @@ x86_64-centos-stream-9:
     TARGET_BASE_IMAGE: quay.io/centos/centos:stream9
 
 
-x86_64-debian-11:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-debian-11-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: debian-11
-    TARGET_BASE_IMAGE: docker.io/library/debian:11-slim
-
-
 x86_64-debian-12:
   extends: .native_build_job
   needs:
@@ -82,6 +71,17 @@ x86_64-debian-12:
   variables:
     NAME: debian-12
     TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+
+
+x86_64-debian-13:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-debian-13-container
+      optional: true
+  allow_failure: true
+  variables:
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:trixie-slim
 
 
 x86_64-debian-sid:
@@ -199,18 +199,6 @@ x86_64-ubuntu-2404:
 
 # Cross build jobs
 
-i686-debian-11:
-  extends: .cross_build_job
-  needs:
-    - job: i686-debian-11-container
-      optional: true
-  allow_failure: false
-  variables:
-    CROSS: i686
-    NAME: debian-11
-    TARGET_BASE_IMAGE: docker.io/library/debian:11-slim
-
-
 i686-debian-12:
   extends: .cross_build_job
   needs:
@@ -221,6 +209,18 @@ i686-debian-12:
     CROSS: i686
     NAME: debian-12
     TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+
+
+i686-debian-13:
+  extends: .cross_build_job
+  needs:
+    - job: i686-debian-13-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: i686
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:trixie-slim
 
 
 # Native cirrus build jobs

@@ -8,9 +8,9 @@ gitlab:
     check-dco: false
 
 targets:
-  alpine-319: x86_64
-
   alpine-320: x86_64
+
+  alpine-321: x86_64
 
   alpine-edge: x86_64
 
@@ -18,12 +18,12 @@ targets:
 
   centos-stream-9: x86_64
 
-  debian-11:
+  debian-12:
     jobs:
       - arch: x86_64
       - arch: i686
 
-  debian-12:
+  debian-13:
     jobs:
       - arch: x86_64
       - arch: i686

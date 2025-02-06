@@ -7,18 +7,18 @@
 
 # Native container jobs
 
-x86_64-alpine-319-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: alpine-319
-
-
 x86_64-alpine-320-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: alpine-320
+
+
+x86_64-alpine-321-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: alpine-321
 
 
 x86_64-alpine-edge-container:
@@ -42,18 +42,18 @@ x86_64-centos-stream-9-container:
     NAME: centos-stream-9
 
 
-x86_64-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: debian-11
-
-
 x86_64-debian-12-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: debian-12
+
+
+x86_64-debian-13-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-13
 
 
 x86_64-debian-sid-container:
@@ -115,15 +115,15 @@ x86_64-ubuntu-2404-container:
 
 # Cross container jobs
 
-i686-debian-11-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: debian-11-cross-i686
-
-
 i686-debian-12-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: debian-12-cross-i686
+
+
+i686-debian-13-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-13-cross-i686
