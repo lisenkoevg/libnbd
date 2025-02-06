@@ -42,7 +42,6 @@ RUN zypper update -y && \
            ocaml-findlib \
            ocaml-ocamldoc \
            perl \
-           perl-Pod-Simple \
            perl-base \
            pkgconfig \
            python3-devel \

@@ -10,7 +10,7 @@ function install_buildenv() {
         autoconf \
         automake \
         bash \
-        bash-completion \
+        bash-completion-devel \
         ca-certificates \
         cargo \
         ccache \
@@ -23,9 +23,9 @@ function install_buildenv() {
         gcc-c++ \
         git \
         glib2-devel \
-        glibc \
         glibc-devel \
         glibc-langpack-en \
+        glibc-utils \
         gnutls-devel \
         gnutls-utils \
         golang \

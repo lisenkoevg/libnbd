@@ -30,9 +30,9 @@ targets:
 
   debian-sid: x86_64
 
-  fedora-39: x86_64
-
   fedora-40: x86_64
+
+  fedora-41: x86_64
 
   fedora-rawhide:
     jobs:
@@ -58,7 +58,7 @@ targets:
 
   opensuse-tumbleweed: x86_64
 
-  macos-13:
+  macos-14:
     jobs:
       - arch: aarch64
         variables:
