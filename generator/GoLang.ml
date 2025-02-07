@@ -159,7 +159,8 @@ let print_callback_wrapper { cbname; cbargs } =
   C.print_cbarg_list ~wrap:true cbargs;
   pr "\n";
   pr "{\n";
-  pr "  return %s_callback ((long)" cbname;
+  pr "  // golang isn't const-correct, there will be warnings here:\n";
+  pr "  return %s_callback ((long *)" cbname;
   C.print_cbarg_list ~types:false ~parens:false cbargs;
   pr ");\n";
   pr "}\n";
@@ -759,12 +760,7 @@ missing_function (struct error *err, const char *fn)
   (* Function decl for each callback wrapper. *)
   List.iter (
     fun { cbname; cbargs } ->
-      (*
-       * It would be nice to do this, but it basically means we have
-       * to guess the prototype that golang will generate for a
-       * golang exported function.  Also golang doesn't bother with
-       * const-correctness.
-       pr "extern int %s_callback (long callbackid" cbname;
+       pr "extern int %s_callback (long *callbackid" cbname;
        List.iter (
          fun cbarg ->
            pr ", ";
@@ -784,16 +780,13 @@ missing_function (struct error *err, const char *fn)
            | CBString n ->
               pr "char *%s" n
            | CBUInt64 n ->
-              pr "uint64_t *%s" n
+              pr "uint64_t %s" n
            | CBMutable (Int n) ->
               pr "int *%s" n
            | CBArrayAndLen _ | CBMutable _ -> assert false
        ) cbargs;
        pr ");\n";
        pr "\n";
-       * So instead we do this:
-       *)
-      pr "extern int %s_callback ();\n" cbname;
       pr "\n";
       pr "int _nbd_%s_callback_wrapper " cbname;
       C.print_cbarg_list ~wrap:true cbargs;
