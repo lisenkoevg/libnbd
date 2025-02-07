@@ -1118,6 +1118,7 @@ L<https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md>.
 
 =head2 Release notes
 
+L<libnbd-release-notes-1.22(1)>,
 L<libnbd-release-notes-1.20(1)>,
 L<libnbd-release-notes-1.18(1)>,
 L<libnbd-release-notes-1.16(1)>,
