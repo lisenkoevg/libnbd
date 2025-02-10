@@ -26,9 +26,9 @@ L<libnbd-security(3)>.
 
 L<nbd_set_tls_hostname(3)> and L<nbd_get_tls_hostname(3)> can be used
 to set and get the hostname used for TLS server certificate checking.
-This hostname, if set, is used in preference to the hostname supplied
-when connecting to the server.  This can be used for example when NBD
-connections are proxied, or happen over a Unix domain socket.
+This hostname, if set, is used in preference to the hostname of the
+server.  This can be used when NBD connections are proxied, or
+transported over a Unix domain socket.
 
 L<nbd_is_uri(3)> applies a heuristic to detect if something is likely
 to be an NBD URI or not.
@@ -41,14 +41,14 @@ subprocess created by functions such as L<nbd_connect_command(3)>.
 As an extension to L<nbd_connect_uri(3)>, you can now connect to
 C<nbd+ssh://> or C<nbds+ssh://> URIs, creating an NBD tunnel over an
 SSH connection.  This is very convenient when you have SSH access to a
-remote host, but not direct access to NBD ports (because of a firewall
-or other restriction).
+remote host, but a firewall prevents direct access to NBD ports.
 
 =head2 Protocol
 
 We now print the full error message string if one is sent by the
-server.  nbdkit E<ge> 1.42 will send full error messages from plugins
-over the NBD connection to compatible NBD clients like libnbd 1.22.
+server.  S<nbdkit E<ge> 1.42> will send full error messages from
+plugins over the NBD connection to compatible NBD clients like
+S<libnbd 1.22> or qemu.
 
 =head2 Tools
 
@@ -74,7 +74,7 @@ greatly.
 
 Common code is now used to get the size of block devices, and this has
 been fixed to work properly on BSD.  This affected at least nbdcopy
-when used on block devices on BSD.
+when used to copy to and from block devices on BSD.
 
 =head2 Documentation
 
@@ -87,16 +87,18 @@ that we parse NBD URIs versus qemu.
 L<nbd_connect_uri(3)> adds additional documentation on the reserved
 VSock port numbers.
 
-
 =head2 Build
 
-gnutls E<ge> 3.5.18 is now required.  This matches the version needed
-by qemu.  This means that RHEL E<ge> 8 is now required.
+S<gnutls E<ge> 3.5.18> is now required.  This matches the version
+needed by qemu.  If using RHEL, this means that S<RHEL E<ge> 8> is now
+required.
 
 libnbd should now compile on macOS.
 
 F<examples/connect-benchmark> is a new example that can be used to
 benchmark connections.
+
+Add support for GCC 15.
 
 =head1 SEE ALSO
 
