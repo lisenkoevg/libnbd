@@ -7,7 +7,7 @@ libnbd-release-notes-1.22 - release notes for libnbd 1.22
 These are the release notes for libnbd stable release 1.22.
 This describes the major changes since 1.20.
 
-libnbd 1.22.0 was released on B<XXX XXX 2025>.
+libnbd 1.22.0 was released on B<11 February 2025>.
 
 =head2 Security
 
