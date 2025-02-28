@@ -53,10 +53,10 @@ if HAVE_OCAMLOPT
 	LD_LIBRARY_PATH=../../lib/.libs $(OCAMLFIND) ocamlopt $(OCAMLFLAGS) -cclib -L$(top_builddir)/lib/.libs -I . $(OCAMLPACKAGES) -linkpkg mlnbd.cmxa $< -o $@
 endif
 
-endif HAVE_OCAML
-
 # Dependencies.
 #.depend: $(srcdir)/*.mli $(srcdir)/*.ml
 .depend: $(srcdir)/*.ml
 	$(OCAMLFIND) ocamldep -I .. $(srcdir)/*.ml > $@
 -include .depend
+
+endif HAVE_OCAML

@@ -109,7 +109,6 @@ TESTS += $(tests_opt)
 endif
 
 endif HAVE_NBDKIT
-endif HAVE_OCAML
 
 check-valgrind:
 	LIBNBD_VALGRIND=1 $(MAKE) check TESTS="$(tests_opt)"
@@ -119,3 +118,5 @@ check-valgrind:
 .depend: $(srcdir)/*.ml
 	$(OCAMLFIND) ocamldep -I .. $(srcdir)/*.ml > $@
 -include .depend
+
+endif HAVE_OCAML
