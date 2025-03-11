@@ -18,6 +18,18 @@
 AC_INIT([libnbd],[1.22.1])
 
 AC_CONFIG_MACRO_DIR([m4])
+
+# Colours within the configure script output.
+term_red=""
+term_green=""
+term_restore=""
+AS_CASE(["$TERM"],
+        [xterm*|vt220*], [
+          term_red="$(printf "\e@<:@22;31m")"
+          term_green="$(printf "\e@<:@22;32m")"
+          term_restore="$(printf "\e@<:@0m")"
+])
+
 m4_ifdef([AC_USE_SYSTEM_EXTENSIONS],[],
          [m4_define([AC_USE_SYSTEM_EXTENSIONS],[])])
 AC_USE_SYSTEM_EXTENSIONS
@@ -843,10 +855,13 @@ feature ()
     feat="$1"
     shift
     if "$@"; then
+        printf "$term_green"
         print "$feat" "yes"
     else
+        printf "$term_red"
         print "$feat" "no"
     fi
+    printf "$term_restore"
 }
 
 echo "Optional library features:"
