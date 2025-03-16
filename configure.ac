@@ -53,34 +53,6 @@ AC_CANONICAL_HOST
 AC_PROG_LN_S
 AC_PROG_SED
 
-dnl Check for some commands used by the tests which should be the GNU
-dnl coreutils variants.  On macOS these are prefixed with 'g' or 'gnu'.
-AC_CHECK_PROGS([CMP],[gcmp cmp],[cmp])
-AC_CHECK_PROGS([CUT],[gnucut cut],[cut])
-AC_CHECK_PROGS([DD],[gdd dd],[dd])
-AC_CHECK_PROGS([REALPATH],[grealpath realpath],[realpath])
-AC_CHECK_PROGS([STAT],[gstat stat],[stat])
-AC_CHECK_PROGS([TR],[gtr tr],[tr])
-AC_CHECK_PROGS([TRUNCATE],[gtruncate truncate],[truncate])
-
-dnl Bash must be at least version 4.  If it is too old, fail hard
-dnl with a good diagnostic.  Note macOS ships an ancient version
-dnl of bash (https://gitlab.com/nbdkit/nbdkit/-/issues/21)
-bash=`which bash`
-AC_MSG_CHECKING([for the major version of $bash])
-bash_major=`bash -c 'echo ${BASH_VERSINFO:-0}'`
-AC_MSG_RESULT([$bash_major])
-AS_IF([test $bash_major -lt 4],
-      [AC_MSG_ERROR([
-Your bash shell ($bash) is older than version 4.
-
-If you are using macOS, please install the latest version of bash
-from homebrew or macports.
-
-If you have installed the latest bash and this error is still
-showing up, check that \$PATH is set correctly.
-])])
-
 dnl Check for basic C environment.
 AC_PROG_CC
 AC_PROG_INSTALL
@@ -229,6 +201,35 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_RESULT([$is_glibc_234])
 AM_CONDITIONAL([HAVE_GLIBC_234], [test "x$is_glibc_234" = "xyes"])
 
+dnl Build the libFuzzer test.  See fuzzing/README.
+AC_ARG_ENABLE([libfuzzer],
+    [AS_HELP_STRING([--enable-libfuzzer],
+                    [build the libFuzzer test (for developers)])],
+    [],
+    [enable_libfuzzer=no])
+AM_CONDITIONAL([ENABLE_LIBFUZZER],[test "x$enable_libfuzzer" = "xyes"])
+
+AC_MSG_CHECKING([for how to mark DSO non-deletable at runtime])
+NODELETE=
+`$LD --help 2>&1 | grep -- "-z nodelete" >/dev/null` && \
+    NODELETE="-Wl,-z -Wl,nodelete"
+AC_MSG_RESULT([$NODELETE])
+AC_SUBST([NODELETE])
+
+AC_MSG_CHECKING([for how to set DSO symbol versions])
+case $host_os in
+  darwin*)
+  VERSION_SCRIPT=
+  ;;
+  *)
+  VERSION_SCRIPT="-Wl,--version-script=${srcdir}/libnbd.syms"
+  ;;
+esac
+AC_MSG_RESULT([$VERSION_SCRIPT])
+AC_SUBST([VERSION_SCRIPT])
+
+HEADING([Checking for libraries])
+
 dnl Check for GnuTLS (optional, for TLS support).
 AC_ARG_WITH([gnutls],
     [AS_HELP_STRING([--without-gnutls],
@@ -306,67 +307,6 @@ AS_IF([test "$with_libxml2" != "no"],[
     ])
 ])
 AM_CONDITIONAL([HAVE_LIBXML2], [test "x$LIBXML2_LIBS" != "x"])
-
-dnl nbdkit and some plugins are only needed to run the test suite.
-dnl
-dnl List the minimum version and plugins which are used by C code,
-dnl because shell script tests can use 'requires' tests.
-nbdkit_min_minor="12" ;# 1.12
-nbdkit_plugins="file memory null pattern sh"
-AC_CHECK_PROG([NBDKIT], [nbdkit], [nbdkit])
-AS_IF([test "x$NBDKIT" != "x"], [
-    have_nbdkit_features=yes
-
-    AC_MSG_CHECKING([for nbdkit >= 1.$nbdkit_min_minor])
-    nbdkit_minor="$(
-        $NBDKIT --version | $SED 's/^nbdkit 1\.\(@<:@0-9@:>@*\)\..*/\1/'
-    )"
-    AS_IF([test $nbdkit_minor -ge $nbdkit_min_minor],[
-        AC_MSG_RESULT([yes (1.$nbdkit_minor)])
-        printf "nbdkit version is "; $NBDKIT --version
-    ],[
-        AC_MSG_RESULT([no (1.$nbdkit_minor)])
-        AC_MSG_WARN([nbdkit is too old, some tests will be disabled])
-        have_nbdkit_features=no
-    ])
-
-    for p in $nbdkit_plugins; do
-        AC_MSG_CHECKING([for nbdkit $p plugin])
-        AS_IF([$NBDKIT $p --version >&AS_MESSAGE_LOG_FD 2>&1], [
-            AC_MSG_RESULT([yes])
-        ],[
-            AC_MSG_RESULT([no])
-            AC_MSG_WARN([nbdkit $p plugin is missing, some tests will be disabled])
-            have_nbdkit_features=no
-        ])
-    done
-
-    AC_DEFINE_UNQUOTED([NBDKIT],["$NBDKIT"],
-                       [The name of nbdkit server (optional)])
-
-])
-AM_CONDITIONAL([HAVE_NBDKIT],
-    [test "x$NBDKIT" != "x" && test "x$have_nbdkit_features" = "xyes"])
-
-dnl nbd-server, qemu-nbd and qemu-storage-daemon for interop testing.
-AC_CHECK_PROG([NBD_SERVER], [nbd-server], [nbd-server])
-AM_CONDITIONAL([HAVE_NBD_SERVER], [test "x$NBD_SERVER" != "x"])
-AS_IF([test "x$NBD_SERVER" != "x"], [
-  AC_DEFINE_UNQUOTED([NBD_SERVER],["$NBD_SERVER"],
-                     [The name of nbd-server (optional)])
-   printf "nbd-server version is "; $NBD_SERVER --version | head -1
-])
-AC_CHECK_PROG([QEMU_NBD], [qemu-nbd], [qemu-nbd])
-AM_CONDITIONAL([HAVE_QEMU_NBD], [test "x$QEMU_NBD" != "x"])
-AS_IF([test "x$QEMU_NBD" != "x"], [
-  AC_DEFINE_UNQUOTED([QEMU_NBD],["$QEMU_NBD"],
-                     [The name of qemu-nbd (optional)])
-   printf "qemu-nbd version is "; $QEMU_NBD --version | head -1
-])
-AC_CHECK_PROG([QEMU_STORAGE_DAEMON],
-               [qemu-storage-daemon], [qemu-storage-daemon])
-AM_CONDITIONAL([HAVE_QEMU_STORAGE_DAEMON],
-               [test "x$QEMU_STORAGE_DAEMON" != "x"])
 
 dnl glib2 main loop for examples that interoperate with the glib main loop.
 PKG_CHECK_MODULES([GLIB], [glib-2.0], [
@@ -456,6 +396,103 @@ AS_IF([test "x$enable_ublk" != "xno"],[
 ])
 AM_CONDITIONAL([HAVE_UBLK],[test "x$enable_ublk" != "xno"])
 
+HEADING([Checking for commands])
+
+dnl Check for some commands used by the tests which should be the GNU
+dnl coreutils variants.  On macOS these are prefixed with 'g' or 'gnu'.
+AC_CHECK_PROGS([CMP],[gcmp cmp],[cmp])
+AC_CHECK_PROGS([CUT],[gnucut cut],[cut])
+AC_CHECK_PROGS([DD],[gdd dd],[dd])
+AC_CHECK_PROGS([REALPATH],[grealpath realpath],[realpath])
+AC_CHECK_PROGS([STAT],[gstat stat],[stat])
+AC_CHECK_PROGS([TR],[gtr tr],[tr])
+AC_CHECK_PROGS([TRUNCATE],[gtruncate truncate],[truncate])
+
+HEADING([Checking for bash])
+
+dnl Bash must be at least version 4.  If it is too old, fail hard
+dnl with a good diagnostic.  Note macOS ships an ancient version
+dnl of bash (https://gitlab.com/nbdkit/nbdkit/-/issues/21)
+bash=`which bash`
+AC_MSG_CHECKING([for the major version of $bash])
+bash_major=`bash -c 'echo ${BASH_VERSINFO:-0}'`
+AC_MSG_RESULT([$bash_major])
+AS_IF([test $bash_major -lt 4],
+      [AC_MSG_ERROR([
+Your bash shell ($bash) is older than version 4.
+
+If you are using macOS, please install the latest version of bash
+from homebrew or macports.
+
+If you have installed the latest bash and this error is still
+showing up, check that \$PATH is set correctly.
+])])
+
+HEADING([Checking for other NBD servers])
+
+dnl nbdkit and some plugins are only needed to run the test suite.
+dnl
+dnl List the minimum version and plugins which are used by C code,
+dnl because shell script tests can use 'requires' tests.
+nbdkit_min_minor="12" ;# 1.12
+nbdkit_plugins="file memory null pattern sh"
+AC_CHECK_PROG([NBDKIT], [nbdkit], [nbdkit])
+AS_IF([test "x$NBDKIT" != "x"], [
+    have_nbdkit_features=yes
+
+    AC_MSG_CHECKING([for nbdkit >= 1.$nbdkit_min_minor])
+    nbdkit_minor="$(
+        $NBDKIT --version | $SED 's/^nbdkit 1\.\(@<:@0-9@:>@*\)\..*/\1/'
+    )"
+    AS_IF([test $nbdkit_minor -ge $nbdkit_min_minor],[
+        AC_MSG_RESULT([yes (1.$nbdkit_minor)])
+        printf "nbdkit version is "; $NBDKIT --version
+    ],[
+        AC_MSG_RESULT([no (1.$nbdkit_minor)])
+        AC_MSG_WARN([nbdkit is too old, some tests will be disabled])
+        have_nbdkit_features=no
+    ])
+
+    for p in $nbdkit_plugins; do
+        AC_MSG_CHECKING([for nbdkit $p plugin])
+        AS_IF([$NBDKIT $p --version >&AS_MESSAGE_LOG_FD 2>&1], [
+            AC_MSG_RESULT([yes])
+        ],[
+            AC_MSG_RESULT([no])
+            AC_MSG_WARN([nbdkit $p plugin is missing, some tests will be disabled])
+            have_nbdkit_features=no
+        ])
+    done
+
+    AC_DEFINE_UNQUOTED([NBDKIT],["$NBDKIT"],
+                       [The name of nbdkit server (optional)])
+
+])
+AM_CONDITIONAL([HAVE_NBDKIT],
+    [test "x$NBDKIT" != "x" && test "x$have_nbdkit_features" = "xyes"])
+
+dnl nbd-server, qemu-nbd and qemu-storage-daemon for interop testing.
+AC_CHECK_PROG([NBD_SERVER], [nbd-server], [nbd-server])
+AM_CONDITIONAL([HAVE_NBD_SERVER], [test "x$NBD_SERVER" != "x"])
+AS_IF([test "x$NBD_SERVER" != "x"], [
+  AC_DEFINE_UNQUOTED([NBD_SERVER],["$NBD_SERVER"],
+                     [The name of nbd-server (optional)])
+   printf "nbd-server version is "; $NBD_SERVER --version | head -1
+])
+AC_CHECK_PROG([QEMU_NBD], [qemu-nbd], [qemu-nbd])
+AM_CONDITIONAL([HAVE_QEMU_NBD], [test "x$QEMU_NBD" != "x"])
+AS_IF([test "x$QEMU_NBD" != "x"], [
+  AC_DEFINE_UNQUOTED([QEMU_NBD],["$QEMU_NBD"],
+                     [The name of qemu-nbd (optional)])
+   printf "qemu-nbd version is "; $QEMU_NBD --version | head -1
+])
+AC_CHECK_PROG([QEMU_STORAGE_DAEMON],
+               [qemu-storage-daemon], [qemu-storage-daemon])
+AM_CONDITIONAL([HAVE_QEMU_STORAGE_DAEMON],
+               [test "x$QEMU_STORAGE_DAEMON" != "x"])
+
+HEADING([Checking for Perl])
+
 dnl Check we have enough to run podwrapper.
 AC_CHECK_PROG([PERL],[perl],[perl],[no])
 AS_IF([test "x$PERL" != "xno"],[
@@ -474,13 +511,7 @@ dnl Define the path to the podwrapper program.
 PODWRAPPER="$PERL $(pwd)/podwrapper.pl"
 AC_SUBST([PODWRAPPER])
 
-dnl Build the libFuzzer test.  See fuzzing/README.
-AC_ARG_ENABLE([libfuzzer],
-    [AS_HELP_STRING([--enable-libfuzzer],
-                    [build the libFuzzer test (for developers)])],
-    [],
-    [enable_libfuzzer=no])
-AM_CONDITIONAL([ENABLE_LIBFUZZER],[test "x$enable_libfuzzer" = "xyes"])
+HEADING([Checking for bash completion])
 
 dnl Bash completion.
 AC_ARG_WITH([bash-completions],
@@ -509,6 +540,8 @@ AS_IF([test "x$bash_completion" = xno && test "x$with_bash_completions" = xyes],
 ])
 
 AM_CONDITIONAL([HAVE_BASH_COMPLETION],[test "x$bash_completion" = "xyes"])
+
+HEADING([Checking for OCaml])
 
 dnl OCaml >= 4.05, required for running the generator when building
 dnl from git, or optional unless you want to build the OCaml bindings.
@@ -623,6 +656,8 @@ EOF
     rm -f conftest.c conftest.o
 ])
 
+HEADING([Checking for Python])
+
 dnl Python, optional for the Python bindings and shell.
 PYTHON_PREFIX=
 PYTHON_VERSION=
@@ -707,6 +742,8 @@ AC_ARG_ENABLE([python-code-style],
     [enable_pycodestyle=no])
 AM_CONDITIONAL([ENABLE_PYCODESTYLE],[test "x$enable_pycodestyle" = "xyes"])
 
+HEADING([Checking for Golang])
+
 dnl Golang.
 AC_ARG_ENABLE([golang],
     AS_HELP_STRING([--disable-golang], [disable Go language bindings]),
@@ -743,6 +780,8 @@ AS_IF([test "x$enable_golang" != "xno"],[
 ],[GOLANG=no])
 AM_CONDITIONAL([HAVE_GOLANG],[test "x$GOLANG" != "xno"])
 
+HEADING([Checking for Rust])
+
 dnl Rust.
 AC_ARG_ENABLE([rust],
     AS_HELP_STRING([--disable-rust], [disable Rust language bindings]),
@@ -774,24 +813,7 @@ AS_IF([test "x$enable_rust" != "xno"],[
 ],[CARGO=no])
 AM_CONDITIONAL([HAVE_RUST],[test "x$CARGO" != "xno"])
 
-AC_MSG_CHECKING([for how to mark DSO non-deletable at runtime])
-NODELETE=
-`$LD --help 2>&1 | grep -- "-z nodelete" >/dev/null` && \
-    NODELETE="-Wl,-z -Wl,nodelete"
-AC_MSG_RESULT([$NODELETE])
-AC_SUBST([NODELETE])
-
-AC_MSG_CHECKING([for how to set DSO symbol versions])
-case $host_os in
-  darwin*)
-  VERSION_SCRIPT=
-  ;;
-  *)
-  VERSION_SCRIPT="-Wl,--version-script=${srcdir}/libnbd.syms"
-  ;;
-esac
-AC_MSG_RESULT([$VERSION_SCRIPT])
-AC_SUBST([VERSION_SCRIPT])
+HEADING([Generating output files])
 
 dnl Produce output files.
 AC_CONFIG_HEADERS([config.h])
