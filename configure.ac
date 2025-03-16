@@ -37,6 +37,8 @@ m4_define([HEADING],
           [AS_ECHO
            AS_ECHO(["${term_bold}$1${term_restore}"])])
 
+HEADING([Checking for C compiler and basic build environment])
+
 m4_ifdef([AC_USE_SYSTEM_EXTENSIONS],[],
          [m4_define([AC_USE_SYSTEM_EXTENSIONS],[])])
 AC_USE_SYSTEM_EXTENSIONS
