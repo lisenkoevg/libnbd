@@ -479,6 +479,9 @@ main (int argc, char *argv[])
   /* Always set the progress bar to 100% at the end of the copy. */
   progress_bar (1, 1);
 
+  /* We should always know the total size copied here. */
+  assert (src->size >= 0);
+
   /* Shut down the source side. */
   src->ops->close (src);
 

@@ -53,6 +53,12 @@ synch_copying (void)
       offset += r;
       progress_bar (offset, src->size);
     }
+
+    /* Record the total amount of data that was copied.  In all other
+     * cases, src->size will already be set to the true size, so here
+     * is the only place we have to set this.
+     */
+    src->size = offset;
   }
 
   /* Otherwise we know how much we're copying, so we can copy in whole
