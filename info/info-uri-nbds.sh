@@ -28,6 +28,10 @@ requires $NBDKIT null --version
 requires $NBDKIT --tls-verify-peer -U - null --run 'exit 0'
 requires jq --version
 
+# Requires that this build has TLS.
+requires nbdsh --version
+requires nbdsh -c 'exit(not h.supports_tls())'
+
 # Requires that the test certificates were created.
 pki=../tests/pki
 requires test -f $pki/stamp-pki
