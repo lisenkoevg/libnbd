@@ -100,6 +100,11 @@ progress_bar (off_t pos, int64_t size)
   if (size == 0)
     return;
 
+  /* XXX Synchronous mode, when the source is a pipe, passes size ==
+   * -1 here.  We should deal with this by displaying some sort of
+   * spinner.
+   */
+
   pthread_mutex_lock (&lock);
   if (progress_fd == -1)
     do_progress_bar (pos, size);
