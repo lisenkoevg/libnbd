@@ -18,6 +18,9 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	copy-blkhash-known.sh \
+	copy-blkhash-pattern.sh \
+	copy-blkhash-randfile.sh \
 	copy-block-to-nbd.sh \
 	copy-file-to-file.sh \
 	copy-file-to-nbd.sh \
@@ -65,6 +68,7 @@ TESTS =
 
 nbdcopy_SOURCES = \
 	nbdcopy.h \
+	blkhash.c \
 	file-ops.c \
 	main.c \
 	multi-thread-copying.c \
@@ -82,8 +86,10 @@ nbdcopy_CPPFLAGS = \
 nbdcopy_CFLAGS = \
 	$(WARNINGS_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
+	$(GNUTLS_CFLAGS) \
 	$(NULL)
 nbdcopy_LDADD = \
+	$(GNUTLS_LIBS) \
 	$(PTHREAD_LIBS) \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libnbd.la \
@@ -150,6 +156,12 @@ TESTS += \
 endif
 
 if HAVE_GNUTLS
+TESTS += \
+	copy-blkhash-known.sh \
+	copy-blkhash-pattern.sh \
+	copy-blkhash-randfile.sh \
+	$(NULL)
+
 if HAVE_PSKTOOL
 TESTS += copy-tls.sh
 endif

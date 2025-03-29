@@ -49,6 +49,7 @@ synch_copying (void)
     size_t r;
 
     while ((r = src->ops->synch_read (src, buf, request_size, offset)) > 0) {
+      update_blkhash ((const char *) buf, offset, request_size);
       dst->ops->synch_write (dst, buf, r, offset);
       offset += r;
       progress_bar (offset, src->size);
@@ -82,6 +83,7 @@ synch_copying (void)
         assert (exts.ptr[i].length <= count);
 
         if (exts.ptr[i].zero) {
+          update_blkhash (NULL, offset, exts.ptr[i].length);
           if (!dst->ops->synch_zero (dst, offset, exts.ptr[i].length, false) &&
               !dst->ops->synch_zero (dst, offset, exts.ptr[i].length, true)) {
             /* If efficient zeroing (punching a hole or allocating
@@ -103,6 +105,7 @@ synch_copying (void)
             exit (EXIT_FAILURE);
           }
 
+          update_blkhash ((const char *) buf, offset, r);
           dst->ops->synch_write (dst, buf, r, offset);
           offset += r;
           progress_bar (offset, src->size);
