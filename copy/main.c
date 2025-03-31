@@ -32,12 +32,15 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
 
-#include <pthread.h>
+#ifdef HAVE_GNUTLS
+#include <gnutls/gnutls.h>
+#endif
 
 #include <libnbd.h>
 
@@ -48,6 +51,11 @@
 #include "nbdcopy.h"
 
 bool allocated;                     /* --allocated flag */
+#ifdef HAVE_GNUTLS                  /* --blkhash */
+gnutls_digest_algorithm_t blkhash_alg = GNUTLS_DIG_UNKNOWN;
+#endif
+unsigned blkhash_size = 65536;
+const char *blkhash_file;           /* --blkhash-file (NULL = stdout) */
 unsigned connections = 4;           /* --connections */
 bool target_is_zero;                /* --target-is-zero flag */
 bool extents = true;                /* ! --no-extents flag */
@@ -76,7 +84,8 @@ usage (FILE *fp, int exitcode)
 "\n"
 "Copy to and from an NBD server:\n"
 "\n"
-"    nbdcopy [--allocated] [-C N|--connections=N]\n"
+"    nbdcopy [--allocated] [--blkhash=DIGEST] [--blkhash-file=FILENAME]\n"
+"            [-C N|--connections=N]\n"
 "            [--destination-is-zero|--target-is-zero] [--flush]\n"
 "            [--no-extents] [-p|--progress|--progress=FD]\n"
 "            [--queue-size=N] [--request-size=N] [-R N|--requests=N]\n"
@@ -113,6 +122,8 @@ main (int argc, char *argv[])
     LONG_OPTIONS,
     SHORT_OPTIONS,
     ALLOCATED_OPTION,
+    BLKHASH_OPTION,
+    BLKHASH_FILE_OPTION,
     TARGET_IS_ZERO_OPTION,
     FLUSH_OPTION,
     NO_EXTENTS_OPTION,
@@ -125,6 +136,8 @@ main (int argc, char *argv[])
     { "help",                no_argument,       NULL, HELP_OPTION },
     { "long-options",        no_argument,       NULL, LONG_OPTIONS },
     { "allocated",           no_argument,       NULL, ALLOCATED_OPTION },
+    { "blkhash",             optional_argument, NULL, BLKHASH_OPTION },
+    { "blkhash-file",        required_argument, NULL, BLKHASH_FILE_OPTION },
     { "connections",         required_argument, NULL, 'C' },
     { "destination-is-zero", no_argument,       NULL, TARGET_IS_ZERO_OPTION },
     { "flush",               no_argument,       NULL, FLUSH_OPTION },
@@ -178,6 +191,64 @@ main (int argc, char *argv[])
     case ALLOCATED_OPTION:
       allocated = true;
       break;
+
+    case BLKHASH_OPTION:
+#ifdef HAVE_GNUTLS
+      if (optarg == NULL || optarg[0] == '\0') {
+        blkhash_alg = GNUTLS_DIG_SHA256;
+        blkhash_size = 65536;
+      }
+      else {
+        i = strcspn (optarg, "/");
+        if (i == 3 && strncasecmp (optarg, "md5", i) == 0)
+          blkhash_alg = GNUTLS_DIG_MD5;
+        else if (i == 4 && strncasecmp (optarg, "sha1", i) == 0)
+          blkhash_alg = GNUTLS_DIG_SHA1;
+        else if (i == 6 && strncasecmp (optarg, "sha256", i) == 0)
+          blkhash_alg = GNUTLS_DIG_SHA256;
+        else if (i == 6 && strncasecmp (optarg, "sha512", i) == 0)
+          blkhash_alg = GNUTLS_DIG_SHA512;
+        else {
+          fprintf (stderr, "%s: %s: unknown digest algorithm '%s'\n",
+                   prog, "--blkhash", optarg);
+          exit (EXIT_FAILURE);
+        }
+        if (optarg[i] == '/') {
+          i64 = human_size_parse (&optarg[i+1], &error, &pstr);
+          if (i64 == -1) {
+            fprintf (stderr, "%s: %s: %s: %s\n",
+                     prog, "--blkhash", error, pstr);
+            exit (EXIT_FAILURE);
+          }
+          if (! is_power_of_2 (blkhash_size)) {
+            fprintf (stderr, "%s: %s is not a power of two: %s\n",
+                     prog, "--blkhash", &optarg[i+1]);
+            exit (EXIT_FAILURE);
+          }
+          if (i64 > UINT_MAX) {
+            fprintf (stderr, "%s: %s is too large: %s\n",
+                     prog, "--blkhash", &optarg[i+1]);
+            exit (EXIT_FAILURE);
+          }
+          blkhash_size = i64;
+        }
+      }
+      break;
+#else
+      fprintf (stderr, "%s: %s: option not supported in this build\n",
+               prog, "--blkhash");
+      exit (EXIT_FAILURE);
+#endif
+
+    case BLKHASH_FILE_OPTION:
+#ifdef HAVE_GNUTLS
+      blkhash_file = optarg;
+      break;
+#else
+      fprintf (stderr, "%s: %s: option not supported in this build\n",
+               prog, "--blkhash-file");
+      exit (EXIT_FAILURE);
+#endif
 
     case TARGET_IS_ZERO_OPTION:
       target_is_zero = true;
@@ -369,6 +440,9 @@ main (int argc, char *argv[])
     exit (EXIT_FAILURE);
   }
 
+  /* Initialize the blkhash function (if used). */
+  init_blkhash ();
+
   /* If multi-conn is not supported, force connections to 1. */
   if (! src->ops->can_multi_conn (src) || ! dst->ops->can_multi_conn (dst))
     connections = 1;
@@ -481,6 +555,9 @@ main (int argc, char *argv[])
 
   /* We should always know the total size copied here. */
   assert (src->size >= 0);
+
+  /* Finish and print the blkhash. */
+  finish_blkhash (src->size);
 
   /* Shut down the source side. */
   src->ops->close (src);

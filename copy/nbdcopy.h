@@ -25,6 +25,10 @@
 #include <sys/types.h>
 #include <pthread.h>
 
+#ifdef HAVE_GNUTLS
+#include <gnutls/gnutls.h>
+#endif
+
 #include <libnbd.h>
 
 #include "vector.h"
@@ -228,6 +232,11 @@ extern void asynch_notify_read_write_not_supported (struct rw *rw,
                                                     size_t index);
 
 extern bool allocated;
+#ifdef HAVE_GNUTLS
+extern gnutls_digest_algorithm_t blkhash_alg;
+#endif
+extern unsigned blkhash_size;
+extern const char *blkhash_file;
 extern unsigned connections;
 extern bool target_is_zero;
 extern bool extents;
@@ -247,5 +256,8 @@ extern const char *prog;
 extern void progress_bar (off_t pos, int64_t size);
 extern void synch_copying (void);
 extern void multi_thread_copying (void);
+extern void init_blkhash (void);
+extern void update_blkhash (const char *buf, uint64_t offset, size_t len);
+extern void finish_blkhash (uint64_t total_size);
 
 #endif /* NBDCOPY_H */

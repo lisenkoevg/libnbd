@@ -4,7 +4,8 @@ nbdcopy - copy to and from an NBD server
 
 =head1 SYNOPSIS
 
- nbdcopy [--allocated] [-C N|--connections=N]
+ nbdcopy [--allocated] [--blkhash=DIGEST] [--blkhash-file=FILE]
+         [-C N|--connections=N]
          [--destination-is-zero|--target-is-zero] [--flush]
          [--no-extents] [-p|--progress|--progress=FD]
          [--queue-size=N] [--request-size=N] [-R N|--requests=N]
@@ -49,6 +50,11 @@ option this will print a progress bar.
 =head2 nbdcopy nbd://server1 nbd://server2
 
 Copy a full disk from one NBD server to another.
+
+=head2 nbdcopy nbd://server1 nbd://server2 --blkhash
+
+Copy a full disk from one NBD server to another, computing the blkhash
+(similar to a checksum) of the disk and printing that.
 
 =head2 nbdcopy -- [ qemu-nbd -r -f qcow2 https://example.com/disk.qcow2 ] -
 
@@ -105,6 +111,49 @@ extent information from the source to copy holes (see
 I<--no-extents>), or by detecting runs of zeroes (see I<-S>).  If you
 use I<--allocated> then nbdcopy creates a fully allocated, non-sparse
 output on the destination.
+
+=item B<--blkhash>
+
+=item B<--blkhash=md5>
+
+=item B<--blkhash=md5/>SIZE
+
+=item B<--blkhash=sha1>
+
+=item B<--blkhash=sha1/>SIZE
+
+=item B<--blkhash=sha256>
+
+=item B<--blkhash=sha256/>SIZE
+
+=item B<--blkhash=sha512>
+
+=item B<--blkhash=sha512/>SIZE
+
+Compute the blkhash of the disk image during the copy and print it at
+the end.  Blkhash (L<https://gitlab.com/nirs/blkhash>) is an algorithm
+similar to a checksum except that it can be computed in parallel.
+Note that it is not compatible with programs like L<cksum(1)> or
+L<sha256sum(1)>.  Using this option will make nbdcopy slower.
+
+You can choose the digest function from C<md5>, C<sha1>, C<sha256>
+(recommended), or C<sha512>.  You can also choose the block size, the
+default being C<64k> (recommended).
+
+The I<--blkhash> option without parameters selects sha256/64k.
+
+To compute the blkhash of a file without copying it, you can do:
+
+ nbdcopy --blkhash -- disk.raw null:
+
+or if the format is qcow2:
+
+ nbdcopy --blkhash -- [ qemu-nbd -f qcow2 disk.qcow2 ] null:
+
+=item B<--blkhash-file=>FILE
+
+If I<--blkhash> is selected, choose where to print the blkhash to.
+The default is stdout.
 
 =item B<-C> N
 
@@ -306,7 +355,9 @@ L<nbdinfo(1)>,
 L<nbdsh(1)>,
 L<nbdublk(1)>,
 L<nbdkit(1)>,
-L<qemu-img(1)>.
+L<qemu-img(1)>,
+L<https://gitlab.com/nirs/blkhash>,
+L<blksum(1)>.
 
 =head1 AUTHORS
 

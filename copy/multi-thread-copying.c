@@ -265,8 +265,10 @@ worker_thread (void *wp)
            * THREAD_WORK_SIZE, so there is no danger of overflowing
            * size_t.
            */
-          command = create_command (zeroing_start, offset-zeroing_start,
-                                    true, w);
+          uint64_t zeroing_len = offset - zeroing_start;
+
+          update_blkhash (NULL, zeroing_start, zeroing_len);
+          command = create_command (zeroing_start, zeroing_len, true, w);
           fill_dst_range_with_zeroes (command);
           is_zeroing = false;
         }
@@ -297,6 +299,9 @@ worker_thread (void *wp)
        * THREAD_WORK_SIZE, so there is no danger of overflowing
        * size_t.
        */
+      uint64_t zeroing_len = offset - zeroing_start;
+
+      update_blkhash (NULL, zeroing_start, zeroing_len);
       command = create_command (zeroing_start, offset - zeroing_start,
                                 true, w);
       fill_dst_range_with_zeroes (command);
@@ -504,6 +509,9 @@ finished_read (void *vp, int *error)
              prog, command->offset, strerror (*error));
     exit (EXIT_FAILURE);
   }
+
+  update_blkhash (slice_ptr (command->slice), command->offset,
+                  command->slice.len);
 
   if (allocated || sparse_size == 0) {
     /* If sparseness detection (see below) is turned off then we write
