@@ -205,32 +205,50 @@ page_cache_evict (struct rw_file *rwf, uint64_t orig_offset, size_t orig_len)
 
 struct write_window {
   uint64_t offset;
-  size_t len;
+  size_t len;           /* window slot only valid if len > 0 */
 };
 
-static inline void
-evict_writes (struct rw_file *rwf, uint64_t offset, size_t len)
+static void
+evict_writes (int fd, uint64_t offset, size_t len)
 {
   static __thread struct write_window window[NR_WINDOWS];
+  struct write_window oldest = { 0 };
 
-  /* Evict the oldest window from the page cache. */
-  if (window[0].len > 0) {
-    sync_file_range (rwf->fd, window[0].offset, window[0].len,
-                     SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE|
-                     SYNC_FILE_RANGE_WAIT_AFTER);
-    posix_fadvise (rwf->fd, window[0].offset, window[0].len,
-                   POSIX_FADV_DONTNEED);
+  /* Save oldest window[0] for eviction below, and move all windows
+   * down one.  Set the newest slot to empty.
+   */
+  oldest = window[0];
+  memmove (&window[0], &window[1], sizeof window[0] * (NR_WINDOWS-1));
+  window[NR_WINDOWS-1].len = 0;
+
+  /* Tell Linux to start writing the current range out to disk
+   * (asynchronously).
+   */
+  if (sync_file_range (fd, offset, len, SYNC_FILE_RANGE_WRITE) == -1) {
+    fprintf (stderr, "%s: sync_file_range: cache=none: "
+             "starting eviction: %m", prog);
+    exit (EXIT_FAILURE);
   }
 
-  /* Move the Nth window to N-1. */
-  memmove (&window[0], &window[1], sizeof window[0] * (NR_WINDOWS-1));
-
-  /* Set up the current window and tell Linux to start writing it out
-   * to disk (asynchronously).
-   */
-  sync_file_range (rwf->fd, offset, len, SYNC_FILE_RANGE_WRITE);
+  /* Add the range to the newest end of the list of windows. */
   window[NR_WINDOWS-1].offset = offset;
   window[NR_WINDOWS-1].len = len;
+
+  /* Evict the oldest window from the page cache (synchronously). */
+  if (oldest.len > 0) {
+    if (sync_file_range (fd, oldest.offset, oldest.len,
+                         SYNC_FILE_RANGE_WAIT_BEFORE |
+                         SYNC_FILE_RANGE_WRITE |
+                         SYNC_FILE_RANGE_WAIT_AFTER) == -1) {
+      fprintf (stderr, "%s: sync_file_range: cache=none: "
+               "evicting oldest window: %m", prog);
+      exit (EXIT_FAILURE);
+    }
+    if (posix_fadvise (fd, oldest.offset, oldest.len,
+                       POSIX_FADV_DONTNEED) == -1)
+      fprintf (stderr, "warning: posix_fadvise: "
+               "POSIX_FADV_DONTNEED: %m");
+  }
 }
 #endif /* EVICT_WRITES */
 
@@ -486,7 +504,7 @@ file_synch_write (struct rw *rw,
   }
 
 #if EVICT_WRITES
-  evict_writes (rwf, orig_offset, orig_len);
+  evict_writes (rwf->fd, orig_offset, orig_len);
 #endif
 }
 
