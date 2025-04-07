@@ -220,7 +220,7 @@ main (int argc, char *argv[])
                      prog, "--blkhash", error, pstr);
             exit (EXIT_FAILURE);
           }
-          if (! is_power_of_2 (blkhash_size)) {
+          if (! is_power_of_2 (i64)) {
             fprintf (stderr, "%s: %s is not a power of two: %s\n",
                      prog, "--blkhash", &optarg[i+1]);
             exit (EXIT_FAILURE);
