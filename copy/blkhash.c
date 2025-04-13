@@ -64,9 +64,9 @@ enum block_type { block_unknown = 0, block_zero, block_data, block_incomplete };
 
 /* We will have one of these structs per blkhash block. */
 struct block {
-  enum block_type type;
   void *ptr;
-  size_t n;
+  uint32_t n;
+  enum block_type type;
 };
 
 DEFINE_VECTOR_TYPE(blocks, struct block);
