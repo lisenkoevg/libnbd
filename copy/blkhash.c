@@ -211,7 +211,10 @@ set_complete_block (uint64_t blknum, const char *buf)
   /* Assert that we haven't seen this block before. */
   assert (b.type == block_unknown);
 
-  if (buf) {
+  /* Detecting a zero block is 20-100 times faster than computing a hash
+   * depending on the machine and the algorithm.
+   */
+  if (buf && !is_zero (buf, blkhash_size)) {
     b.type = block_data;
 
     /* Compute the hash of the whole block now. */
