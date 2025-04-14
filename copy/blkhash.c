@@ -43,28 +43,30 @@
 
 #ifdef HAVE_GNUTLS
 
+/* unknown => We haven't seen this block yet.  'ptr' is NULL.
+ *
+ * zero => The block is all zeroes.  'ptr' is NULL.
+ *
+ * data => The block is all data, and we have seen the whole block,
+ * and the hash has been computed.  'ptr' points to the computed
+ * hash.  'n' is unused.
+ *
+ * incomplete => Part of the block was seen.  'ptr' points to the
+ * data block, waiting to be completed.  'n' is the number of bytes
+ * seen so far.  We will compute the hash and turn this into a
+ * 'data' or 'zero' block, either when we have seen all bytes of
+ * this block, or at the end.
+ *
+ * Note that this code assumes that we are called exactly once for a
+ * range in the disk image.
+ */
+enum block_type { block_unknown = 0, block_zero, block_data, block_incomplete };
+
 /* We will have one of these structs per blkhash block. */
 struct block {
-  /* unknown => We haven't seen this block yet.  'ptr' is NULL.
-   *
-   * zero => The block is all zeroes.  'ptr' is NULL.
-   *
-   * data => The block is all data, and we have seen the whole block,
-   * and the hash has been computed.  'ptr' points to the computed
-   * hash.  'n' is unused.
-   *
-   * incomplete => Part of the block was seen.  'ptr' points to the
-   * data block, waiting to be completed.  'n' is the number of bytes
-   * seen so far.  We will compute the hash and turn this into a
-   * 'data' or 'zero' block, either when we have seen all bytes of
-   * this block, or at the end.
-   *
-   * Note that this code assumes that we are called exactly once for a
-   * range in the disk image.
-   */
-  enum { block_unknown = 0, block_zero, block_data, block_incomplete } type;
   void *ptr;
-  size_t n;
+  uint32_t n;
+  enum block_type type;
 };
 
 DEFINE_VECTOR_TYPE(blocks, struct block);
