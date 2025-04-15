@@ -49,7 +49,7 @@ synch_copying (void)
     size_t r;
 
     while ((r = src->ops->synch_read (src, buf, request_size, offset)) > 0) {
-      update_blkhash ((const char *) buf, offset, request_size);
+      update_blkhash ((const char *) buf, offset, r);
       dst->ops->synch_write (dst, buf, r, offset);
       offset += r;
       progress_bar (offset, src->size);
