@@ -28,7 +28,41 @@
 
 #include <libnbd.h>
 
+#include "minmax.h"
 #include "nbdcopy.h"
+
+/* Fill a range in dst with zeroes.  This is called from the copying
+ * loop when we see a zero range in the source.  Depending on the
+ * command line flags this could mean:
+ *
+ * --destination-is-zero:
+ *                 do nothing
+ *
+ * --allocated:    write zeroes allocating space using an efficient
+ *                 zeroing command or writing a command of zeroes
+ *
+ * (neither flag)  write zeroes punching a hole using an efficient
+ *                 zeroing or fallback to writing zeroes manually.
+ */
+static void
+fill_dst_range_with_zeroes (uint64_t offset, size_t length, void *buf)
+{
+  if (target_is_zero) return;
+
+  /* Try efficient zeroing. */
+  if (dst->ops->synch_zero (dst, offset, length, allocated))
+    return;
+
+  /* Fall back to loop writing zeroes. */
+  memset (buf, 0, MIN (length, request_size));
+  while (length > 0) {
+    size_t len = MIN (length, request_size);
+
+    dst->ops->synch_write (dst, buf, len, offset);
+    length -= len;
+    offset += len;
+  }
+}
 
 void
 synch_copying (void)
@@ -84,14 +118,7 @@ synch_copying (void)
 
         if (exts.ptr[i].zero) {
           update_blkhash (NULL, offset, exts.ptr[i].length);
-          if (!dst->ops->synch_zero (dst, offset, exts.ptr[i].length, false) &&
-              !dst->ops->synch_zero (dst, offset, exts.ptr[i].length, true)) {
-            /* If efficient zeroing (punching a hole or allocating
-             * space) are possible, write zeroes the hard way.
-             */
-            memset (buf, 0, exts.ptr[i].length);
-            dst->ops->synch_write (dst, buf, exts.ptr[i].length, offset);
-          }
+          fill_dst_range_with_zeroes(offset, exts.ptr[i].length, buf);
           offset += exts.ptr[i].length;
         }
         else /* data */ {
