@@ -574,6 +574,25 @@ file_zeroout (int fd, uint64_t offset, uint64_t count)
 }
 
 static bool
+file_fallocate (int fd, uint64_t offset, uint64_t count)
+{
+#ifdef __linux__
+  int r;
+
+  r = fallocate (fd, 0, offset, count);
+  if (r == -1) {
+    if (is_not_supported (errno))
+      return false;
+
+    perror ("fallocate");
+    exit (EXIT_FAILURE);
+  }
+  return true;
+#endif
+  return false;
+}
+
+static bool
 file_synch_zero (struct rw *rw, uint64_t offset, uint64_t count, bool allocate)
 {
   struct rw_file *rwf = (struct rw_file *)rw;
@@ -611,10 +630,8 @@ file_synch_zero (struct rw *rw, uint64_t offset, uint64_t count, bool allocate)
 
   if (rwf->can_punch_hole && rwf->can_fallocate) {
     if (file_punch_hole (rwf->fd, offset, count)) {
-#ifdef __linux__
-      if (fallocate (rwf->fd, 0, offset, count))
+      if (file_fallocate (rwf->fd, offset, count))
           return true;
-#endif
 
       rwf->can_fallocate = false;
     } else {
