@@ -497,7 +497,7 @@ main (int argc, char *argv[])
    * has an effect on regular files.
    */
   if (dst->ops->truncate)
-    dst->ops->truncate (dst, src->size);
+    dst->ops->truncate (dst, src->size, allocated);
 
   /* Check if the source is bigger than the destination, since that
    * would truncate (ie. lose) data.  Copying from smaller to larger

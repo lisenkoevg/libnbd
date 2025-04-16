@@ -156,7 +156,7 @@ struct rw_ops {
   /* Truncate, only called on output files.  This callback can be NULL
    * for types that don't support this.
    */
-  void (*truncate) (struct rw *rw, int64_t size);
+  void (*truncate) (struct rw *rw, int64_t size, bool allocate);
 
   /* Flush pending writes to permanent storage. */
   void (*flush) (struct rw *rw);

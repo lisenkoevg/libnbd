@@ -379,15 +379,16 @@ file_close (struct rw *rw)
   free (rw);
 }
 
+static void file_allocate_space (struct rw *rw, uint64_t size);
+
 static void
-file_truncate (struct rw *rw, int64_t size)
+file_truncate (struct rw *rw, int64_t size, bool allocate)
 {
   struct rw_file *rwf = (struct rw_file *)rw;
 
   /* If the destination is an ordinary file then the original file
    * size doesn't matter.  Truncate it to the source size.  But
-   * truncate it to zero first so the file is completely empty and
-   * sparse.
+   * truncate it to zero first so the entire file reads as zeroes.
    */
   if (rwf->is_block)
     return;
@@ -397,6 +398,10 @@ file_truncate (struct rw *rw, int64_t size)
     fprintf (stderr, "%s: truncate: %m\n", rw->name);
     exit (EXIT_FAILURE);
   }
+
+  if (allocate)
+    file_allocate_space (rw, size);
+
   rwf->rw.size = size;
 
   /* We can assume the target is zero. */
@@ -590,6 +595,45 @@ file_fallocate (int fd, uint64_t offset, uint64_t count)
   return true;
 #endif
   return false;
+}
+
+static void
+file_allocate_space (struct rw *rw, uint64_t size)
+{
+  struct rw_file *rwf = (struct rw_file *)rw;
+  void *buf;
+  uint64_t offset = 0;
+  uint64_t len = size;
+
+  /* Try efficient allocation if supported. */
+
+  if (rwf->can_fallocate) {
+    if (file_fallocate (rwf->fd, 0, size))
+      return;
+
+    rwf->can_fallocate = false;
+  }
+
+  /* Fallback to manually writing zeros. This is much faster than
+   * posix_fallocate() since we don't try to keep existing data.
+   */
+
+  buf = calloc (1, request_size);
+  if (buf == NULL) {
+    perror ("calloc");
+    exit (EXIT_FAILURE);
+  }
+
+  while (len > request_size) {
+    file_synch_write (rw, buf, request_size, offset);
+    offset += request_size;
+    len -= request_size;
+  }
+
+  if (len)
+    file_synch_write (rw, buf, len, offset);
+
+  free (buf);
 }
 
 static bool
