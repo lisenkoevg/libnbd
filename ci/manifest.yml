@@ -50,7 +50,11 @@ targets:
 
   freebsd-13: x86_64
 
-  freebsd-14: x86_64
+  freebsd-14:
+    jobs:
+      - arch: x86_64
+        variables:
+          GOLANG: skip
 
   freebsd-current: x86_64
 

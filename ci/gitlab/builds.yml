@@ -249,6 +249,7 @@ x86_64-freebsd-14:
     CIRRUS_VM_IMAGE_NAME: freebsd-14-2
     CIRRUS_VM_IMAGE_SELECTOR: image_family
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    GOLANG: skip
     INSTALL_COMMAND: pkg install -y
     NAME: freebsd-14
     UPDATE_COMMAND: pkg update
