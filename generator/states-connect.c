@@ -63,6 +63,27 @@ disable_sigpipe (int sock)
 #endif
 }
 
+/* Set socket send and receive buffers for MacOS.
+ *
+ * Makes the transfers 8 times faster on macOS. Need testing on other
+ * platforms. Apple recommends sizing the receive buffer at 4 times the
+ * size of the send buffer. The default receive buffer allows the sender
+ * to queue up to 16 256K commands.
+ *
+ * TODO: Test on other platforms.
+ */
+static void
+set_buffers (int sock)
+{
+#if __APPLE__
+  const int sndbuf_size = 1024 * 1024;
+  const int rcvbuf_size = 4 * sndbuf_size;
+
+  setsockopt (sock, SOL_SOCKET, SO_SNDBUF, &sndbuf_size, sizeof(sndbuf_size));
+  setsockopt (sock, SOL_SOCKET, SO_RCVBUF, &rcvbuf_size, sizeof(rcvbuf_size));
+#endif
+}
+
 STATE_MACHINE {
  CONNECT.START:
   sa_family_t family;
@@ -84,6 +105,7 @@ STATE_MACHINE {
 
   disable_nagle (fd);
   disable_sigpipe (fd);
+  set_buffers (fd);
 
   r = connect (fd, (struct sockaddr *)&h->connaddr, h->connaddrlen);
   if (r == 0 || (r == -1 && errno == EINPROGRESS))
