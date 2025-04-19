@@ -52,7 +52,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Check if the user provided a URI or a unix socket.
     let socket_or_uri = args[1].to_str().unwrap();
-    if socket_or_uri.contains("://") {
+    if nbd.is_uri(socket_or_uri).unwrap() {
         nbd.connect_uri(socket_or_uri)?;
     } else {
         nbd.connect_unix(socket_or_uri)?;
@@ -104,7 +104,7 @@ async fn run_thread(
     let nbd = Arc::new(libnbd::AsyncHandle::new()?);
 
     // Check if the user provided a URI or a unix socket.
-    if socket_or_uri.contains("://") {
+    if nbd.is_uri(socket_or_uri.clone()).unwrap() {
         nbd.connect_uri(socket_or_uri).await?;
     } else {
         nbd.connect_unix(socket_or_uri).await?;

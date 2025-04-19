@@ -24,7 +24,7 @@ fn main() -> anyhow::Result<()> {
 
     // Check if the user provided a URI or a unix socket.
     let socket_or_uri = args[1].to_str().unwrap();
-    if socket_or_uri.contains("://") {
+    if nbd.is_uri(socket_or_uri).unwrap() {
         nbd.connect_uri(socket_or_uri)?;
     } else {
         // Connect to the NBD server over a Unix domain socket.
