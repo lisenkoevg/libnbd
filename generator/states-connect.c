@@ -65,10 +65,11 @@ disable_sigpipe (int sock)
 
 /* Set unix socket send and receive buffers for MacOS.
  *
- * Makes the transfers 8 times faster on macOS. Need testing on other
- * platforms. Apple recommends sizing the receive buffer at 4 times the
- * size of the send buffer. The default receive buffer allows the sender
- * to queue up to 16 256K commands.
+ * Setting this on the server side makes the transfer 8 times faster on macOS.
+ * Setting this also the client side improves the tranasfer little bit more.
+ * Apple recommends sizing the receive buffer at 4 times the size of the send
+ * buffer. The default receive buffer allows the sender to queue up to 16 256K
+ * commands.
  *
  * TODO: Test on other platforms.
  */
