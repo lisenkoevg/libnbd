@@ -63,12 +63,13 @@ disable_sigpipe (int sock)
 #endif
 }
 
-/* Set socket send and receive buffers for MacOS.
+/* Set unix socket send and receive buffers for MacOS.
  *
- * Makes the transfers 8 times faster on macOS. Need testing on other
- * platforms. Apple recommends sizing the receive buffer at 4 times the
- * size of the send buffer. The default receive buffer allows the sender
- * to queue up to 16 256K commands.
+ * Setting this on the server side makes the transfer 8 times faster on macOS.
+ * Setting this also the client side improves the tranasfer little bit more.
+ * Apple recommends sizing the receive buffer at 4 times the size of the send
+ * buffer. The default receive buffer allows the sender to queue up to 16 256K
+ * commands.
  *
  * TODO: Test on other platforms.
  */
@@ -105,7 +106,8 @@ STATE_MACHINE {
 
   disable_nagle (fd);
   disable_sigpipe (fd);
-  set_buffers (fd);
+  if (family == AF_UNIX)
+    set_buffers (fd);
 
   r = connect (fd, (struct sockaddr *)&h->connaddr, h->connaddrlen);
   if (r == 0 || (r == -1 && errno == EINPROGRESS))
