@@ -18,6 +18,8 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	copy-allocated-asynch.sh \
+	copy-allocated-synch.sh \
 	copy-blkhash-known.sh \
 	copy-blkhash-pattern.sh \
 	copy-blkhash-randfile.sh \
@@ -143,6 +145,8 @@ TESTS += \
 	copy-zero-to-nbd.sh \
 	copy-zero-to-null.sh \
 	copy-flush.sh \
+	copy-allocated-asynch.sh \
+	copy-allocated-synch.sh \
 	$(ROOT_TESTS) \
 	test-long-options.sh \
 	test-short-options.sh \
