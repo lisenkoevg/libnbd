@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	copy-file-to-null.sh \
 	copy-file-to-qcow2.sh \
 	copy-file-to-qcow2-compressed.sh \
+	copy-flush.sh \
 	copy-nbd-to-block.sh \
 	copy-nbd-to-file.sh \
 	copy-nbd-to-hexdump.sh \
@@ -141,6 +142,7 @@ TESTS += \
 	copy-sparse-to-stream.sh \
 	copy-zero-to-nbd.sh \
 	copy-zero-to-null.sh \
+	copy-flush.sh \
 	$(ROOT_TESTS) \
 	test-long-options.sh \
 	test-short-options.sh \
