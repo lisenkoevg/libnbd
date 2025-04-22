@@ -811,6 +811,8 @@ AS_IF([test "x$enable_rust" != "xno"],[
             CARGO=no
         ])
     ])
+    AC_ARG_VAR([RUST_TARGET],
+               [if set, cargo build uses --target $RUST_TARGET])
 ],[CARGO=no])
 AM_CONDITIONAL([HAVE_RUST],[test "x$CARGO" != "xno"])
 

@@ -98,15 +98,17 @@ libnbd-sys/libnbd_version: Makefile
 	$(abs_top_builddir)/run echo $(VERSION) > libnbd-sys/libnbd_version.t
 	mv libnbd-sys/libnbd_version.t libnbd-sys/libnbd_version
 
+RUST_TARGET_PARAM := $(if $(RUST_TARGET),--target $(RUST_TARGET))
+
 target/debug/liblibnbd.rlib: $(source_files)
-	$(abs_top_builddir)/run $(CARGO) build
+	$(abs_top_builddir)/run $(CARGO) build $(RUST_TARGET_PARAM)
 
 target/doc/libnbd/index.html: $(source_files)
 	$(abs_top_builddir)/run $(CARGO) doc
 
 # This will actually build all the examples:
 target/debug/examples/get-size: $(source_files)
-	$(abs_top_builddir)/run $(CARGO) build --examples
+	$(abs_top_builddir)/run $(CARGO) build  $(RUST_TARGET_PARAM) --examples
 
 if HAVE_POD
 
