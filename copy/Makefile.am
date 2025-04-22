@@ -24,6 +24,8 @@ EXTRA_DIST = \
 	copy-blkhash-pattern.sh \
 	copy-blkhash-randfile.sh \
 	copy-block-to-nbd.sh \
+	copy-destination-zero-asynch.sh \
+	copy-destination-zero-synch.sh \
 	copy-file-to-file.sh \
 	copy-file-to-nbd.sh \
 	copy-file-to-null.sh \
@@ -147,6 +149,8 @@ TESTS += \
 	copy-flush.sh \
 	copy-allocated-asynch.sh \
 	copy-allocated-synch.sh \
+	copy-destination-zero-asynch.sh \
+	copy-destination-zero-synch.sh \
 	$(ROOT_TESTS) \
 	test-long-options.sh \
 	test-short-options.sh \
