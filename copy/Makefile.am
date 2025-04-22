@@ -18,15 +18,22 @@
 include $(top_srcdir)/subdir-rules.mk
 
 EXTRA_DIST = \
+	copy-allocated-asynch.sh \
+	copy-allocated-synch.sh \
+	copy-allocated-destination-zero-asynch.sh \
+	copy-allocated-destination-zero-synch.sh \
 	copy-blkhash-known.sh \
 	copy-blkhash-pattern.sh \
 	copy-blkhash-randfile.sh \
 	copy-block-to-nbd.sh \
+	copy-destination-zero-asynch.sh \
+	copy-destination-zero-synch.sh \
 	copy-file-to-file.sh \
 	copy-file-to-nbd.sh \
 	copy-file-to-null.sh \
 	copy-file-to-qcow2.sh \
 	copy-file-to-qcow2-compressed.sh \
+	copy-flush.sh \
 	copy-nbd-to-block.sh \
 	copy-nbd-to-file.sh \
 	copy-nbd-to-hexdump.sh \
@@ -141,6 +148,13 @@ TESTS += \
 	copy-sparse-to-stream.sh \
 	copy-zero-to-nbd.sh \
 	copy-zero-to-null.sh \
+	copy-flush.sh \
+	copy-allocated-asynch.sh \
+	copy-allocated-synch.sh \
+	copy-destination-zero-asynch.sh \
+	copy-destination-zero-synch.sh \
+	copy-allocated-destination-zero-asynch.sh \
+	copy-allocated-destination-zero-synch.sh \
 	$(ROOT_TESTS) \
 	test-long-options.sh \
 	test-short-options.sh \

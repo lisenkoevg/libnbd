@@ -28,6 +28,7 @@ requires nbdkit eval --version
 
 out=copy-sparse.out
 cleanup_fn rm -f $out
+rm -f $out
 
 # Copy from a sparse data disk to an nbdkit-eval-plugin instance which
 # is logging everything.  This allows us to see exactly what nbdcopy

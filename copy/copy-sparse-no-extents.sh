@@ -38,6 +38,7 @@ requires $NBDKIT eval --version
 
 out=copy-sparse-no-extents.out
 cleanup_fn rm -f $out
+rm -f $out
 
 $VG nbdcopy --request-size=32M --no-extents -S 0 -- \
     [ $NBDKIT --exit-with-parent data data='
