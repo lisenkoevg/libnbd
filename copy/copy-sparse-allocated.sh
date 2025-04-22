@@ -30,6 +30,7 @@ requires $NBDKIT eval --version
 
 out=copy-sparse-allocated.out
 cleanup_fn rm -f $out
+rm -f $out
 
 $VG nbdcopy --allocated --request-size=32K -- \
     [ $NBDKIT --exit-with-parent data data='
