@@ -791,6 +791,7 @@ AS_IF([test "x$enable_rust" != "xno"],[
     AC_CHECK_PROG([CARGO],[cargo],[cargo],[no])
     AS_IF([test "x$CARGO" != "xno"],[
         printf "cargo version is "; $CARGO --version
+        printf "rustc version is "; rustc --version
     ])
     AC_CHECK_PROG([RUSTFMT],[rustfmt],[rustfmt],[no])
     AS_IF([test "x$RUSTFMT" != "xno"],[
