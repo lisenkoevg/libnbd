@@ -106,11 +106,13 @@ main() {
             --disable-fuse
             --disable-ocaml
             --disable-python
+            --disable-rust
             --disable-golang"
     else
         CONFIG_ARGS="$CONFIG_ARGS
             --enable-fuse
             --enable-ocaml
+            --enable-rust
             --enable-python"
         if test "$GOLANG" = "skip"
         then
