@@ -82,7 +82,7 @@ struct rw_file {
   bool seek_hole_supported;
   int sector_size;
 
-  /* We try to use the most eficient zeroing first. If an efficent zero
+  /* We try to use the most efficient zeroing first. If an efficient zero
    * method is not available, we disable the flag so next time we use
    * the working method.
    */

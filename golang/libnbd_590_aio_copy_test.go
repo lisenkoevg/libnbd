@@ -86,7 +86,7 @@ func write_completed(buf AioBuffer) int {
 	return 1
 }
 
-/* Copy between two libnbd handles using aynchronous I/O (AIO). */
+/* Copy between two libnbd handles using asynchronous I/O (AIO). */
 func asynch_copy(t *testing.T, src *Libnbd, dst *Libnbd) {
 	size, _ := dst.GetSize()
 

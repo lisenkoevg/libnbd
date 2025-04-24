@@ -145,7 +145,7 @@ Consistently wrap source code at 80 columns (Laszlo Ersek).
 
 Debug messages no longer print the very verbose state transitions
 inside the state machine as these are not usually useful.  You can
-reenable this by defining C<-DLIBNBD_STATE_VERBOSE=1> at compile time.
+re-enable this by defining C<-DLIBNBD_STATE_VERBOSE=1> at compile time.
 
 Completion C<.callback> methods are now always called exactly once,
 and documentation is clearer on when this happens (Eric Blake).

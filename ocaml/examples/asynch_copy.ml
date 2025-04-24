@@ -10,7 +10,7 @@ let max_reads_in_flight = 16
 let dir_is_read dir = dir land (Int32.to_int NBD.aio_direction_read) <> 0
 let dir_is_write dir = dir land (Int32.to_int NBD.aio_direction_write) <> 0
 
-(* Copy between two libnbd handles using aynchronous I/O (AIO). *)
+(* Copy between two libnbd handles using asynchronous I/O (AIO). *)
 let asynch_copy src dst =
   let size = NBD.get_size dst in
 

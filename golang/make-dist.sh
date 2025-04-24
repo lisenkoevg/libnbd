@@ -112,7 +112,7 @@ echo "$info" > $v_dir/$version.info
 cp go.mod $v_dir/$version.mod
 mv $version.zip $v_dir
 
-# Create the list file by amending the curent file on the server.
+# Create the list file by amending the current file on the server.
 list_url=https://download.libguestfs.org/libnbd/golang/libguestfs.org/libnbd/@v/list
 curl --silent --show-error "$list_url" | sort > $v_dir/list
 grep -q "$version" $v_dir/list || echo "$version" >> $v_dir/list

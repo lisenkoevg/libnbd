@@ -75,7 +75,7 @@ func TestAioBuffer(t *testing.T) {
 		t.Fatalf("Expected %v, got %v", zeroes, buf2.Bytes())
 	}
 
-	/* Crated a zeroed buffer. */
+	/* Create a zeroed buffer. */
 	buf3 := MakeAioBufferZero(uint(32))
 	defer buf.Free()
 

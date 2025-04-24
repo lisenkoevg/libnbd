@@ -3,7 +3,7 @@
  *
  * http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod
  *
- * To build it you need the libev-devel pacakge.
+ * To build it you need the libev-devel package.
  *
  * To run it:
  *
@@ -32,7 +32,7 @@
 
 #include <ev.h>
 
-/* These values depend on the enviroment tested.
+/* These values depend on the environment tested.
  *
  * For shared storage using direct I/O:
  *
@@ -76,8 +76,8 @@ enum request_state {
     IDLE,       /* Not used yet. */
     EXTENTS,    /* Getting extents from source. */
     READ,       /* Read from source. */
-    WRITE,      /* Write to destiation. */
-    ZERO,       /* Write zeroes to destiation. */
+    WRITE,      /* Write to destination. */
+    ZERO,       /* Write zeroes to destination. */
     SLEEP       /* Waiting for extents completion. */
 };
 
@@ -631,12 +631,12 @@ main (int argc, char *argv[])
 
     debug = getenv ("COPY_LIBEV_DEBUG") != NULL;
 
-    /* Configure soruce to report extents. */
+    /* Configure source to report extents. */
 
     if (nbd_add_meta_context (src.nbd, LIBNBD_CONTEXT_BASE_ALLOCATION))
         FAIL ("Cannot add base:allocation: %s", nbd_get_error ());
 
-    /* Connecting is fast, so use the syncronous API. */
+    /* Connecting is fast, so use the synchronous API. */
 
     if (nbd_connect_uri (src.nbd, argv[1]))
         FAIL ("Cannot connect to source: %s", nbd_get_error ());

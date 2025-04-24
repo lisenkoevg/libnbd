@@ -62,8 +62,8 @@ var (
 )
 
 // command keeps state of single AioPread call while the read is handled by
-// libnbd, until the command reach the front of the queue and can be writen to
-// the output.
+// libnbd, until the command reach the front of the queue and can be written
+// to the output.
 type command struct {
 	buf   libnbd.AioBuffer
 	ready bool

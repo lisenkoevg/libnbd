@@ -49,7 +49,7 @@ impl DebugLogger {
         }
     }
 
-    /// Check wether a specific message has been logged.
+    /// Check whether a specific message has been logged.
     pub fn contains(&self, msg: &str) -> bool {
         self.entries.lock().unwrap().iter().any(|(_, x)| x == msg)
     }

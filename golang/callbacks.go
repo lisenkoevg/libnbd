@@ -36,7 +36,7 @@ package libnbd
 // - Create an exported Golang function whose job will be to retrieve
 //   the context and execute the callback in it
 //   (connErrCallback). Such a function should receive a callback ID
-//   and will use it to retrive the context.
+//   and will use it to retrieve the context.
 //
 // - Create a CGO function similar to the above function but with the
 //   appropriate signature to be registered as a callback in C code

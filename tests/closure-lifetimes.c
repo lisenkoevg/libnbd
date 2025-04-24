@@ -156,7 +156,7 @@ main (int argc, char *argv[])
                                      completion_callback, 0);
   if (cookie == -1) NBD_ERROR;
   /* read_cb_called is indeterminate at this point, as state machine
-   * progress may vary based on task schduling and network speed factors.
+   * progress may vary based on task scheduling and network speed factors.
    */
   assert (completion_cb_called == 0);
   assert (read_cb_freed == 0);

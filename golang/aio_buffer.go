@@ -80,7 +80,7 @@ func (b *AioBuffer) Bytes() []byte {
 
 // Slice creates a slice backed by the underlying C array. The slice can be
 // used to access or modify the contents of the underlying array. The slice
-// must not be used after caling Free().
+// must not be used after calling Free().
 func (b *AioBuffer) Slice() []byte {
 	if b.P == nil {
 		panic("Using AioBuffer after Free()")

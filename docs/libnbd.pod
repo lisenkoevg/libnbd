@@ -936,7 +936,7 @@ it would cause deadlock.
 
 =head2 Completion callbacks
 
-All of the asychronous commands have an optional completion callback
+All of the asynchronous commands have an optional completion callback
 function that is used if the call to the asynchronous API reports
 success.  The completion callback is invoked when the submitted
 command is eventually marked complete, after any mid-command callbacks
@@ -976,7 +976,7 @@ callback will still be valid (corresponding to the current portion of
 the server's reply), and the overall command will still fail (at the
 completion callback or L<nbd_aio_command_completed(3)> for an
 asynchronous command, or as the result of the overall synchronous
-command).  Returing C<-1> from a mid-command callback does not prevent
+command).  Returning C<-1> from a mid-command callback does not prevent
 that callback from being reached again, if the server sends more
 mid-command replies that warrant another use of that callback.  A
 mid-command callback may be reached more times than expected if the

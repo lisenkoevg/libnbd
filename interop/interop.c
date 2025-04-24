@@ -131,7 +131,7 @@ main (int argc, char *argv[])
    * need to have our own log handler.
    *
    * Also the log levels are quite random.  Level 2 doesn't show the
-   * negotiated cyphersuite, but level 3+ shows excessive detail.
+   * negotiated ciphersuite, but level 3+ shows excessive detail.
    */
   gnutls_global_set_log_level (2);
   gnutls_global_set_log_function (tls_log);
