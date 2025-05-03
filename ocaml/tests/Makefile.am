@@ -49,6 +49,7 @@ ML_TESTS = \
 	test_510_aio_pwrite.ml \
 	test_510_aio_pwrite_old_buffer.ml \
 	test_580_aio_connect.ml \
+	test_580_aio_is_zero.ml \
 	test_590_aio_copy.ml \
 	test_600_debug_callback.ml \
 	test_610_exception.ml \

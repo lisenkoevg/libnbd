@@ -90,6 +90,7 @@ endif
 libnbdocaml_a_CPPFLAGS = \
 	-I$(top_builddir) -I$(OCAMLLIB) -I$(top_srcdir)/ocaml \
 	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/common/include \
 	-DCAML_NAME_SPACE \
 	$(NULL)
 

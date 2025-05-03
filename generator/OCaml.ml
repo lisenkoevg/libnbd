@@ -244,6 +244,12 @@ module Buffer : sig
 
       In libnbd ≥ 1.20 this is an alias for {!Bigarray.Array1.dim}. *)
 
+  val is_zero : ?sub:(int * int) -> t -> bool
+  (** Return true if and only if the buffer contains only zero bytes.
+
+      The optional [?sub = (offset, len)] can be used to check part
+      of a buffer. *)
+
 end
 (** Persistent buffer used in AIO calls. *)
 
@@ -382,6 +388,9 @@ module Buffer = struct
     let buf = alloc (String.length s) in
     _of_string s buf;
     buf
+
+  external is_zero : ?sub:(int * int) -> t -> bool =
+    \"nbd_internal_ocaml_is_zero\" [@@noalloc]
 end
 
 external errno_of_unix_error : Unix.error -> int =

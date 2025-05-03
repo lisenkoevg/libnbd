@@ -31,6 +31,8 @@
 
 #include <libnbd.h>
 
+#include "iszero.h"
+
 #include "nbd-c.h"
 
 /* Copy an NBD persistent buffer to an OCaml bytes. */
@@ -61,4 +63,27 @@ nbd_internal_ocaml_buffer_of_bytes (value bytesv, value bufv)
   memcpy (data, Bytes_val (bytesv), len);
 
   CAMLreturn (Val_unit);
+}
+
+/* Check buffer is zero. */
+/* NB: noalloc function. */
+value
+nbd_internal_ocaml_is_zero (value optsub, value bufv)
+{
+  struct caml_ba_array *buf = Caml_ba_array_val (bufv);
+  uint8_t *data = (uint8_t *)buf->data;
+  size_t size = (size_t)buf->dim[0];
+  size_t offset = 0, len = size;
+
+  if (optsub != Val_int (0)) {               /* Some (offset, len) */
+    value v = Field (optsub, 0);             /* (offset, len) */
+
+    offset = Int_val (Field (v, 0));
+    len = Int_val (Field (v, 1));
+    if (offset < 0 || offset > size || len < 0 || len > size ||
+        offset + len < 0 || offset + len > size)
+      caml_invalid_argument ("NBD.Buffer.is_zero");
+  }
+
+  return Val_bool (is_zero ((void *) &data[offset], len));
 }
