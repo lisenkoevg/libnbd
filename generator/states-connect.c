@@ -63,25 +63,23 @@ disable_sigpipe (int sock)
 #endif
 }
 
-/* Set unix socket send and receive buffers for MacOS.
+/* Set unix socket send buffer.
  *
- * Setting this on the server side makes the transfer 8 times faster on macOS.
- * Setting this also the client side improves the tranasfer little bit more.
- * Apple recommends sizing the receive buffer at 4 times the size of the send
- * buffer. The default receive buffer allows the sender to queue up to 16 256K
- * commands.
+ * Setting send buffer size on the server and client side makes copying
+ * from qemu-nbd to qemu-nbd up to 7.6 time faster on macOS and up to
+ * 1.6 times faster on Linux.
+ *
+ * On Linux we must increase net.core.wmem_max to make this chagne
+ * effective.
  *
  * TODO: Test on other platforms.
  */
 static void
 set_buffers (int sock)
 {
-#if __APPLE__
-  const int sndbuf_size = 1024 * 1024;
-  const int rcvbuf_size = 4 * sndbuf_size;
-
-  setsockopt (sock, SOL_SOCKET, SO_SNDBUF, &sndbuf_size, sizeof(sndbuf_size));
-  setsockopt (sock, SOL_SOCKET, SO_RCVBUF, &rcvbuf_size, sizeof(rcvbuf_size));
+#if defined(__APPLE__) || defined(__linux__)
+  const int value = 2 * 1024 * 1024;
+  setsockopt (sock, SOL_SOCKET, SO_SNDBUF, &value, sizeof(value));
 #endif
 }
 
