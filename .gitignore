@@ -291,3 +291,7 @@ Makefile.in
 /ublk/nbdublk
 /ublk/nbdublk.1
 /valgrind/suppressions
+*.swp
+tags
+Session.vim
+

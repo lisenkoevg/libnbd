@@ -84,6 +84,8 @@ nbdcopy_SOURCES = \
 	pipe-ops.c \
 	progress.c \
 	synch-copying.c \
+	unzstd.h \
+	unzstd.c \
 	$(NULL)
 nbdcopy_CPPFLAGS = \
 	-I$(top_srcdir)/include \
@@ -101,6 +103,11 @@ nbdcopy_LDADD = \
 	$(top_builddir)/common/utils/libutils.la \
 	$(top_builddir)/lib/libnbd.la \
 	$(NULL)
+
+if HAVE_LIBZSTD
+  nbdcopy_CFLAGS += $(LIBZSTD_CFLAGS)
+  nbdcopy_LDADD += $(LIBZSTD_LIBS)
+endif
 
 # This program depends on URI support; no point in installing it otherwise
 if HAVE_LIBXML2

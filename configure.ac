@@ -816,6 +816,22 @@ AS_IF([test "x$enable_rust" != "xno"],[
 ],[CARGO=no])
 AM_CONDITIONAL([HAVE_RUST],[test "x$CARGO" != "xno"])
 
+dnl Check for zstd (only if you want to compile nbdcopy --zstd).
+AC_ARG_WITH([libzstd],
+    [AS_HELP_STRING([--without-libzstd],
+                    [disable allocator=zstd @<:@default=check@:>@])],
+    [],
+    [with_libzstd=check])
+AS_IF([test "$with_libzstd" != "no"],[
+    PKG_CHECK_MODULES([LIBZSTD], [libzstd],[
+        AC_SUBST([LIBZSTD_CFLAGS])
+        AC_SUBST([LIBZSTD_LIBS])
+        AC_DEFINE([HAVE_LIBZSTD],[1],[libzstd found at compile time.])
+    ],
+    [AC_MSG_WARN([libzstd not found, allocator=zstd will be disabled])])
+])
+AM_CONDITIONAL([HAVE_LIBZSTD],[test "x$LIBZSTD_LIBS" != "x"])
+
 HEADING([Generating output files])
 
 dnl Produce output files.
@@ -907,6 +923,7 @@ feature "FUSE support"          test "x$HAVE_FUSE_TRUE" = "x"
 feature "ublk support"          test "x$HAVE_UBLK_TRUE" = "x"
 feature "Manual pages"          test "x$HAVE_POD_TRUE" = "x"
 feature "Bash tab completion"   test "x$HAVE_BASH_COMPLETION_TRUE" = "x"
+feature "nbdcopy zstd compression"      test "x$HAVE_LIBZSTD_TRUE" = "x"
 
 echo
 echo "Language bindings:"

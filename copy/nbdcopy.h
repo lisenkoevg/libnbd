@@ -250,6 +250,7 @@ extern unsigned sparse_size;
 extern bool synchronous;
 extern unsigned threads;
 extern bool verbose;
+extern bool zstd;
 
 extern const char *prog;
 

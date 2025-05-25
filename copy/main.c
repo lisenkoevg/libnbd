@@ -70,6 +70,8 @@ bool synchronous;                   /* --synchronous flag */
 unsigned threads;                   /* --threads */
 struct rw *src, *dst;               /* The source and destination. */
 bool verbose;                       /* --verbose flag */
+bool zstd;                          /* --zstd flag */
+
 
 const char *prog;                   /* program name (== basename argv[0]) */
 
@@ -90,6 +92,7 @@ usage (FILE *fp, int exitcode)
 "            [--no-extents] [-p|--progress|--progress=FD]\n"
 "            [--queue-size=N] [--request-size=N] [-R N|--requests=N]\n"
 "            [-S N|--sparse=N] [--synchronous] [-T N|--threads=N] \n"
+"            [--zstd]\n"
 "            [-v|--verbose]\n"
 "            SOURCE DESTINATION\n"
 "\n"
@@ -130,6 +133,7 @@ main (int argc, char *argv[])
     QUEUE_SIZE_OPTION,
     REQUEST_SIZE_OPTION,
     SYNCHRONOUS_OPTION,
+    ZSTD_OPTION,
   };
   const char *short_options = "C:pR:S:T:vV";
   const struct option long_options[] = {
@@ -149,6 +153,7 @@ main (int argc, char *argv[])
     { "short-options",       no_argument,       NULL, SHORT_OPTIONS },
     { "sparse",              required_argument, NULL, 'S' },
     { "synchronous",         no_argument,       NULL, SYNCHRONOUS_OPTION },
+    { "zstd",                no_argument,       NULL, ZSTD_OPTION },
     { "target-is-zero",      no_argument,       NULL, TARGET_IS_ZERO_OPTION },
     { "threads",             required_argument, NULL, 'T' },
     { "verbose",             no_argument,       NULL, 'v' },
@@ -264,6 +269,10 @@ main (int argc, char *argv[])
 
     case SYNCHRONOUS_OPTION:
       synchronous = true;
+      break;
+
+    case ZSTD_OPTION:
+      zstd = true;
       break;
 
     case 'C':
@@ -412,8 +421,10 @@ main (int argc, char *argv[])
       dst = null_create (dst_name);
     else if (! is_nbd_uri (dst_name))
       dst = open_local (dst_name, WRITING);
-    else
+    else {
+      fprintf(stderr, "%s: %s nbd_rw_create_uri %s\n", prog, __FILE_NAME__, dst_name);
       dst = nbd_rw_create_uri (dst_name, dst_name, WRITING);
+    }
   }
 
   /* There must be no extra parameters. */
@@ -640,11 +651,14 @@ open_local (const char *filename, direction d)
     exit (EXIT_FAILURE);
   }
   /* Regular file or block device. */
-  if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode))
+  fprintf(stderr, "%s: %s %d %d %d\n", prog, __FILE_NAME__, stat.st_mode, S_ISREG (stat.st_mode), S_ISBLK (stat.st_mode));
+  if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode)) {
+    fprintf(stderr, "%s: %s file_create %s\n", prog, __FILE_NAME__, filename);
     return file_create (filename, fd, &stat, d);
   /* Probably stdin/stdout, a pipe or a socket. */
-  else {
+  } else {
     synchronous = true;        /* Force synchronous mode for pipes. */
+    fprintf(stderr, "%s: %s pipe_create %s\n", prog, __FILE_NAME__, filename);
     return pipe_create (filename, fd);
   }
 }

@@ -31,6 +31,8 @@
 #include "minmax.h"
 #include "nbdcopy.h"
 
+#include "unzstd.h"
+
 /* Fill a range in dst with zeroes.  This is called from the copying
  * loop when we see a zero range in the source.  Depending on the
  * command line flags this could mean:
@@ -71,11 +73,13 @@ synch_copying (void)
   unsigned char *buf;
 
   buf = malloc (request_size);
+
   if (buf == NULL) {
     perror ("malloc");
     exit (EXIT_FAILURE);
   }
 
+  fprintf(stderr, "%s: %s src->size = %ld\n", prog, __FILE_NAME__, src->size);
   /* If the source size is unknown then we copy data and cannot use
    * extent information.
    */
@@ -84,7 +88,11 @@ synch_copying (void)
 
     while ((r = src->ops->synch_read (src, buf, request_size, offset)) > 0) {
       update_blkhash ((const char *) buf, offset, r);
-      dst->ops->synch_write (dst, buf, r, offset);
+      if (!zstd) {
+        dst->ops->synch_write (dst, buf, r, offset);
+      } else {
+//         zstd_compress_and_write(dst, buf, r, offset, dst->ops->synch_write);
+      }
       offset += r;
       progress_bar (offset, src->size);
     }
