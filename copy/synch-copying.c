@@ -140,7 +140,10 @@ synch_copying (void)
           }
 
           update_blkhash ((const char *) buf, offset, r);
-          dst->ops->synch_write (dst, buf, r, offset);
+          if (!zstd)
+            dst->ops->synch_write (dst, buf, r, offset);
+          else
+            zstd_compress_and_write (dst, buf, r, offset, dst->ops->synch_write);
           offset += r;
           progress_bar (offset, src->size);
         }
