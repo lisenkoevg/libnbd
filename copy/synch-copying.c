@@ -79,7 +79,6 @@ synch_copying (void)
     exit (EXIT_FAILURE);
   }
 
-  fprintf(stderr, "%s: %s src->size = %ld\n", prog, __FILE_NAME__, src->size);
   /* If the source size is unknown then we copy data and cannot use
    * extent information.
    */
@@ -91,7 +90,7 @@ synch_copying (void)
       if (!zstd) {
         dst->ops->synch_write (dst, buf, r, offset);
       } else {
-//         zstd_compress_and_write(dst, buf, r, offset, dst->ops->synch_write);
+        zstd_compress_and_write (dst, buf, r, offset, dst->ops->synch_write);
       }
       offset += r;
       progress_bar (offset, src->size);

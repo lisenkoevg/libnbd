@@ -421,10 +421,8 @@ main (int argc, char *argv[])
       dst = null_create (dst_name);
     else if (! is_nbd_uri (dst_name))
       dst = open_local (dst_name, WRITING);
-    else {
-      fprintf(stderr, "%s: %s nbd_rw_create_uri %s\n", prog, __FILE_NAME__, dst_name);
+    else
       dst = nbd_rw_create_uri (dst_name, dst_name, WRITING);
-    }
   }
 
   /* There must be no extra parameters. */
@@ -651,14 +649,11 @@ open_local (const char *filename, direction d)
     exit (EXIT_FAILURE);
   }
   /* Regular file or block device. */
-  fprintf(stderr, "%s: %s %d %d %d\n", prog, __FILE_NAME__, stat.st_mode, S_ISREG (stat.st_mode), S_ISBLK (stat.st_mode));
   if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode)) {
-    fprintf(stderr, "%s: %s file_create %s\n", prog, __FILE_NAME__, filename);
     return file_create (filename, fd, &stat, d);
   /* Probably stdin/stdout, a pipe or a socket. */
   } else {
     synchronous = true;        /* Force synchronous mode for pipes. */
-    fprintf(stderr, "%s: %s pipe_create %s\n", prog, __FILE_NAME__, filename);
     return pipe_create (filename, fd);
   }
 }
