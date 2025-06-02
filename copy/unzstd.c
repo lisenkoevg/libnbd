@@ -1,7 +1,9 @@
 #include "unzstd.h"
 #include <stdio.h>
 
+#if 0
 #include "../../nbd/experiments/dump_buffer.c"
+#endif
 
 void zstd_compress_and_write (struct rw *dst, const void *data, size_t size, uint64_t offset,
     synch_write_op_t write_op) {
