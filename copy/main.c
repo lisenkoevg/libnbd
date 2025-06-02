@@ -649,10 +649,10 @@ open_local (const char *filename, direction d)
     exit (EXIT_FAILURE);
   }
   /* Regular file or block device. */
-  if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode)) {
+  if (S_ISREG (stat.st_mode) || S_ISBLK (stat.st_mode))
     return file_create (filename, fd, &stat, d);
   /* Probably stdin/stdout, a pipe or a socket. */
-  } else {
+  else {
     synchronous = true;        /* Force synchronous mode for pipes. */
     return pipe_create (filename, fd);
   }
