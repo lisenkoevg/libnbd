@@ -1,5 +1,8 @@
-#include "unzstd.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <zstd.h>
+
+#include "unzstd.h"
 
 #if 0
 #include "../../nbd/experiments/dump_buffer.c"

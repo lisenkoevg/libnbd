@@ -1,7 +1,3 @@
-#include <zstd.h>
-#include <stdint.h>
-#include <stdlib.h>
-
 #include "nbdcopy.h"
 
 #define COMPRESSION_LEVEL 3
