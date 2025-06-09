@@ -22,6 +22,7 @@ void zstd_compress_and_synch_write (struct rw *dst, const void *data, size_t siz
 void zstd_compress_and_asynch_write(struct rw *dst, struct command *command, nbd_completion_callback cb,
     asynch_write_op_t asynch_write_op) {
 
+  // TODO: check __thread portability
   static struct command __thread *command_replaced;
 
   size_t size = command->slice.len;
