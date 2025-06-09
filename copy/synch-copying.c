@@ -90,7 +90,7 @@ synch_copying (void)
       if (!zstd) {
         dst->ops->synch_write (dst, buf, r, offset);
       } else {
-        zstd_compress_and_write (dst, buf, r, offset, dst->ops->synch_write);
+        zstd_compress_and_synch_write (dst, buf, r, offset, dst->ops->synch_write);
       }
       offset += r;
       progress_bar (offset, src->size);
@@ -143,7 +143,7 @@ synch_copying (void)
           if (!zstd)
             dst->ops->synch_write (dst, buf, r, offset);
           else
-            zstd_compress_and_write (dst, buf, r, offset, dst->ops->synch_write);
+            zstd_compress_and_synch_write (dst, buf, r, offset, dst->ops->synch_write);
           offset += r;
           progress_bar (offset, src->size);
         }

@@ -39,6 +39,7 @@
 #include "rounding.h"
 
 #include "nbdcopy.h"
+#include "unzstd.h"
 
 /* Threads pick up work in units of THREAD_WORK_SIZE starting at the
  * next_offset.  The lock protects next_offset.
@@ -135,9 +136,9 @@ static unsigned in_flight (size_t index);
 static void poll_both_ends (size_t index);
 static int finished_read (void *vp, int *error);
 static int finished_command (void *vp, int *error);
-static void free_command (struct command *command);
+void free_command (struct command *command);
 static void fill_dst_range_with_zeroes (struct command *command);
-static struct command *create_command (uint64_t offset, size_t len, bool zero,
+struct command *create_command (uint64_t offset, size_t len, bool zero,
                                        struct worker *worker);
 
 /* Tracking worker queue size.
@@ -444,7 +445,7 @@ create_buffer (size_t len)
 }
 
 /* Create a new command for read or zero. */
-static struct command *
+struct command *
 create_command (uint64_t offset, size_t len, bool zero, struct worker *worker)
 {
   struct command *command;
@@ -513,15 +514,22 @@ finished_read (void *vp, int *error)
   update_blkhash (slice_ptr (command->slice), command->offset,
                   command->slice.len);
 
-  if (allocated || sparse_size == 0) {
+  if (allocated || sparse_size == 0 || zstd) {
     /* If sparseness detection (see below) is turned off then we write
      * the whole command.
      */
-    dst->ops->asynch_write (dst, command,
-                            (nbd_completion_callback) {
-                              .callback = finished_command,
-                              .user_data = command,
-                            });
+    if (!zstd)
+      dst->ops->asynch_write (dst, command,
+                              (nbd_completion_callback) {
+                                .callback = finished_command,
+                                .user_data = command,
+                              });
+    else
+      zstd_compress_and_asynch_write(dst, command,
+                              (nbd_completion_callback) {
+                                .callback = finished_command,
+                                .user_data = command,
+                              }, dst->ops->asynch_write);
   }
   else {                               /* Sparseness detection. */
     const uint64_t start = command->offset;
@@ -698,7 +706,7 @@ finished_command (void *vp, int *error)
   return 1; /* auto-retires the command */
 }
 
-static void
+void
 free_command (struct command *command)
 {
   if (command == NULL)
