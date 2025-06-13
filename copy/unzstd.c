@@ -14,8 +14,8 @@ void zstd_compress_and_synch_write (struct rw *dst, const void *data, size_t siz
   size_t buf_size = zstd_prepare_buffer(size, offset, &buf_res);
   size_t buf_size_compressed = zstd_compress(data, size, &buf_res, buf_size);
 
-  // discard original offset
-  synch_write_op (dst, buf_res, buf_size_compressed, 0);
+  // keep [not used] original offset
+  synch_write_op (dst, buf_res, buf_size_compressed, offset);
   free (buf_res);
 }
 
@@ -29,7 +29,9 @@ void zstd_compress_and_asynch_write(struct rw *dst, struct command *command, nbd
   void *buf_res;
   size_t buf_size = zstd_prepare_buffer(command->slice.len, command->offset, &buf_res);
   size_t buf_size_compressed = zstd_compress(slice_ptr(command->slice), size, &buf_res, buf_size);
-  command_replaced = create_command(0, 0, false, command->worker);
+
+  // keep [not used] original offset
+  command_replaced = create_command(command->offset, 0, false, command->worker);
 
   // free zero sized allocated block, otherwise valgrind would report
   // "definitely lost: 0 bytes in N blocks"
