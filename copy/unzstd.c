@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <zstd.h>
+#include <unistd.h>
 
 #include "unzstd.h"
 
@@ -33,14 +34,16 @@ void zstd_compress_and_asynch_write(struct rw *dst, struct command *command, nbd
   // keep [not used] original offset
   command_replaced = create_command(command->offset, 0, false, command->worker);
 
-  // free zero sized allocated block, otherwise valgrind would report
+  // free zero-sized allocated block, otherwise valgrind would report
   // "definitely lost: 0 bytes in N blocks"
   free(command_replaced->slice.buffer->data);
   command_replaced->slice.buffer->data = buf_res;
   command_replaced->slice.len = buf_size_compressed;
 
   asynch_write_op(dst, command_replaced, cb);
+
   // original *command will be freed upon cb() invocation
+  // usleep(1000); probable bug
   free_command(command_replaced);
 }
 
@@ -63,7 +66,7 @@ size_t zstd_prepare_buffer(size_t size, uint64_t offset, void **buf_res) {
     .original_size = size,
     .original_offset = offset,
   };
-  // prepare result buffer containing original data parameters + zstd frame
+  // prepare result buffer containing original buffer parameters + zstd frame
   size_t zstd_compressBound = ZSTD_compressBound(size);
   size_t buf_size = sizeof zstd_params + zstd_compressBound;
   *buf_res = malloc (buf_size);
